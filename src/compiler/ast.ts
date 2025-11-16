@@ -1,11 +1,14 @@
+import { max } from "../math";
+import { Matrix, scalarMatrix } from "../matrix";
 import { id, isinstance, str } from "../utils";
 import { processArgsInCall } from "./call";
 import { makeCodeMacroExpander } from "./codemacro";
-import { compileNode, makeStereoAtIndex, ResultCacheEntry } from "./compile";
+import { addConstantMatrix, allocNode, allocRegister, CompileState, NodeCompileData } from "./compile";
 import { CompileError, ErrorNote, LocationTrace, RuntimeError } from "./errors";
-import { EvalState, NodeDef, NodeValueType, pushNamed } from "./evalState";
+import { EvalState, pushNamed } from "./evalState";
+import { Rate } from "./nodeDef";
 import { OPERATORS } from "./operator";
-import { allocNode, allocRegister, CompiledVoiceData, Opcode, Program } from "./prog";
+import { Opcode } from "./prog";
 
 export abstract class Node {
     id: number;
@@ -13,7 +16,7 @@ export abstract class Node {
     abstract edgemost(left: boolean): Node;
     abstract pipe(fn: (node: Node) => Promise<Node>): Promise<Node>;
     abstract eval(state: EvalState): Promise<Node>;
-    abstract compile(state: CompiledVoiceData, refMap: Map<Node, ResultCacheEntry>, ni: NodeDef[]): void;
+    abstract compile(state: CompileState): NodeCompileData;
     static checkImmediate(x: Node): x is Value | Symbol | ContainerNode {
         return isinstance(x, Value) || isinstance(x, Symbol) || (isinstance(x, ContainerNode) && x.isImmediate());
     }
@@ -26,7 +29,7 @@ export abstract class Node {
 }
 
 export abstract class NotCodeNode extends Node {
-    compile(state: CompiledVoiceData, refMap: Map<Node, ResultCacheEntry>, ni: NodeDef[]) {
+    compile(state: CompileState): NodeCompileData {
         throw new CompileError("how did we get here ?!? (" + this.constructor.name + ")", this.loc);
     }
 }
@@ -48,14 +51,14 @@ export class AnnotatedValue extends NotCodeNode {
             var name: string;
             if (isinstance(attr, Call) || isinstance(attr, Name)) {
                 name = attr.name;
-                const impl = state.annotators[name];
-                if (!impl) {
+                const a = state.annotators.find(a => a.name === name);
+                if (!a) {
                     throw new RuntimeError("unknown annotation " + str(name), attr.loc, stackToNotes(state.callstack));
                 }
                 if (isinstance(attr, Call)) {
                     args = attr.args;
                 }
-                v = await impl(v, args, state);
+                v = await a.apply(v, args, state);
             } else {
                 throw new RuntimeError("illegal annotation", attr.loc, stackToNotes(state.callstack));
             }
@@ -65,25 +68,31 @@ export class AnnotatedValue extends NotCodeNode {
 }
 
 export class Value extends Leaf {
-    constructor(trace: LocationTrace, public value: any) { super(trace); };
+    constructor(trace: LocationTrace, public value: string | number | Matrix) { super(trace); };
     async eval(state: EvalState): Promise<Node> {
         if (isinstance(this.value, Node)) return this.value;
         return this;
     }
-    compile(state: CompiledVoiceData) {
-        state.p.push([Opcode.PUSH_CONSTANT, this.value]);
-        state.tosStereo = false;
+    compile(state: CompileState): NodeCompileData {
+        const [m] = toMatrix(this);
+        return {
+            self: [Opcode.PUSH_CONSTANT, addConstantMatrix(m, state)],
+            args: [],
+            argTypes: [],
+            result: Rate.ANY_RATE,
+        }
     }
 }
 
-export class Symbol extends Leaf {
-    constructor(trace: LocationTrace, public value: string) { super(trace); };
-    async eval(state: EvalState): Promise<Symbol> {
+export class Symbol extends Value {
+    declare value: string;
+    constructor(trace: LocationTrace, value: string) { super(trace, value); };
+    async eval(): Promise<this> {
         return this;
     }
 }
 
-export class Assignment extends Node {
+export class Assignment extends NotCodeNode {
     constructor(trace: LocationTrace, public target: Node, public value: Node) { super(trace); };
     edgemost(left: boolean): Node { return left ? this.target.edgemost(left) : this.value.edgemost(left); }
     async pipe(fn: (node: Node) => Promise<Node>): Promise<Node> { return new Assignment(this.loc, await fn(this.target), await fn(this.value)); }
@@ -104,10 +113,6 @@ export class Assignment extends Node {
         }
         return result;
     }
-    compile(state: CompiledVoiceData, refMap: Map<Node, ResultCacheEntry>, ni: NodeDef[]) {
-        compileNode(this.value, state, refMap, ni);
-        state.p.push([Opcode.TAP_REGISTER, allocRegister((this.target as any).name, state)]);
-    }
 }
 
 export class Name extends Leaf {
@@ -119,9 +124,6 @@ export class Name extends Leaf {
         }
         return val;
     }
-    compile(state: CompiledVoiceData, refMap: Map<Node, ResultCacheEntry>, ni: NodeDef[]) {
-        state.p.push([Opcode.GET_REGISTER, allocRegister(this.name, state)]);
-    }
 }
 
 export class LateBinding extends Name {
@@ -129,15 +131,14 @@ export class LateBinding extends Name {
     async eval() {
         return this.boundValue ?? this;
     }
-    compile(state: CompiledVoiceData, refMap: Map<Node, ResultCacheEntry>, ni: NodeDef[]) {
+    compile(): NodeCompileData {
         if (!this.boundValue) {
             throw new CompileError(`${this.name} was never assigned to in this scope`, this.loc);
         }
-        compileNode(this.boundValue, state, refMap, ni);
-        const myRegname = "" + id(this.boundValue);
-        const last = state.p.at(-1)!;
-        if (!(last[0] === Opcode.GET_REGISTER && state.r[last[1] as number] === myRegname)) {
-            state.p.push([Opcode.SHIFT_REGISTER, allocRegister(myRegname, state)]);
+        return {
+            args: [this.boundValue],
+            argTypes: [Rate.ANY_RATE],
+            result: Rate.ANY_RATE
         }
     }
 }
@@ -147,72 +148,31 @@ export class Call extends Node {
     edgemost(left: boolean): Node { return left ? this : this.args.at(-1)?.edgemost(left) ?? this; }
     async pipe(fn: (node: Node) => Promise<Node>): Promise<Node> { return new Call(this.loc, this.name, await asyncNodePipe(this.args, fn)); }
     async eval(state: EvalState): Promise<Node> {
-        const funcImpl = state.functions.find(f => f[0] === this.name);
+        const funcImpl = state.functions.find(f => f.name === this.name);
         if (funcImpl) {
-            const impl = funcImpl[2];
             const newState: EvalState = { ...state, callstack: state.callstack.concat(this) };
-            return impl(this.args, newState);
+            return funcImpl.expand(this.args, newState);
         }
-        const nodeImpl = state.nodes.find(n => n[0] === this.name);
+        const nodeImpl = state.nodes.find(n => n.name === this.name);
         if (!nodeImpl) {
             throw new RuntimeError("undefined node or function " + this.name, this.loc, stackToNotes(state.callstack));
         }
-        var x: List;
-        if (nodeImpl[2] === NodeValueType.DECOUPLED_MATH && (x = new List(this.loc, this.args)).isImmediate()) {
-            return new Value(this.loc, nodeImpl[4]!(null as any)(null!, x.toImmediate()!));
+        if (nodeImpl.stateless && this.args.every(x => Node.checkImmediate(x))) {
+            return new Value(this.loc, nodeImpl.make(null as any).updateSample(this.args.map(m => toMatrix(m as any)[0])));
         }
-        return new Call(this.loc, nodeImpl[0], await processArgsInCall(state, true, this.loc, this.args, nodeImpl));
+        return new Call(this.loc, nodeImpl.name, await processArgsInCall(state, true, this.loc, this.args, nodeImpl));
     }
-    compile(state: CompiledVoiceData, refMap: Map<Node, ResultCacheEntry>, ni: NodeDef[]) {
-        var i: number;
-        const nodeImpl = ni.find(n => n[0] === this.name);
+    compile(state: CompileState): NodeCompileData {
+        const nodeImpl = state.nodeDefs.find(n => n.name === this.name);
         if (!nodeImpl) {
             throw new CompileError(`cannot find node ${this.name} (should be unreachable!!)`, this.loc);
         }
-        const argProgs: [argProg: Program, isStereo: NodeValueType][] = [];
-        const existingProg: Program = state.p;
-        for (i = 0; i < this.args.length; i++) {
-            state.p = [];
-            compileNode(this.args[i]!, state, refMap, ni);
-            argProgs.push([state.p, state.tosStereo ? NodeValueType.STEREO : NodeValueType.NORMAL_OR_MONO]);
+        return {
+            args: this.args,
+            argTypes: nodeImpl.inputs.map(arg => arg.rate),
+            self: [Opcode.TEMP_OPCODE_FOR_UNIFIED_CALL, allocNode(this.name, state)],
+            result: nodeImpl.outputRate
         }
-        state.p = existingProg;
-        const callProg: Program[number] = [Opcode.APPLY_NODE, allocNode(this.name, state), nodeImpl[1].length];
-        // logic for stereo/mono nodes:
-        // if the node is x -> stereo, the inputs must all be the right type (mono to stereo can be widened; stereo to mono can't be narrowed, error)
-        // if the node is mono -> mono, the node itself is duplicated if any inputs are stereo and the output is stereo, else mono
-        // if the node is stereo -> mono, normal with the inputs also being widened if needed
-        // We assume our arguments are correct and line up positionally already
-        // (this should have been handled by the eval() stage)
-        state.tosStereo = nodeImpl[2] === NodeValueType.STEREO;
-        if (nodeImpl[1].every(a => a[2] !== NodeValueType.STEREO) && argProgs.some(s => s[1] === NodeValueType.STEREO)) {
-            // Can stereo widen
-            for (i = 0; i < nodeImpl[1].length; i++) {
-                const gottenArgType = argProgs[i]![1];
-                if (gottenArgType !== NodeValueType.STEREO) {
-                    makeStereoAtIndex(argProgs[i]![0]);
-                }
-            }
-            state.tosStereo = true;
-            callProg[0] = Opcode.APPLY_DOUBLE_NODE_STEREO;
-            callProg.splice(2, 0, allocNode(this.name, state)); // 2nd node
-        }
-        else {
-            for (i = 0; i < nodeImpl[1].length; i++) {
-                const neededArgType = nodeImpl[1][i]![2]! ?? NodeValueType.NORMAL_OR_MONO;
-                const gottenArgType = argProgs[i]![1];
-                if (neededArgType !== NodeValueType.STEREO && gottenArgType === NodeValueType.STEREO) {
-                    throw new CompileError("cannot implicitly convert stereo output to mono", this.args[i]!.loc);
-                } else if (neededArgType === NodeValueType.STEREO && gottenArgType !== NodeValueType.STEREO) {
-                    makeStereoAtIndex(argProgs[i]![0]);
-                }
-            }
-            state.tosStereo = nodeImpl[2] === NodeValueType.STEREO;
-        }
-        for (i = 0; i < this.args.length; i++) {
-            state.p.push(...argProgs[i]![0]);
-        }
-        state.p.push(callProg);
     }
 }
 
@@ -256,22 +216,22 @@ export class List extends ContainerNode {
             return this.values.map(v => Node.getValueOf(v));
         }
     }
-    compile(state: CompiledVoiceData, refMap: Map<Node, ResultCacheEntry>, ni: NodeDef[]) {
-        if (this.isImmediate()) {
-            const imm = this.toImmediate() as any;
-            state.p.push([Opcode.PUSH_CONSTANT, imm]);
-        } else {
-            state.p.push([Opcode.PUSH_FRESH_EMPTY_LIST]);
-            for (var arg of this.values) {
-                compileNode(arg, state, refMap, ni);
-                if (isinstance(arg, SplatValue)) {
-                    state.p.push([Opcode.EXTEND_TO_LIST]);
-                } else {
-                    state.p.push([Opcode.APPEND_TO_LIST]);
-                }
-            }
+    compile(state: CompileState): NodeCompileData {
+        const [mat, inst] = toMatrix(this);
+        return {
+            isParts: true,
+            result: Rate.ANY_RATE,
+            pre: [[Opcode.PUSH_CONSTANT, addConstantMatrix(mat, state)]],
+            post: [],
+            parts: inst.flatMap((rowV, rowN) => rowV.flatMap((v, col) => {
+                return v == null ? [] : [{
+                    arg: v,
+                    type: Rate.ANY_RATE,
+                    pre: [],
+                    post: [[Opcode.SET_MATRIX_EL, rowN, col]],
+                }]
+            })),
         }
-        state.tosStereo = this.values.length === 2;
     }
 }
 
@@ -296,18 +256,8 @@ export class Mapping extends ContainerNode {
             return out;
         }
     }
-    compile(state: CompiledVoiceData, refMap: Map<Node, ResultCacheEntry>, ni: NodeDef[]): void {
-        if (this.isImmediate()) {
-            state.p.push([Opcode.PUSH_CONSTANT, this.toImmediate()]);
-        } else {
-            state.p.push([Opcode.PUSH_FRESH_EMPTY_MAP]);
-            for (var { key, val } of this.mapping) {
-                compileNode(key, state, refMap, ni);
-                compileNode(val, state, refMap, ni);
-                state.p.push([Opcode.ADD_TO_MAP]);
-            }
-        }
-        state.tosStereo = false;
+    compile(): never {
+        throw new CompileError("Cannot convert mapping to matrix!", this.loc);
     }
 }
 
@@ -316,8 +266,8 @@ export class Definition extends NotCodeNode {
     edgemost(left: boolean): Node { return left ? this.parameters.length > 0 ? this.parameters[0]!.edgemost(left) : this : this.body.edgemost(left); }
     async pipe(fn: (node: Node) => Promise<Node>): Promise<Node> { return new Definition(this.loc, this.name, this.outMacro, await asyncNodePipe(this.parameters, fn), await fn(this.body)); }
     async eval(state: EvalState) {
-        pushNamed(state.functions, [this.name, this.parameters.length, makeCodeMacroExpander(this.name, this.outMacro, this.parameters, this.body)]);
-        return new Value(this.loc, undefined);
+        pushNamed(state.functions, { name: this.name, argc: this.parameters.length, expand: makeCodeMacroExpander(this.name, this.outMacro, this.parameters, this.body) });
+        return new Value(this.loc, undefined as any);
     }
 }
 
@@ -386,17 +336,13 @@ export class BinaryOp extends Node {
         }
         return new BinaryOp(this.loc, this.op, left, right);
     }
-    compile(state: CompiledVoiceData, refMap: Map<Node, ResultCacheEntry>, ni: NodeDef[]) {
-        compileNode(this.left, state, refMap, ni);
-        const aStereo = state.tosStereo;
-        const aIndex = state.p.length;
-        compileNode(this.right, state, refMap, ni);
-        const bStereo = state.tosStereo;
-        if ((state.tosStereo ||= aStereo)) {
-            if (!aStereo) makeStereoAtIndex(state.p, aIndex);
-            if (!bStereo) makeStereoAtIndex(state.p);
+    compile(): NodeCompileData {
+        return {
+            args: [this.left, this.right],
+            argTypes: [Rate.ANY_RATE, Rate.ANY_RATE],
+            result: Rate.ANY_RATE,
+            self: [Opcode.BINARY_OP, this.op]
         }
-        state.p.push([state.tosStereo ? Opcode.DO_BINARY_OP_STEREO : Opcode.DO_BINARY_OP, this.op]);
     }
 }
 
@@ -420,9 +366,13 @@ export class UnaryOp extends Node {
         }
         return new UnaryOp(this.loc, this.op, val);
     }
-    compile(state: CompiledVoiceData, refMap: Map<Node, ResultCacheEntry>, ni: NodeDef[]) {
-        compileNode(this.value, state, refMap, ni);
-        state.p.push([state.tosStereo ? Opcode.DO_UNARY_OP_STEREO : Opcode.DO_UNARY_OP, this.op]);
+    compile(): NodeCompileData {
+        return {
+            args: [this.value],
+            argTypes: [Rate.ANY_RATE],
+            result: Rate.ANY_RATE,
+            self: [Opcode.UNARY_OP, this.op]
+        }
     }
 }
 
@@ -454,21 +404,13 @@ export class Conditional extends Node {
         const cf = await this.caseFalse.eval(state);
         return new Conditional(this.loc, cond, ct, cf);
     }
-    compile(state: CompiledVoiceData, refMap: Map<Node, ResultCacheEntry>, ni: NodeDef[]) {
-        compileNode(this.caseFalse, state, refMap, ni);
-        const stereoF = state.tosStereo;
-        const stereoI = state.p.length;
-        compileNode(this.caseTrue, state, refMap, ni);
-        const stereoT = state.tosStereo;
-        if ((state.tosStereo ||= stereoF)) {
-            if (!stereoT) makeStereoAtIndex(state.p, stereoI);
-            if (!stereoF) makeStereoAtIndex(state.p);
+    compile(): NodeCompileData {
+        return {
+            args: [this.cond, this.caseTrue, this.caseFalse],
+            self: [Opcode.CONDITIONAL_SELECT],
+            argTypes: [Rate.ANY_RATE, Rate.ANY_RATE, Rate.ANY_RATE],
+            result: Rate.ANY_RATE
         }
-        compileNode(this.cond, state, refMap, ni);
-        if (state.tosStereo) {
-            throw new CompileError("cannot use stereo output as condition", this.cond.loc);
-        }
-        state.p.push([Opcode.CONDITIONAL_SELECT]);
     }
 }
 
@@ -501,9 +443,9 @@ export class Block extends NotCodeNode {
     edgemost(left: boolean): Node { return this.body.length > 0 ? left ? this.body[0]!.edgemost(left) : this.body.at(-1)!.edgemost(left) : this; }
     async pipe(fn: (node: Node) => Promise<Node>): Promise<Node> { return new Block(this.loc, await asyncNodePipe(this.body, fn)); }
     async eval(state: EvalState): Promise<Node> {
-        var last: Node = new Value(this.loc, undefined);
+        var last: Node = new Value(this.loc, undefined as any);
         for (var v of this.body) {
-            if (isinstance(v, DefaultPlaceholder)) last = new Value(v.loc, undefined);
+            if (isinstance(v, DefaultPlaceholder)) last = new Value(v.loc, undefined as any);
             else last = await v.eval(state);
         }
         return last;
@@ -526,4 +468,39 @@ function scopeForName(name: string, state: EvalState) {
     return Object.hasOwn(state.env, name) ? state.env : Object.hasOwn(state.globalEnv, name) ? state.globalEnv : state.env;
 }
 
+function toMatrix(x: List | Value): [Matrix, (Node | null)[][]] {
+    if (isinstance(x, Value)) {
+        return [isinstance(x.value, Matrix) ? x.value : typeof x.value === "string" ? Matrix.ofVector(new Array(x.value.length).fill(0).map((_, i) => (x.value as string).codePointAt(i)!)) : scalarMatrix(x.value), []];
+    }
+    const rows = x.values.length;
+    const cols = x.values.map((v: any) => v.values.length ?? v.value.length ?? 1).reduce((x, y) => max(x, y), 0);
+    const d = [];
+    const m = new Matrix(rows, cols);
+    for (var row = 0; row < rows; row++) {
+        const r: (Node | null)[] = [];
+        d.push(r);
+        const rv = x.values[row]!;
+        var rowvalues: ArrayLike<Node | number>;
+        if (isinstance(rv, Value)) rowvalues = toMatrix(rv)[0].data;
+        else {
+            if (!isinstance(rv, List)) throw new CompileError("can't convert this to matrix row", rv.loc);
+            rowvalues = rv.values.map(v => {
+                if (isinstance(v, Value)) {
+                    if (typeof v.value !== "number") throw new CompileError("can only use string as the entire row of a matrix", v.loc);
+                    return v.value;
+                }
+                return v;
+            });
+        }
+        for (var col = 0; col < cols; col++) {
+            const elem = rowvalues[col];
+            switch (typeof elem) {
+                case "number": m.put(row, col, elem); break;
+                case "undefined": break;
+                default: r[col] = elem;
+            }
+        }
+    }
+    return [m, d];
+}
 

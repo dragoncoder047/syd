@@ -1,42 +1,75 @@
-import { NodeDef, NodeHelp, NodeValueType } from "../../compiler/evalState";
-import { abs, noise3, noise5, saw, sgn, sin, tanW, TAU, tri } from "../../math";
+import { AudioProcessor, AudioProcessorFactory, Rate } from "../../compiler/nodeDef";
+import { fract } from "../../math";
+import { scalarMatrix } from "../../matrix";
+import { Wave, WorkletSynth } from "../../runtime/synthImpl";
 
-export const zzfxOscillator: NodeDef = [
-    "zzfxOscillator",
-    [["freq", null], ["shape", 0], ["distortion", 1], ["noise", 0], ["phi", 0]],
-    NodeValueType.NORMAL_OR_MONO,
-    [, { sine: 0, triangle: 1, sawtooth: 2, tangent: 3, noise3: 4 }],
-    () => {
-        var phase = 0, sampleNo = 0;
-        return (dt, args) => {
-            const frequency = args[0]!, shape = args[1]!, distortion = args[2]!, noise = args[3]!, phaseMod = args[4]!;
-            const sample = (shape > 3 ? noise3 : shape > 2 ? tanW : shape > 1 ? saw : shape ? tri : sin)(phaseMod * TAU + (phase += (frequency * TAU * dt) * (1 + noise * noise5(sampleNo++))));
-            return sgn(sample) * (abs(sample) ** distortion);
-        }
-    }
-];
-export const zzfxOscillatorHelp: NodeHelp = {
-    description: "Multi-waveform oscillator like that of ZzFX.",
-    parameters: {
-        freq: {
+
+export class WavetableOscillator implements AudioProcessorFactory {
+    name = "osc";
+    description = "A wavetable oscillator, which plays back a list of samples on loop, pitch-shifted to produce the right note. Basically an arbitrary function generator If the wavetable was loaded as a sample, the basePitch is used. If no basePitch was provided the sample is interpreted as one complete cycle of the wave."
+    inputs = [
+        {
+            name: "frequency",
             unit: "Hz",
-            range: [0, 20000],
+            rate: Rate.A_RATE,
+            dims: "1x1",
+            range: [0, 20000] as any
         },
-        shape: {
-            description: "Which base shape of oscillator to start with. Note: tangent wave sounds like double the desired frequency."
+        {
+            name: "wave",
+            description: "The index of the wave returned by the wave-loading function.",
+            rate: Rate.K_RATE,
+            dims: "1x1"
         },
-        distortion: {
-            range: [0, 10],
-            description: "How much to distort the wave shape by. A value of 0 returns a 50% duty cycle squarewave with the same frequency as the original, a value of 1 returns the real shape unchanged, and large values warp the wave towards the alternating Dirac comb function (and aliasing is increasingly likely)"
+        {
+            name: "phase",
+            description: "Phase offset, useful for FM",
+            unit: "cycles (NOT radians)!",
+            rate: Rate.A_RATE,
+            dims: "1x1"
         },
-        noise: {
-            range: [0, 100],
-            description: "How much extra noise to add to the wave.",
-        },
-        phi: {
-            range: [0, 1],
-            unit: "cycles (NOT radians!)",
-            description: "Modulates the oscillator's phase without adding to the internal accumulator. Useful for FM synthesis."
+        {
+            name: "aliasing",
+            description: "When off (the default), antiderivative antialiasing is applied to the wave to reduce distortion at high frequencies. When on, samples are output verbatim (which is what you want for true samples).",
+            rate: Rate.K_RATE,
+            default: scalarMatrix(0),
+            dims: "1x1",
+            unit: "boolean",
+            constantOptions: {
+                on: scalarMatrix(1),
+                off: scalarMatrix(0),
+            }
+        }
+    ];
+    outputRate = Rate.A_RATE;
+    outputDims = "1x1";
+    make(synth: WorkletSynth): AudioProcessor {
+        var phase = 0, wave: Wave | undefined, aliasing = false, prev: number;
+        return {
+            updateControl(controlParams) {
+                wave = synth.waves[controlParams[0]!.toScalar()];
+                aliasing = controlParams[1]!.toScalar() != 0;
+                return [];
+            },
+            updateSample(inputs) {
+                if (!wave) return scalarMatrix(0);
+                const wantedFrequency = inputs[0]!.toScalar();
+                const baseFrequency = wave.basePitch;
+                const loopsPerSecond = wantedFrequency / baseFrequency;
+                const loopsPerSample = loopsPerSecond * synth.dt;
+                const phaseMod = inputs[1]!.toScalar();
+                phase += loopsPerSample;
+                if (phase > 1) phase -= phase | 0;
+                const fIndex = fract(phase + phaseMod) * wave.integral.length;
+                if (aliasing) return scalarMatrix(wave.samples[fIndex | 0]!);
+                const iIndex = fIndex | 0;
+                const alpha = fIndex - iIndex;
+                var next = wave.integral[iIndex]!;
+                next += (wave.integral[iIndex + 1]! - next) * alpha;
+                const sample = next - prev;
+                next = prev;
+                return scalarMatrix(sample);
+            },
         }
     }
-};
+}

@@ -1,51 +1,20 @@
-import { WorkletSynth } from "../runtime/synthImpl";
+import { AnnotatorDef } from "./annotatorDef";
 import * as AST from "./ast";
+import { FunctionDef } from "./funcDef";
+import { AudioProcessorFactory } from "./nodeDef";
 
 export interface EvalState {
     env: Record<string, AST.Node>;
     globalEnv: Record<string, AST.Node>;
-    functions: MacroDef[];
-    nodes: NodeDef[];
+    functions: FunctionDef[];
+    nodes: AudioProcessorFactory[];
+    annotators: AnnotatorDef[];
     callstack: AST.Call[],
     recursionLimit: number;
-    annotators: Record<string, (
-        val: AST.Node | null,
-        evaledArgs: AST.Node[] | null,
-        state: EvalState,
-    ) => Promise<AST.Node>>;
 }
 
-export type MacroDef = [
-    name: string,
-    argc: number | undefined,
-    expand: (args: AST.Node[], state: EvalState) => Promise<AST.Node>,
-];
-
-export enum NodeValueType {
-    NORMAL_OR_MONO,
-    STEREO,
-    DECOUPLED_MATH
-}
-export type NodeDef = [
-    name: string,
-    params: [name: string, default_: number | null, type?: NodeValueType][],
-    returnType: NodeValueType,
-    enumChoices: (Record<string, number> | undefined)[],
-    impl: (synth: WorkletSynth) => (dt: number, args: number[]) => number,
-];
-
-export function pushNamed<T extends NodeDef | MacroDef>(defs: T[], newDef: T) {
-    const i = defs.findIndex(d => d[0] === newDef[0]);
+export function pushNamed<T extends AudioProcessorFactory | FunctionDef | AnnotatorDef>(defs: T[], newDef: T) {
+    const i = defs.findIndex(d => d.name === newDef.name);
     if (i !== -1) defs[i] = newDef;
     else defs.push(newDef);
 }
-
-export type NodeHelp = {
-    description: string;
-    parameters: Record<string, {
-        range?: [number, number, step?: number],
-        allowNonEnum?: boolean,
-        unit?: string,
-        description?: string,
-    }>;
-};

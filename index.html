@@ -26,19 +26,74 @@
         <h1>Syd test</h1>
         <p><a href="https://github.com/dragoncoder047/syd?tab=readme-ov-file">(What is this?)</a></p>
         <p><button id="play">Play</button></p>
-        <p>Instrument: <textarea id="instrument" rows="10" cols="80">// thanks LeoV!!
-t = t + (1 / 48000); tm = 5;
-nC = 5; nT = (t * tm) % nC;
-env = 1 - t * tm % 1; env2 = 1 - (t * tm * 0.5) % 1; env3 = 1 - (t * tm * 0.5 + 0.5) % 1; env4 = 1 - (t * tm * 0.25 + 0.5) % 1;
-f1 = nT > 3 ? 525 : (nT > 2 ? 660 : (nT > 1 ? 700 : 440));
-o1 = zzfxOscillator(f1, 2) / 8 * env ** 2 |> (fb = delay(# + fb * 0.6, 0.3));
-o2 = zzfxOscillator(f1 * (3/2) ** 1 * 0.5, 2) / 8 * env ** 2 |> (fb2 = delay(# + fb2 * 0.6, 0.4));
-o3 = zzfxOscillator(f1 * (3/2) ** 1 * 0.45, 2) / 8 * env ** 5 |> (fb3 = delay(# + fb3 * 0.6, 0.3));
-o4 = zzfxOscillator(f1 * (3/2) ** 0.0125 * 2, 2) / 8 * env ** 2 |> (fb4 = delay(# + fb4 * 0.7, 0.002)) |> (fb5 = delay(# + fb5 * 0.6, 0.3));
-o5 = zzfxOscillator(440 * 0.125 + env2 ** 30 * 1000, 1) / 2 * env2;
-o6 = zzfxOscillator(2000, 5, 1) / 5 * env3 ** 5;
-o7 = zzfxOscillator(290) / 1 * env4 ** 40 + zzfxOscillator(1000, 1, 1, 40) / 2 * env4 ** 9;
-o1 + ([-1, 1] * o2) + ([1, -1] * o3) + ([-1, 1] * o4) + o5 + o6 + o7</textarea></p>
+        <p>Instrument: <textarea id="instrument" rows="10" cols="80">// radix - yuki satellites
+// https://modarchive.org/index.php?request=view_by_moduleid&query=167157
+
+mtof(p) :- (440 + 4) * (2 ** ((p - 69) * (1 / 12)));
+min(a, b) :- a < b ? a : b;
+max(a, b) :- a > b ? a : b;
+trunc(x) :- x | 0;
+echo(s, fbv, t) :- (s |> ((d = delay(# + d * fbv, t)) + s));
+pluck(t, p) :- (1 - t) ** p;
+saw(f, sR) :- (p = p + (f * (1 / sR)); (p - trunc(p)) * 2 - 1);
+
+sR = 48000;
+btR = 60 / 350;
+btRi = 1 / btR;
+t = t + (1 / sR);
+
+n0 = [
+ 68,  0, 75, 67,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  0,  0,
+ 68,  0, 75, 67,  0,  0,  0, 65,
+  0,  0, 63,  0,  0,  0,  0,  0
+];
+n1 = [
+ 37, 37,  0, 37,  0,  0,  0, 37,
+ 37,  0, 37,  0,  0, 44, 44,  0,
+ 41, 41,  0, 41,  0,  0,  0, 41,
+ 41,  0, 41,  0,  0, 44, 44,  0
+];
+n2 = [
+ 49, 56, 61, 63, 49, 56, 61, 63,
+ 49, 56, 61, 68, 49, 67, 60, 63,
+ 48, 53, 60, 63, 48, 53, 60, 63,
+ 48, 53, 60, 61, 48, 60, 56, 53
+];
+kP = [
+  1,  0,  0,  1,  0,  0,  0,  1,
+  0,  0,  1,  0,  0,  1,  0,  0,
+  1,  0,  0,  1,  0,  0,  0,  1,
+  0,  0,  1,  0,  0,  1,  0,  0
+];
+
+n0R = btR * #n0;
+n0Ri = 1 / n0R;
+n0T = (t % n0R) * n0Ri;
+n0I = n0T * #n0;
+nT = n0I % 1;
+pNE = 1 - nT;
+n0Int = trunc(n0I);
+n0F = mtof(n0->n0Int);
+n0E = n0F <= 10 ? 0 : pNE;
+n1F = mtof(n1->n0Int);
+n1E = n1F <= 10 ? 0 : 1;
+n2F = mtof(n2->n0Int);
+n2E = n2F <= 10 ? 0 : pNE;
+kV = kP->n0Int;
+kE = kV <= 0 ? 0 : pluck(nT, 2);
+sE = (t % (btR * 8)) / (btR * 8) > 0.5 ? 1 - ((t % (btR * 4)) / (btR * 4)) : 0;
+
+0
+
++ echo(saw(n0F, sR) * n0E * 0.5, 0.8, btR * 2)
++ (saw(n1F, sR) + saw(n1F + 0.5, sR)) * n1E * 0.5
++ zzfxOscillator(n2F, 0, 0) * n2E * 0.3
+
++ zzfxOscillator(440 * 0.125 + kE ** 9 * 1000, 1, 0) * kE * 0.8
++ zzfxOscillator(500, 1, 1, 50) * (1 - ((t % btR) * btRi)) ** 4 * 0.5
++ zzfxOscillator(300, 1, 1, 50) * (1 - ((t * 2) % (btR * 4)) * (1 / (btR * 4))) ** 4 * 0.5
++ (zzfxOscillator(290) * max(sE ** 10 - 0.5, 0) * 10 + zzfxOscillator(200, 1, 1, 40) * sE ** 6)</textarea></p>
         <canvas id="oscilloscope" width="800" height="200"></canvas>
         <div id="log"></div>
         <script type="module">

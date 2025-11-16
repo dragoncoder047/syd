@@ -1,7 +1,9 @@
 import { beforeEach, describe, expect, mock, test } from "bun:test";
 import * as AST from "../src/compiler/ast";
 import { LocationTrace } from "../src/compiler/errors";
-import { EvalState, NodeValueType } from "../src/compiler/evalState";
+import { EvalState } from "../src/compiler/evalState";
+import { Rate } from "../src/compiler/nodeDef";
+import { Matrix, scalarMatrix } from "../src/matrix";
 import { expectEval, expectEvalError } from "./astCheck";
 
 var dummyState: EvalState;
@@ -16,27 +18,42 @@ beforeEach(() => {
         },
         env: {},
         functions: [
-            [
-                "reverse3",
-                3,
-                async args => {
+            {
+                name: "reverse3",
+                argc: 3,
+                async expand(args, state) {
                     const [a, b, c] = args as [AST.Node, AST.Node, AST.Node];
                     return new AST.List(c.edgemost(false).loc, [c, b, a]);
-                }
-            ]
+                },
+            },
         ],
         nodes: [
-            [
-                "foo",
-                [["bar", null], ["baz", null]],
-                NodeValueType.NORMAL_OR_MONO,
-                [, { opt1: 2, opt2: 3 }],
-                () => () => 1,
-            ]
+            {
+                name: "foo",
+                inputs: [
+                    {
+                        name: "bar",
+                        rate: Rate.K_RATE,
+                        dims: "1x1",
+                    },
+                    {
+                        name: "baz",
+                        rate: Rate.K_RATE,
+                        dims: "1x1",
+                    }
+                ],
+                outputRate: Rate.K_RATE,
+                outputDims: "1x1",
+                stateless: false,
+                make: () => ({
+                    updateControl: () => null as any,
+                    updateSample: () => scalarMatrix(1),
+                }),
+            },
         ],
         callstack: [],
         recursionLimit: 50,
-        annotators: {},
+        annotators: [],
     };
     dummyState.env = Object.create(dummyState.globalEnv);
 })
@@ -462,8 +479,8 @@ describe("recursion", () => {
         });
     });
     test("looping via recursion", async () => {
-        const m = mock(() => 1);
-        dummyState.nodes.push(["dummy", [["x", null], ["y", null]], NodeValueType.DECOUPLED_MATH, [], () => m]);
+        const m = mock(() => ({ updateSample: () => scalarMatrix(1) }));
+        dummyState.nodes.push({ name: "dummy", inputs: [{ name: "x", rate: Rate.K_RATE, dims: "1x1", }, { name: "y", rate: Rate.K_RATE, dims: "1x1", }], outputRate: Rate.K_RATE, outputDims: "1x1", make: m });
         await expectEval("@while(@cond, @body) :- {&cond ? (&body, while(&cond, &body)) : 0}; @for(@var, min, max, @body, step=1) :- {&var = &min; while(&var < &max, (&body, &var += &step))}; for(i, 0, 10, dummy())", dummyState, {
             __class__: AST.Value,
             value: 0
@@ -476,19 +493,19 @@ describe("recursion", () => {
 });
 describe("immediate math", () => {
     test("node with immediate math mode", async () => {
-        const m = mock((dt: number, args: any[]) => args[0] + Math.sqrt(args[1]));
-        dummyState.nodes.push(["dummy", [["x", null], ["y", null]], NodeValueType.DECOUPLED_MATH, [], () => m]);
+        const m = mock(() => ({ updateSample: (inputs: Matrix[]) => inputs[0]!.applyBinary((a, b) => a + b, inputs[1]!.applyUnary(Math.sqrt)) }));
+        dummyState.nodes.push({ name: "dummy", inputs: [{ name: "x", rate: Rate.K_RATE, dims: "1x1", }, { name: "y", rate: Rate.K_RATE, dims: "1x1", }], outputRate: Rate.K_RATE, outputDims: "1x1", make: m });
         await expectEval("dummy(1, 2)", dummyState, {
             __class__: AST.Value,
             value: 1 + Math.sqrt(2)
         });
-        expect(m).toHaveBeenCalledWith(null, [1, 2]);
+        expect(m).toHaveBeenCalled();
     });
 });
 describe("annotations", () => {
     test("annotations registered on object", async () => {
         const m = mock(async (x: AST.Node | null) => x! && new AST.Value(x.loc, (x as any).value * 2));
-        dummyState.annotators.doubleMe = m;
+        dummyState.annotators.push({ name: "doubleMe", apply: m });
         await expectEval("#!doubleMe 2", dummyState, {
             __class__: AST.Value,
             value: 4

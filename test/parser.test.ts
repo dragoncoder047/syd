@@ -872,7 +872,7 @@ describe("expand simple pipe operators", () => {
                     __class__: AST.Assignment,
                     target: {
                         __class__: AST.Name,
-                        name: "_pipe_teststring_0_6"
+                        name: "$1"
                     },
                     value: {
                         __class__: AST.Call,
@@ -884,11 +884,11 @@ describe("expand simple pipe operators", () => {
                     __class__: AST.Conditional,
                     cond: {
                         __class__: AST.Name,
-                        name: "_pipe_teststring_0_6"
+                        name: "$1"
                     },
                     caseTrue: {
                         __class__: AST.Name,
-                        name: "_pipe_teststring_0_6"
+                        name: "$1"
                     },
                     caseFalse: {
                         __class__: AST.Value,

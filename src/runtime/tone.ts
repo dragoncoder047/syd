@@ -1,8 +1,8 @@
-import { NodeDef } from "../compiler/evalState";
-import { OPERATORS } from "../compiler/operator";
-import { CompiledVoiceData, Opcode, Program } from "../compiler/prog";
-import { isArray, isNumber } from "../utils";
+import { AudioProcessor } from "../compiler/nodeDef";
+import { CompiledVoiceData } from "../compiler/prog";
+import { Matrix } from "../matrix";
 import { AutomatedValue, AutomatedValueMethod } from "./automation";
+import { ProgramState } from "./programState";
 import { WorkletSynth } from "./synthImpl";
 
 export enum PassMode {
@@ -11,202 +11,64 @@ export enum PassMode {
 }
 
 export class Tone {
-    p: Program;
-    r: any[];
-    n: ReturnType<NodeDef[4]>[];
-    sc: any[] = [];
-    ac: any[] = [];
-    acL: any[] = [];
-    acR: any[] = [];
     pitch: AutomatedValue;
     expression: AutomatedValue;
     mods: AutomatedValue[];
     modToIndexMap: Record<string, number>;
+    nodes: AudioProcessor[];
     alive = true;
+    aRate: ProgramState;
+    kRate: ProgramState;
+    input = new Matrix;
     constructor(
         state: CompiledVoiceData,
         public dt: number,
         public synth: WorkletSynth,
         pitch: number,
         expression: number) {
-        this.p = state.p;
-        this.r = state.r.map(_ => 0);
-        this.n = state.nn.map(nn => synth.nodes.find(nd => nd[0] === nn)![4]!(synth));
         this.pitch = new AutomatedValue(pitch, AutomatedValueMethod.EXPONENTIAL);
         this.expression = new AutomatedValue(expression, AutomatedValueMethod.EXPONENTIAL);
         this.mods = state.mods.map(([_, initial, mode]) => new AutomatedValue(initial, mode));
         this.modToIndexMap = Object.fromEntries(state.mods.map((m, i) => [m[0], i]));
-    }
-    /** SCREAMING HOT CODE */
-    processSample(
-        sampleNo: number,
-        l: Float32Array,
-        r: Float32Array,
-        mode: PassMode,
-        gate: boolean,
-        gain: number) {
-        const stack = this.sc;
-        const args = this.ac;
-        const argsL = this.acL
-        const argsR = this.acR;
-        const prog = this.p;
-        const registers = this.r;
-        const nodes = this.n;
-        const pitch = this.pitch.value;
-        const expression = this.expression.value;
-
-        const push = (x: any) => (stack[sp] = x, sp++);
-        const pop = () => (sp--, stack[sp]);
-        const peek = () => stack[sp - 1];
-        const stereo = (a: number, b: number) => {
-            return [a, b];
-        }
-
-        var sp: number, a, b, c, i;
-        stack.length = args.length = argsL.length = argsR.length = sp = 0;
-
-        for (var pc = 0; pc < prog.length; pc++) {
-            const code = prog[pc]!;
-            const op = code[0];
-            switch (op) {
-                case Opcode.NOOP:
-                    break;
-                case Opcode.PUSH_CONSTANT:
-                    push(code[1]);
-                    break;
-                case Opcode.PUSH_INPUT_SAMPLES:
-                    push(stereo(l[sampleNo]!, r[sampleNo]!));
-                    break;
-                case Opcode.PUSH_PITCH:
-                    push(pitch);
-                    break;
-                case Opcode.PUSH_EXPRESSION:
-                    push(expression);
-                    break;
-                case Opcode.PUSH_GATE:
-                    push(gate);
-                    break;
-                case Opcode.MARK_STILL_ALIVE:
-                    this.alive = true;
-                    break;
-                case Opcode.PUSH_FRESH_EMPTY_LIST:
-                    push([]);
-                    break;
-                case Opcode.APPEND_TO_LIST:
-                    a = pop();
-                    peek().push(a);
-                    break;
-                case Opcode.EXTEND_TO_LIST:
-                    a = pop();
-                    peek().push(...a);
-                    break;
-                case Opcode.PUSH_FRESH_EMPTY_MAP:
-                    push({});
-                    break;
-                case Opcode.ADD_TO_MAP:
-                    c = pop();
-                    b = pop();
-                    peek()[b] = c;
-                    break;
-                case Opcode.DO_BINARY_OP:
-                case Opcode.DO_BINARY_OP_STEREO:
-                    b = pop();
-                    a = pop();
-                    c = OPERATORS[code[1] as string]!.cb!;
-                    push(op === Opcode.DO_BINARY_OP ? c(a, b) : stereo(c(a[0], b[0]), c(a[1], b[1])));
-                    break;
-                case Opcode.DO_UNARY_OP:
-                case Opcode.DO_UNARY_OP_STEREO:
-                    a = pop();
-                    c = OPERATORS[code[1] as string]!.cu!;
-                    push(op === Opcode.DO_UNARY_OP ? c(a) : stereo(c(a[0]), c(a[1])));
-                    break;
-                case Opcode.GET_REGISTER:
-                    push(registers[code[1] as number]);
-                    break;
-                case Opcode.TAP_REGISTER:
-                    registers[code[1] as number] = peek();
-                    break;
-                case Opcode.SHIFT_REGISTER:
-                    a = registers[code[1] as number];
-                    registers[code[1] as number] = pop();
-                    push(a);
-                    break;
-                case Opcode.CONDITIONAL_SELECT:
-                    c = pop();
-                    b = pop();
-                    a = pop();
-                    push(c ? b : a);
-                    break;
-                case Opcode.STEREO_DOUBLE_WIDEN:
-                    a = pop();
-                    push(stereo(a, a));
-                    break;
-                case Opcode.APPLY_NODE:
-                    a = code[1] as number;
-                    i = args.length = code[2] as number;
-                    while (i > 0) {
-                        i--;
-                        args[i] = pop();
-                    }
-                    push(nodes[a]!(this.dt, args));
-                    break;
-                case Opcode.GET_MOD:
-                    push(this.mods[code[1] as number]?.value ?? 0);
-                    break;
-                case Opcode.APPLY_DOUBLE_NODE_STEREO:
-                    a = code[1] as number;
-                    b = code[2] as number;
-                    i = args.length = argsL.length = argsR.length = c = code[3] as number;
-                    while (i > 0) {
-                        i--;
-                        args[i] = pop();
-                    }
-                    while (i < c) {
-                        if (isArray(args[i])) {
-                            argsL[i] = args[i][0];
-                            argsR[i] = args[i][1];
-                        } else {
-                            argsL[i] = argsR[i] = args[i];
-                        }
-                        i++;
-                    }
-                    push(stereo(nodes[a]!(this.dt, argsL), nodes[b]!(this.dt, argsR)));
-                    break;
-                default:
-                    op satisfies never;
-            }
-        }
-        a = pop();
-        if (!isArray(a)) a = stereo(a, a);
-        if (isNumber(a[0]) && isNaN(a[0])) a[0] = 0;
-        if (isNumber(a[0]) && isNaN(a[1])) a[1] = 0;
-        switch (mode) {
-            case PassMode.SET:
-                l[sampleNo] = a[0] * gain;
-                r[sampleNo] = a[1] * gain;
-                break;
-            case PassMode.ADD:
-                l[sampleNo]! += a[0] * gain;
-                r[sampleNo]! += a[1] * gain;
-                break;
-        }
+        this.nodes = state.nodeNames.map(n => synth.nodes.find(f => f.name === n)!.make(synth));
+        this.aRate = new ProgramState(state.aCode, state.registers, this.nodes, state.constantTab);
+        this.kRate = new ProgramState(state.kCode, state.registers, this.nodes, state.constantTab);
     }
     /** HOT CODE */
-    processBlock(
-        leftBuffer: Float32Array,
-        rightBuffer: Float32Array,
-        mode: PassMode,
-        gate: boolean,
-        gain: number) {
-        const len = leftBuffer.length;
-        var sampleNo, modNo;
-        for (sampleNo = 0; sampleNo < len; sampleNo++) {
-            for (modNo = 0; modNo < this.mods.length; modNo++) {
-                this.mods[modNo]!.update(this.dt);
+    processBlock(leftBuffer: Float32Array, rightBuffer: Float32Array, mode: PassMode, gate: boolean, gain: number) {
+        const dt = this.dt, len = leftBuffer.length, modList = this.mods, input = this.input, aRate = this.aRate, pitch = this.pitch, expression = this.expression, nodes = this.nodes, sample = aRate.result.data;
+        var si, i, j: number, node: AudioProcessor, f: Matrix, g: Matrix, l: Matrix, alpha: number;
+        // Update k-rate parameters
+        var alive = this.kRate.run(input, pitch.value, expression.value, gate ? 0 : 1, modList, len, this.alive);
+        for (si = 0; si < len; si++) {
+            // Mods always update per-sample
+            for (i = 0; i < modList.length; i++) {
+                modList[i]!.update(dt);
             }
-            this.processSample(sampleNo, leftBuffer, rightBuffer, mode, gate, gain);
+            pitch.update(dt);
+            expression.update(dt);
+            // Interpolate k-rate parameters
+            alpha = si / len;
+            for (i = 0; i < nodes.length; i++) {
+                node = nodes[i]!;
+                node.kCur ??= [];
+                for (j = 0; j < node.kNext!.length; j++) {
+                    f = node.kPrev![j]!;
+                    g = node.kNext![j]!;
+                    (node.kCur[j] ??= new Matrix).applyUnary((_, row, col) => f.get(row, col) * (1 - alpha) + g.get(row, col) * alpha);
+                }
+            }
+            // Update sample
+            alive = aRate.run(input, pitch.value, expression.value, gate ? 0 : 1, modList, len, alive);
+            // Apply sample
+            sample[0]! *= gain;
+            sample[1]! *= gain;
+            switch (mode) {
+                case PassMode.SET: leftBuffer[si] = sample[0]!; rightBuffer[si] = sample[1]!; break;
+                case PassMode.ADD: leftBuffer[si]! += sample[0]!; rightBuffer[si]! += sample[1]!;
+            }
         }
+        this.alive = alive;
     }
     automate(name: string, value: number, atTime: number) {
         this.mods[this.modToIndexMap[name]!]?.goto(value, this.dt, atTime);

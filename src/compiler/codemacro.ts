@@ -1,11 +1,12 @@
 import { isinstance } from "../utils";
 import * as AST from "./ast";
 import { processArgsInCall } from "./call";
-import { EvalState, NodeDef, NodeValueType } from "./evalState";
+import { EvalState } from "./evalState";
 import { RuntimeError } from "./errors";
+import { AudioProcessorFactory, Rate } from "./nodeDef";
 
 export function makeCodeMacroExpander(name: string, finalMacro: boolean, params: AST.Node[], body: AST.Node): ((args: AST.Node[], state: EvalState) => Promise<AST.Node>) & { body: AST.Node } {
-    const fakeNodeDef: NodeDef = [name, [], NodeValueType.NORMAL_OR_MONO, [], null as any];
+    const fakeNodeDef: AudioProcessorFactory = { name, inputs: [], outputRate: Rate.K_RATE, stateless: true, make: () => null as any };
     const shouldEvalParam: boolean[] = [];
     var built = false;
     async function build(state: EvalState) {
@@ -14,14 +15,12 @@ export function makeCodeMacroExpander(name: string, finalMacro: boolean, params:
         for (var i = 0; i < params.length; i++) {
             var param = params[i]!;
             if (isinstance(param, AST.Name)) {
-                fakeNodeDef[1].push([param.name, null]);
-                fakeNodeDef[3].push(undefined);
+                fakeNodeDef.inputs.push({ name: param.name, rate: Rate.K_RATE });
                 shouldEvalParam.push(true);
             } else if (isinstance(param, AST.ParameterDescriptor)) {
                 var v: any = param.defaultValue;
                 if (isinstance(v, AST.DefaultPlaceholder)) v = null;
-                fakeNodeDef[1].push([param.name, v]);
-                fakeNodeDef[3].push((await param.enumOptions.eval(state)).toImmediate());
+                fakeNodeDef.inputs.push({ name: param.name, default: v, rate: Rate.K_RATE, constantOptions: (await param.enumOptions.eval(state)).toImmediate() });
                 shouldEvalParam.push(!param.lazy);
             } else throw new RuntimeError("unreachable", param.loc, AST.stackToNotes(state.callstack));
         }
@@ -34,9 +33,9 @@ export function makeCodeMacroExpander(name: string, finalMacro: boolean, params:
         if (state.callstack.length > state.recursionLimit) throw new RuntimeError("too much recursion", state.callstack.at(-1)!.loc, AST.stackToNotes(state.callstack));
         const givenArgs = await processArgsInCall(state, false, state.callstack.at(-1)!.loc, args, fakeNodeDef);
         const newState = { ...state, env: Object.create(state.globalEnv) };
-        for (var i = 0; i < fakeNodeDef[1].length; i++) {
+        for (var i = 0; i < fakeNodeDef.inputs.length; i++) {
             const param = givenArgs[i]!;
-            newState.env[fakeNodeDef[1][i]![0]] = shouldEvalParam[i] ? await param.eval(state) : param;
+            newState.env[fakeNodeDef.inputs[i]!.name] = shouldEvalParam[i] ? await param.eval(state) : param;
         }
         const result = await body.eval(newState);
         return finalMacro ? result.eval(state) : result;

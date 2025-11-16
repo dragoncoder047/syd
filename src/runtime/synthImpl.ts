@@ -1,38 +1,54 @@
-import { NodeDef } from "../compiler/evalState";
+import { AudioProcessorFactory } from "../compiler/nodeDef";
 import { CompiledVoiceData } from "../compiler/prog";
 import { nodes, passthroughFx } from "../lib";
 import { Instrument } from "./instrument";
 import { PassMode, Tone } from "./tone";
+import { lengthToBasePitch, samplesToIntegral } from "./waveProcess";
 
+export interface Wave {
+    samples: Float32Array,
+    integral: Float32Array,
+    basePitch: number;
+}
 
 export class WorkletSynth {
     instruments: Instrument[] = [];
-    postFX: Tone = null as any;
+    postFX: Tone;
     n2i: Record<number, number> = {};
-    waves: Record<string, Float32Array> = {};
-    nodes: NodeDef[] = nodes();
+    waves: Wave[] = [];
+    nodes: AudioProcessorFactory[] = nodes();
     volume: number = 0.8;
     constructor(public dt: number) {
-        this.clearAll();
-    }
-    clearAll() {
-        this.instruments = [];
         this.postFX = new Tone(passthroughFx(), this.dt, this, 0, 1);
     }
-    addWave(name: string, wave: Float32Array) {
-        this.waves[name] = wave;
+    clearAll() {
+        this.clearInstruments();
+        this.clearPostFX();
     }
-    addInstrument(voiceDef: CompiledVoiceData, fxDef: CompiledVoiceData): number {
-        return this.instruments.push(new Instrument(this.dt, this, voiceDef, fxDef)) - 1;
+    clearInstrument(index: number) {
+        delete this.instruments[index];
+    }
+    clearInstruments() {
+        this.instruments = [];
+    }
+    clearPostFX() {
+        this.postFX = new Tone(passthroughFx(), this.dt, this, 0, 1);
+    }
+    setWave(number: number, samples: Float32Array, basePitch?: number) {
+        this.waves[number] = {
+            samples,
+            integral: samplesToIntegral(samples),
+            basePitch: basePitch ?? lengthToBasePitch(samples.length, this.dt),
+        }
+    }
+    setInstrument(voiceDef: CompiledVoiceData, fxDef: CompiledVoiceData, instrumentNumber: number) {
+        this.instruments[instrumentNumber] = new Instrument(this.dt, this, voiceDef, fxDef);
     }
     setPostFX(fxDef: CompiledVoiceData): void {
         this.postFX = new Tone(fxDef, this.dt, this, 1, 1);
     }
     setVolume(volume: number) {
         this.volume = volume;
-    }
-    getInstrumentCount() {
-        return this.instruments.length;
     }
     private _ifn(noteID: number) {
         return this.instruments[this.n2i[noteID]!];
@@ -60,6 +76,6 @@ export class WorkletSynth {
         for (var i = 0; i < instruments.length; i++) {
             instruments[i]!.process(left, right);
         }
-        this.postFX?.processBlock(left, right, PassMode.SET, true, this.volume);
+        this.postFX!.processBlock(left, right, PassMode.SET, true, this.volume);
     }
 }

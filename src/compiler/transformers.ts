@@ -1,4 +1,4 @@
-import { isinstance, str } from "../utils";
+import { gensym, isinstance, str } from "../utils";
 import * as AST from "./ast";
 import { liftCommas } from "./core";
 import { ErrorNote, ParseError } from "./errors";
@@ -212,13 +212,13 @@ const TRANSFORM_PASSES = [
     async function expandPipeOperators(ast: AST.Node): Promise<AST.Node> {
         ast = await ast.pipe(expandPipeOperators);
         if (!isPipe(ast)) return ast;
-        const sym = new AST.Name(ast.loc, ["_pipe", ast.loc.file.replace(/[^a-z]/ig, ""), ast.loc.line, ast.loc.col].join("_"));
         const arg = ast.left;
         const expr = ast.right;
         const numPlaceholders = await countPlaceholdersIn(expr);
         if (numPlaceholders === 0) {
             throw new ParseError("missing '#' placeholder in pipe expression", expr.loc, [new ErrorNote("note: required by this pipe operator", ast.loc)]);
         } else if (numPlaceholders > 1 && !isinstance(arg, AST.Value)) {
+            const sym = new AST.Name(ast.loc, gensym());
             return new AST.Block(ast.loc, [new AST.Assignment(ast.loc, sym, arg), await replacePlaceholdersWith(expr, sym)]);
         } else {
             return replacePlaceholdersWith(expr, arg);

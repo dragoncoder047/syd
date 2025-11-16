@@ -1,61 +1,49 @@
+import { Matrix } from "../matrix";
 import { AutomatedValueMethod } from "../runtime/automation";
 
 export enum Opcode {
-    NOOP,
-    /** the constant */
+    /** the index in the constant table */
     PUSH_CONSTANT,
     PUSH_INPUT_SAMPLES,
     PUSH_PITCH,
     PUSH_EXPRESSION,
     PUSH_GATE,
-    MARK_STILL_ALIVE,
-    PUSH_FRESH_EMPTY_LIST,
-    APPEND_TO_LIST,
-    EXTEND_TO_LIST,
-    PUSH_FRESH_EMPTY_MAP,
-    ADD_TO_MAP,
+    DROP_TOP,
+    MARK_LIVE_STATE,
+    SET_MATRIX_EL,
     /** opcode */
-    DO_BINARY_OP,
-    DO_BINARY_OP_STEREO,
+    BINARY_OP,
     /** opcode */
-    DO_UNARY_OP,
-    DO_UNARY_OP_STEREO,
+    UNARY_OP,
     /** register no. */
     GET_REGISTER,
     /** register no. */
     TAP_REGISTER,
-    SHIFT_REGISTER,
+    SWAP_REGISTER,
     CONDITIONAL_SELECT,
-    /** doubles the sample into a [sample, sample] left right pair */
-    STEREO_DOUBLE_WIDEN,
     /** node no, argc */
-    APPLY_NODE,
-    /** node no A and B, argc */
-    APPLY_DOUBLE_NODE_STEREO,
+    CALL_NODE_A_RATE,
+    /** node no, argc */
+    CALL_NODE_K_RATE,
+    /** node no */
+    PUSH_NODE_K_RESULT,
     /** input number, returns 0 if doesn't exist */
     GET_MOD,
+    /** only used internally by compiler */
+    TEMP_OPCODE_FOR_UNIFIED_CALL,
+    /** only used internally by compiler */
+    TEMP_OPCODE_FOR_LABEL,
 }
 
-type Command = [Opcode, arg?: any, b?: number, c?: number];
+export type Command = [Opcode, arg?: any, b?: number, c?: number];
 export type Program = Command[];
 
 export interface CompiledVoiceData {
-    p: Program;
-    r: string[];
-    nn: string[];
-    tosStereo: boolean;
+    aCode: Program;
+    kCode: Program;
+    registers: Matrix[];
+    constantTab: Matrix[];
+    nodeNames: string[];
     mods: [name: string, initial: number, mode: AutomatedValueMethod][]
 }
 
-export function allocRegister(name: string, state: CompiledVoiceData): number {
-    const i = state.r.indexOf(name);
-    if (i === -1) return state.r.push(name) - 1;
-    return i;
-}
-export function allocNode(name: string, state: CompiledVoiceData): number {
-    return state.nn.push(name) - 1;
-}
-
-export function allocMod(name: string, state: CompiledVoiceData, initial: number, mode: AutomatedValueMethod): number {
-    return state.mods.push([name, initial, mode]) - 1;
-}

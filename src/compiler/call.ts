@@ -1,10 +1,11 @@
 import { isinstance, str } from "../utils";
 import * as AST from "./ast";
-import { EvalState, NodeDef } from "./evalState";
-import { RuntimeError, ErrorNote, LocationTrace } from "./errors";
+import { ErrorNote, LocationTrace, RuntimeError } from "./errors";
+import { EvalState } from "./evalState";
+import { AudioProcessorFactory } from "./nodeDef";
 
-export async function processArgsInCall(state: EvalState, doEvalArgs: boolean, site: LocationTrace, args: AST.Node[], nodeImpl: NodeDef) {
-    const newArgs: (AST.Node | null)[] = nodeImpl[1].map(arg => arg[1] !== null ? new AST.Value(site, arg[1]) : null);
+export async function processArgsInCall(state: EvalState, doEvalArgs: boolean, site: LocationTrace, args: AST.Node[], nodeImpl: AudioProcessorFactory) {
+    const newArgs: (AST.Node | null)[] = nodeImpl.inputs.map(arg => arg.default ? new AST.Value(site, arg.default) : null);
     const seenArgs: (AST.Node | null)[] = newArgs.map(_ => null);
     var firstKW: AST.Node | undefined;
     for (var i = 0; i < args.length; i++) {
@@ -12,22 +13,22 @@ export async function processArgsInCall(state: EvalState, doEvalArgs: boolean, s
         var argIndex = i;
         if (isinstance(arg, AST.KeywordArgument)) {
             if (!firstKW) firstKW = arg;
-            argIndex = nodeImpl[1].findIndex(a => a[0] === arg.name);
+            argIndex = nodeImpl.inputs.findIndex(a => a.name === arg.name);
             if (argIndex === -1) {
-                throw new RuntimeError(`no such keyword argument ${str(arg.name)} on node ${nodeImpl[0]}`, arg.loc, AST.stackToNotes(state.callstack));
+                throw new RuntimeError(`no such keyword argument ${str(arg.name)} on node ${nodeImpl.name}`, arg.loc, AST.stackToNotes(state.callstack));
             }
         } else {
             if (firstKW) throw new RuntimeError("positional argument can't come after keyword argument", arg.loc, [new ErrorNote("note: first keyword argument was here:", firstKW.loc), ...AST.stackToNotes(state.callstack)]);
-            if (i >= nodeImpl[1].length) throw new RuntimeError("too many arguments to " + nodeImpl[0], arg.edgemost(true).loc, AST.stackToNotes(state.callstack));
+            if (i >= nodeImpl.inputs.length) throw new RuntimeError("too many arguments to " + nodeImpl.name, arg.edgemost(true).loc, AST.stackToNotes(state.callstack));
         }
-        const argEntry = nodeImpl[1][argIndex]!;
+        const argEntry = nodeImpl.inputs[argIndex]!;
         if (seenArgs[argIndex]) {
-            throw new RuntimeError(`argument ${str(argEntry[0])} already provided`, arg.loc, [new ErrorNote("note: first occurrance was here:", seenArgs[argIndex]!.edgemost(true).loc), ...AST.stackToNotes(state.callstack)]);
+            throw new RuntimeError(`argument ${str(argEntry.name)} already provided`, arg.loc, [new ErrorNote("note: first occurrance was here:", seenArgs[argIndex]!.edgemost(true).loc), ...AST.stackToNotes(state.callstack)]);
         }
         seenArgs[argIndex] = arg;
 
-        const defaultValue = argEntry[1];
-        const enumChoices = nodeImpl[3][argIndex] ?? null;
+        const defaultValue = argEntry.name;
+        const enumChoices = argEntry.constantOptions ?? null;
         const walkAndReplaceSymbols = async (ast: AST.Node): Promise<AST.Node> => {
             if (isinstance(ast, AST.Call)) return ast; // Don't walk into another call's symbols
             if (isinstance(ast, AST.Symbol)) {
@@ -45,7 +46,7 @@ export async function processArgsInCall(state: EvalState, doEvalArgs: boolean, s
         var value = await walkAndReplaceSymbols(isinstance(arg, AST.KeywordArgument) ? arg.arg : arg);
         if (isinstance(arg, AST.DefaultPlaceholder)) {
             if ((defaultValue ?? null) === null) {
-                throw new RuntimeError(`missing value for argument ${argEntry[0]}`, arg.loc, AST.stackToNotes(state.callstack));
+                throw new RuntimeError(`missing value for argument ${argEntry.name}`, arg.loc, AST.stackToNotes(state.callstack));
             }
             value = new AST.Value(arg.loc, defaultValue);
         } else if (isinstance(arg, AST.SplatValue)) {
@@ -56,10 +57,10 @@ export async function processArgsInCall(state: EvalState, doEvalArgs: boolean, s
         newArgs[argIndex] = value;
     }
     // now all of the ones that still have null arguments, that were not provided, are truly missing
-    for (var i = 0; i < nodeImpl[1].length; i++) {
+    for (var i = 0; i < nodeImpl.inputs.length; i++) {
         if (newArgs[i] === null) {
-            const argEntry = nodeImpl[1][i]!;
-            throw new RuntimeError(`missing value for argument ${argEntry[0]}`, site, AST.stackToNotes(state.callstack));
+            const argEntry = nodeImpl.inputs[i]!;
+            throw new RuntimeError(`missing value for argument ${argEntry.name}`, site, AST.stackToNotes(state.callstack));
         }
     }
     return newArgs as AST.Node[];
