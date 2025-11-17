@@ -29,8 +29,6 @@
         "dev:serve": "python3 -m http.server",
         "dev": "pnpm run \"/^dev:.*/\"",
         "lint": "tsc",
-        "test": "pnpm bun test --todo",
-        "test:watch": "pnpm test --watch",
         "prepare": "pnpm build -m"
     },
     "keywords": [],
@@ -38,7 +36,6 @@
     "license": "GPL-3.0-only",
     "devDependencies": {
         "@types/audioworklet": "^0.0.87",
-        "@types/bun": "^1.2.21",
         "@types/node": "^24.3.1",
         "bun": "^1.2.21",
         "esbuild": "^0.25.0",

@@ -1,47 +1,32 @@
 import { Matrix } from "../matrix";
 import { WorkletSynth } from "../runtime/synthImpl";
 
-export enum Rate {
-    /** update once per block */
-    K_RATE,
-    /** must update every sample */
-    A_RATE,
-    /** K-rate or A-rate, I don't care. Implemented as A-rate */
-    ANY_RATE,
-}
+export type Dimensions = [string | number, string | number];
+export const SCALAR_DIMS: Dimensions = [1, 1];
+
+export type Range = [number, number, step?: number];
 
 export interface NodeInput {
     name: string;
     description?: string;
     unit?: string;
-    dims: string;
-    range?: [number, number, step?: number];
-    default?: Matrix | undefined;
-    rate: Rate,
-    constantOptions?: Record<string, Matrix | undefined>;
+    dims: Dimensions;
+    range?: Range;
+    default?: number | undefined;
+    constantOptions?: Record<string, number | undefined>;
 }
 
 export interface AudioProcessorFactory {
     name: string;
     description?: string;
     inputs: NodeInput[];
-    /** if outputRate is K_RATE then the first value returned will
-     * be used as the "k-rate result" for the node */
-    outputRate: Rate;
-    outputDims: string;
+    outputDims: Dimensions;
     stateless?: boolean;
-    make(synth: WorkletSynth): AudioProcessor;
+    make(synth: WorkletSynth, sizeVars: Record<string, number>): AudioProcessor;
 }
 
-export interface AudioProcessor {
-    kPrev?: Matrix[];
-    kNext?: Matrix[];
-    /** current values of k-rate parameters */
-    kCur?: Matrix[];
-    /** process (or don't process) the control inputs into usable internal state.
-     * if not present the k-rate inputs will be the state. */
-    updateControl?(controlParams: Matrix[], blockSize: number): Matrix[];
-    /** called once per sample, with the a-rate inputs,
-     * k-rate can be read from `this.kCur` */
-    updateSample(inputs: Matrix[]): Matrix;
-}
+export type AudioProcessor = (
+    inputs: Matrix[],
+    isStartOfBlock: boolean,
+    blockProgress: number,
+) => Matrix;

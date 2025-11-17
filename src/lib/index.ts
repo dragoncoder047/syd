@@ -1,62 +1,51 @@
-import * as AST from "../compiler/ast";
-import { EvalState } from "../compiler/evalState";
-import { AudioProcessorFactory } from "../compiler/nodeDef";
-import { CompiledVoiceData, Opcode } from "../compiler/prog";
-import { scalarMatrix } from "../matrix";
-import { ast as lib, sources } from "./index.syd";
+import { AudioProcessorFactory, Dimensions } from "../compiler/nodeDef";
+import { OPERATORS } from "../compiler/operator";
+import { lerp } from "../math";
+import { Matrix } from "../matrix";
 import { Bitcrusher, DelayLine, Filter } from "./nodes/effects";
 import { WavetableOscillator } from "./nodes/generators";
 import { Clock, Integrator, Shimmer } from "./nodes/logic";
-export { sources as libSrc };
 
-export function nodes(): AudioProcessorFactory[] {
-    return [
-        new WavetableOscillator,
-        new Filter,
-        new Bitcrusher,
-        new DelayLine,
-        new Shimmer,
-        new Integrator,
-        new Clock,
-    ]
-}
+export const NODES: AudioProcessorFactory[] = [
+    new WavetableOscillator,
+    new Filter,
+    new Bitcrusher,
+    new DelayLine,
+    new Shimmer,
+    new Integrator,
+    new Clock,
+    ...Object.entries(OPERATORS).map(([op, func]) => ({
+        name: "op" + op,
+        inputs: [
+            {
+                name: "a",
+                dims: ["N", "M"] as Dimensions,
+            },
+            {
+                name: "b",
+                dims: ["N", "M"] as Dimensions,
+            }
+        ],
+        outputDims: ["N", "M"] as Dimensions,
+        make() {
+            return (inputs: Matrix[]) => inputs[0]!.applyBinary(func, inputs[1]!);
+        }
+    })),
+];
 
-export function baseEnv(): EvalState {
-    return {
-        globalEnv: {},
-        env: {},
-        functions: [],
-        nodes: nodes(),
-        callstack: [],
-        recursionLimit: 1000,
-        // TODO
-        annotators: [],
-    };
-}
-
-export function silenceInstrument(): CompiledVoiceData {
-    return {
-        aCode: [[Opcode.PUSH_CONSTANT, 0]],
-        kCode: [],
-        registers: [],
-        nodeNames: [],
-        constantTab: [scalarMatrix(0)],
-        mods: []
+export class KRateHelper {
+    prev: Matrix;
+    current: Matrix;
+    sample: Matrix;
+    constructor(rows: number, cols: number) {
+        this.prev = new Matrix(rows, cols);
+        this.current = new Matrix(rows, cols);
+        this.sample = new Matrix(rows, cols);
     }
-}
-export function passthroughFx(): CompiledVoiceData {
-    return {
-        aCode: [[Opcode.PUSH_INPUT_SAMPLES]],
-        kCode: [],
-        registers: [],
-        nodeNames: [],
-        constantTab: [],
-        mods: []
+    nextBlock() {
+        this.prev.copyFrom(this.current);
     }
-}
-
-export async function newEnv() {
-    const env = baseEnv();
-    await (lib as AST.Node).eval(env);
-    return env;
+    loadForSample(progress: number) {
+        this.sample.applyUnary((_, row, col) => lerp(this.prev.get(row, col), this.current.get(row, col), progress));
+    }
 }

@@ -1,11 +1,11 @@
-import { CompiledVoiceData } from "../compiler/prog";
+import { CompiledGraph } from "../compiler/prog";
 import { WorkletSynth } from "./synthImpl";
 import { PassMode, Tone } from "./tone";
 
 export class Instrument {
-    liveNotes: Record<number, Tone> = {};
-    liveNoteCount = 0;
-    deadNotes: Record<number, [Tone, number]> = {};
+    liveNotes: Tone[] = [];
+    liveNoteIds: number[] = [];
+    deadNotes: [Tone, number][] = [];
     fx: Tone;
     inputs: Record<string, any> = {};
     prevInputs: Record<string, any> = null as any;
@@ -14,22 +14,24 @@ export class Instrument {
     constructor(
         public dt: number,
         public synth: WorkletSynth,
-        public voiceTemplate: CompiledVoiceData,
-        fxDef: CompiledVoiceData
+        public voiceTemplate: CompiledGraph,
+        fxDef: CompiledGraph
     ) {
         this.fx = new Tone(fxDef, dt, synth, 1, 1);
     }
     noteOn(id: number, pitch: number, expression: number) {
-        if (this.liveNotes[id]) this.noteOff(id);
-        this.liveNotes[id] = new Tone(this.voiceTemplate, this.dt, this.synth, pitch, expression);
-        this.liveNoteCount++;
+        this.noteOff(id);
+        this.liveNotes.push(new Tone(this.voiceTemplate, this.dt, this.synth, pitch, expression));
+        this.liveNoteIds.push(id);
     }
     noteOff(id: number) {
-        const note = this.liveNotes[id];
-        if (!note) return;
-        this.deadNotes[id] = [note, gainForChord(this.liveNoteCount)];
-        delete this.liveNotes[id];
-        this.liveNoteCount--;
+        if (this.liveNoteIds.includes(id)) {
+            const index = this.liveNoteIds.indexOf(id);
+            const note = this.liveNotes[index]!;
+            this.deadNotes.push([note, gainForChord(this.liveNotes.length)]);
+            this.liveNotes[index] = this.liveNotes.pop()!;
+            this.liveNoteIds[index] = this.liveNoteIds.pop()!;
+        }
     }
     pitchBend(id: number, pitch: number, time: number) {
         this.liveNotes[id]?.pitch.goto(pitch, this.dt, time);
@@ -38,9 +40,9 @@ export class Instrument {
         this.liveNotes[id]?.expression.goto(expression, this.dt, time);
     }
     automate(param: string, value: any, time: number, note?: number) {
-        if (note !== undefined) this.liveNotes[note]!.automate(param, value, time);
+        if (note !== undefined) this.liveNotes[this.liveNoteIds.indexOf(note)]!.automate(param, value, time);
         else {
-            for (var k of Object.keys(this.liveNotes)) this.liveNotes[+k]!.automate(param, value, time);
+            for (var i = 0; i < this.liveNotes.length; i++) this.liveNotes[i]!.automate(param, value, time);
             this.fx.automate(value, this.dt, time);
         }
     }
@@ -54,18 +56,19 @@ export class Instrument {
             this.lb = lb = new Float32Array(lb.buffer, 0, len);
             this.rb = rb = new Float32Array(rb.buffer, 0, len);
         }
-        var i: any;
-        const liveNoteCount = this.liveNoteCount, liveNotes = this.liveNotes, deadNotes = this.deadNotes
-        for (i in liveNotes) {
+        var i: number;
+        const liveNotes = this.liveNotes, deadNotes = this.deadNotes, liveNoteCount = liveNotes.length;
+        for (i = 0; i < liveNoteCount; i++) {
             liveNotes[i]!.processBlock(lb, rb, PassMode.ADD, true, gainForChord(liveNoteCount));
         }
-        for (i in deadNotes) {
+        for (i = 0; i < deadNotes.length; i++) {
             var tone = deadNotes[i]![0];
             var gain = deadNotes[i]![1];
             tone.alive = false;
             tone.processBlock(lb, rb, PassMode.ADD, false, gain);
             if (!tone.alive) {
-                delete deadNotes[i];
+                deadNotes[i] = deadNotes.pop()!;
+                i--;
             }
         }
         this.fx.processBlock(lb, rb, PassMode.SET, true, 1);

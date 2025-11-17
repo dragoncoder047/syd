@@ -32,7 +32,7 @@ export class Matrix {
     get dims() {
         return [this.rows, this.cols];
     }
-    resize(rows: number, cols: number) {
+    resize(rows: number, cols: number): this {
         if (rows < 1 || cols < 1) throw new Error(`invalid dimensions: ${rows}x${cols}`);
         const newLen = rows * cols;
         if (this.data.length < newLen) {
@@ -42,14 +42,16 @@ export class Matrix {
         }
         this.rows = rows;
         this.cols = cols;
+        return this;
     }
-    smear(rows: number, cols: number) {
+    smear(rows: number, cols: number): this {
         var lastIndex = this.rows * this.cols;
         const last = this.data[lastIndex - 1]!;
         this.resize(rows, cols);
         for (; lastIndex < rows * cols; lastIndex++) {
             this.data[lastIndex] = last;
         }
+        return this;
     }
     setScalar(value: number): this {
         this.resize(1, 1);
@@ -140,8 +142,8 @@ export class Matrix {
         }
         return m;
     }
-    private static _transposePermutationCache: Map<number, Map<number, Uint16Array>> = new Map;
-    private static _getPermuter(r: number, c: number): Uint16Array {
+    private static _transposePermutationCache: Map<number, Map<number, number[]>> = new Map;
+    private static _getPermuter(r: number, c: number): number[] {
         const cache = this._transposePermutationCache;
         var colcache = cache.get(r);
         if (colcache) {
@@ -152,7 +154,7 @@ export class Matrix {
             cache.set(r, colcache);
         }
         const n = r * c;
-        const map = new Uint16Array(n);
+        const map = new Array(n);
         for (var ri = 0; ri < r; ri++)
             for (var ci = 0; ci < c; ci++) map[ci * r + ri] = ri * c + ci;
         colcache.set(c, map);
@@ -208,11 +210,11 @@ export function zipsize(l1: Matrix[], l2?: Matrix[], l3?: Matrix[]) {
         w = max(l1[i]!.cols, w);
         h = max(l1[i]!.rows, h);
     }
-    if (l2) for (; i < len2!; i++) {
+    if (l2) for (i = 0; i < len2!; i++) {
         w = max(l2[i]!.cols, w);
         h = max(l2[i]!.rows, h);
     }
-    if (l3) for (; i < len3!; i++) {
+    if (l3) for (i = 0; i < len3!; i++) {
         w = max(l3[i]!.cols, w);
         h = max(l3[i]!.rows, h);
     }

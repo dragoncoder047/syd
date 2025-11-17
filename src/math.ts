@@ -16,3 +16,4 @@ export const saw = (x: number) => 1 - (2 * x / TAU % 2 + 2) % 2;
 export const tri = (x: number) => 1 - 4 * abs(Math.round(x / TAU) - x / TAU);
 export const noise3 = (x: number) => sin(x ** 3);
 export const noise5 = (x: number) => sin(x ** 5);
+export const lerp = (a: number, b: number, progress: number) => a * (1 - progress) + b * progress;

@@ -1,5 +1,3 @@
-import { max, min } from "../math";
-
 export enum AutomatedValueMethod {
     LINEAR,
     EXPONENTIAL,
@@ -30,7 +28,7 @@ export class AutomatedValue {
         }
         this.target = newValue;
         this.timeLeft = time;
-        if (time === 0) {
+        if (!time) {
             this.value = newValue;
         }
     }

@@ -13,7 +13,7 @@ export class ProgramState {
         public registers: Matrix[],
         public nodes: AudioProcessor[],
         public constantTab: Matrix[]) { }
-    run(input: Matrix, pitch: number, expression: number, gate: number, mods: AutomatedValue[], blockSize: number, alive: boolean): boolean {
+    run(input: Matrix, pitch: number, expression: number, gate: number, mods: AutomatedValue[], isStartOfBlock: boolean, blockProgress: number, alive: boolean): boolean {
         const stack = this.stack;
         const argv = this.argCache;
         const prog = this.instructions;
@@ -27,13 +27,12 @@ export class ProgramState {
         const peek = () => stack[sp - 1];
         const temp = new Matrix(1, 1);
 
-        var sp: number, a: Matrix, b: Matrix, c: Matrix, i: number, n: AudioProcessor, m: Matrix[];
-        stack.length = argv.length = sp = 0;
+        var sp = 0, a: Matrix, b: Matrix, c: Matrix, i: number;
         for (var pc = 0; pc < prog.length; pc++) {
             const command = prog[pc]!;
             const op = command[0];
-            const i1 = command[1];
-            const i2 = command[2];
+            const i1 = command[1]!;
+            const i2 = command[2]!;
             switch (op) {
                 case Opcode.PUSH_CONSTANT:
                     push(constants[i1]!);
@@ -54,7 +53,7 @@ export class ProgramState {
                     pop();
                     break;
                 case Opcode.MARK_LIVE_STATE:
-                    alive = i1;
+                    alive = !!i1;
                     push(temp.setScalar(0));
                     break;
                 case Opcode.SET_MATRIX_EL:
@@ -63,10 +62,7 @@ export class ProgramState {
                     break;
                 case Opcode.BINARY_OP:
                     a = pop()!;
-                    peek()!.applyBinary(OPERATORS[i1]!.cb!, a);
-                    break;
-                case Opcode.UNARY_OP:
-                    peek()!.applyUnary(OPERATORS[i1]!.cu!);
+                    peek()!.applyBinary(OPERATORS[i1]!, a);
                     break;
                 case Opcode.GET_REGISTER:
                     push(registers[i1]!);
@@ -74,39 +70,15 @@ export class ProgramState {
                 case Opcode.TAP_REGISTER:
                     registers[i1]!.copyFrom(peek()!);
                     break;
-                case Opcode.SWAP_REGISTER:
-                    temp.copyFrom(pop()!);
-                    push(registers[i1]!);
-                    registers[i1]!.copyFrom(temp);
-                    break;
                 case Opcode.CONDITIONAL_SELECT:
                     a = pop()!;
                     b = pop()!;
                     c = pop()!;
                     push(c.toScalar() ? b : a);
                     break;
-                case Opcode.CALL_NODE_A_RATE:
+                case Opcode.CALL_NODE:
                     for (i = 0; i < i2!; i++) (argv[i2! - i - 1] ??= new Matrix).copyFrom(pop()!);
-                    push(nodes[i1]!.updateSample(argv));
-                    break;
-                case Opcode.CALL_NODE_K_RATE:
-                    n = nodes[i1]!;
-                    for (i = 0; i < i2!; i++) (argv[i2! - i - 1] ??= new Matrix()).copyFrom(pop()!);
-                    m = n.updateControl?.(argv, blockSize) ?? argv.slice(0, i2);
-                    if (n.kNext) {
-                        for (i = 0; i < m.length; i++) {
-                            n.kPrev![i]!.copyFrom(n.kNext![i]!);
-                            n.kNext![i]!.copyFrom(m[i]!);
-                        }
-                    }
-                    else {
-                        n.kNext = m.map(m => m.clone());
-                        n.kPrev = m.map(m => m.clone());
-                        n.kCur = m.map(m => m.clone());
-                    }
-                    break;
-                case Opcode.PUSH_NODE_K_RESULT:
-                    push(nodes[i1]!.kCur![0]!);
+                    push(nodes[i1]!(argv, isStartOfBlock, blockProgress));
                     break;
                 case Opcode.GET_MOD:
                     pushScalar(mods[i1]?.value ?? 0);

@@ -1,5 +1,5 @@
 import { AudioProcessor } from "../compiler/nodeDef";
-import { CompiledVoiceData } from "../compiler/prog";
+import { CompiledGraph } from "../compiler/prog";
 import { Matrix } from "../matrix";
 import { AutomatedValue, AutomatedValueMethod } from "./automation";
 import { ProgramState } from "./programState";
@@ -17,11 +17,10 @@ export class Tone {
     modToIndexMap: Record<string, number>;
     nodes: AudioProcessor[];
     alive = true;
-    aRate: ProgramState;
-    kRate: ProgramState;
+    impl: ProgramState;
     input = new Matrix;
     constructor(
-        state: CompiledVoiceData,
+        state: CompiledGraph,
         public dt: number,
         public synth: WorkletSynth,
         pitch: number,
@@ -30,16 +29,21 @@ export class Tone {
         this.expression = new AutomatedValue(expression, AutomatedValueMethod.EXPONENTIAL);
         this.mods = state.mods.map(([_, initial, mode]) => new AutomatedValue(initial, mode));
         this.modToIndexMap = Object.fromEntries(state.mods.map((m, i) => [m[0], i]));
-        this.nodes = state.nodeNames.map(n => synth.nodes.find(f => f.name === n)!.make(synth));
-        this.aRate = new ProgramState(state.aCode, state.registers, this.nodes, state.constantTab);
-        this.kRate = new ProgramState(state.kCode, state.registers, this.nodes, state.constantTab);
+        this.nodes = state.nodes.map(([name, dims]) => synth.nodes.find(f => f.name === name)!.make(synth, dims));
+        this.impl = new ProgramState(state.code, state.registers, this.nodes, state.constantTab);
     }
     /** HOT CODE */
     processBlock(leftBuffer: Float32Array, rightBuffer: Float32Array, mode: PassMode, gate: boolean, gain: number) {
-        const dt = this.dt, len = leftBuffer.length, modList = this.mods, input = this.input, aRate = this.aRate, pitch = this.pitch, expression = this.expression, nodes = this.nodes, sample = aRate.result.data;
-        var si, i, j: number, node: AudioProcessor, f: Matrix, g: Matrix, l: Matrix, alpha: number;
-        // Update k-rate parameters
-        var alive = this.kRate.run(input, pitch.value, expression.value, gate ? 0 : 1, modList, len, this.alive);
+        const dt = this.dt,
+            len = leftBuffer.length,
+            modList = this.mods,
+            input = this.input,
+            impl = this.impl,
+            pitch = this.pitch,
+            expression = this.expression,
+            sample = impl.result.data;
+        var si: number, i: number;
+        var alive = this.alive;
         for (si = 0; si < len; si++) {
             // Mods always update per-sample
             for (i = 0; i < modList.length; i++) {
@@ -47,19 +51,15 @@ export class Tone {
             }
             pitch.update(dt);
             expression.update(dt);
-            // Interpolate k-rate parameters
-            alpha = si / len;
-            for (i = 0; i < nodes.length; i++) {
-                node = nodes[i]!;
-                node.kCur ??= [];
-                for (j = 0; j < node.kNext!.length; j++) {
-                    f = node.kPrev![j]!;
-                    g = node.kNext![j]!;
-                    (node.kCur[j] ??= new Matrix).applyUnary((_, row, col) => f.get(row, col) * (1 - alpha) + g.get(row, col) * alpha);
-                }
-            }
-            // Update sample
-            alive = aRate.run(input, pitch.value, expression.value, gate ? 0 : 1, modList, len, alive);
+            alive = impl.run(
+                input,
+                pitch.value,
+                expression.value,
+                gate ? 0 : 1,
+                modList,
+                si == 0,
+                si / len,
+                alive);
             // Apply sample
             sample[0]! *= gain;
             sample[1]! *= gain;

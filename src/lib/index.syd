@@ -1,3 +1,0 @@
-#!include "./macros/control.syd";
-#!include "./macros/functions.syd";
-#!include "./macros/effects.syd";

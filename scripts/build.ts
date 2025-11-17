@@ -1,5 +1,4 @@
 import * as esbuild from "esbuild";
-import { sydPlugin } from "../src/esbuildPlugin";
 import { opt } from "./com";
 import { rmSync } from "fs";
 
@@ -21,7 +20,6 @@ const config: esbuild.BuildOptions = {
     splitting: true,
     outdir,
     plugins: [
-        sydPlugin(),
         {
             name: "mark_node:_as_external",
             setup(build) {
