@@ -20,10 +20,12 @@ export const NODES: AudioProcessorFactory[] = [
             {
                 name: "a",
                 dims: ["N", "M"] as Dimensions,
+                default: 1,
             },
             {
                 name: "b",
                 dims: ["N", "M"] as Dimensions,
+                default: 1,
             }
         ],
         outputDims: ["N", "M"] as Dimensions,

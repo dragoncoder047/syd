@@ -9,7 +9,8 @@ export class Shimmer implements AudioProcessorFactory {
     inputs = [
         {
             name: "value",
-            dims: ["M", "N"] as Dimensions
+            dims: ["M", "N"] as Dimensions,
+            default: 0,
         },
         {
             name: "amount",
@@ -46,7 +47,8 @@ export class Integrator implements AudioProcessorFactory {
     inputs = [
         {
             name: "derivative",
-            dims: ["M", "N"] as Dimensions
+            dims: ["M", "N"] as Dimensions,
+            default: 0,
         },
         {
             name: "reset",

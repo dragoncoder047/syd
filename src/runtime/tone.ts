@@ -30,7 +30,7 @@ export class Tone {
         this.mods = state.mods.map(([_, initial, mode]) => new AutomatedValue(initial, mode));
         this.modToIndexMap = Object.fromEntries(state.mods.map((m, i) => [m[0], i]));
         this.nodes = state.nodes.map(([name, dims]) => synth.nodes.find(f => f.name === name)!.make(synth, dims));
-        this.impl = new ProgramState(state.code, state.registers, this.nodes, state.constantTab);
+        this.impl = new ProgramState(state.code, state.registers.map(r => Matrix.resurrect(r)), this.nodes, state.constantTab);
     }
     /** HOT CODE */
     processBlock(leftBuffer: Float32Array, rightBuffer: Float32Array, mode: PassMode, gate: boolean, gain: number) {

@@ -6,20 +6,20 @@ export const SCALAR_DIMS: Dimensions = [1, 1];
 
 export type Range = [number, number, step?: number];
 
-export interface NodeInput {
+export interface NodeInputDef {
     name: string;
     description?: string;
     unit?: string;
     dims: Dimensions;
     range?: Range;
-    default?: number | undefined;
+    default: number;
     constantOptions?: Record<string, number | undefined>;
 }
 
 export interface AudioProcessorFactory {
     name: string;
     description?: string;
-    inputs: NodeInput[];
+    inputs: NodeInputDef[];
     outputDims: Dimensions;
     stateless?: boolean;
     make(synth: WorkletSynth, sizeVars: Record<string, number>): AudioProcessor;

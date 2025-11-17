@@ -1,3 +1,5 @@
+import { AutomatedValueMethod } from "../runtime/automation";
+
 export interface Instrument {
     voice: NodeGraph;
     fx: NodeGraph;
@@ -28,13 +30,15 @@ export enum SpecialNodeKind {
 
 export interface NodeGraphInput {
     name: string;
+    value: number;
     min: number;
     max: number;
     step?: number;
+    mode: AutomatedValueMethod;
 }
 
 export type NodeInput = number | [
-    indexOrValue: number,
+    indexOrValue: number | string,
     from: NodeInputLocation,
 ];
 

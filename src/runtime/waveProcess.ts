@@ -1,7 +1,7 @@
 export function samplesToIntegral(wave: Float32Array): Float32Array {
-    const integral = new Float32Array(wave.length + 1);
-    integral.set(wave);
     const len = wave.length;
+    const integral = new Float32Array(len + 1);
+    integral.set(wave);
     var i: number;
     // remove DC offset to prevent blowup
     var average = 0; for (i = 0; i < len; i++) average += integral[i]!; average /= len;

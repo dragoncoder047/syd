@@ -1,7 +1,7 @@
 import { KRateHelper } from "..";
 import { AudioProcessor, AudioProcessorFactory, Dimensions, SCALAR_DIMS } from "../../compiler/nodeDef";
 import { TAU, cos as cosine, lerp, sin, sqrt, tan } from "../../math";
-import { Matrix, scalarMatrix } from "../../matrix";
+import { Matrix } from "../../matrix";
 import { WorkletSynth } from "../../runtime/synthImpl";
 
 enum FilterType {
@@ -16,11 +16,13 @@ export class Filter implements AudioProcessorFactory {
     inputs = [
         {
             name: "sample",
-            dims: ["N", 1] as Dimensions
+            dims: ["N", 1] as Dimensions,
+            default: 0
         },
         {
             name: "cutoff",
             range: [0, 10000] as any,
+            default: 1000,
             unit: "Hz",
             dims: SCALAR_DIMS
         },
@@ -35,6 +37,7 @@ export class Filter implements AudioProcessorFactory {
             name: "kind",
             description: "Selects what band the filter will process. A low-pass filter dampens frequencies higher than the cutoff, making the sound more muffled. A high-pass filter dampens frequencies below the cutoff, making the sound more tinny. A peak filter enhances or dampens frequencies close to the cutoff, adding or suppressing shrieks at that point.",
             dims: SCALAR_DIMS,
+            default: FilterType.LOWPASS,
             constantOptions: {
                 lowpass: FilterType.LOWPASS,
                 highpass: FilterType.HIGHPASS,
@@ -127,12 +130,14 @@ export class Bitcrusher implements AudioProcessorFactory {
         {
             name: "sample",
             dims: ["M", "N"] as Dimensions,
+            default: 0
         },
         {
             name: "newSampleRate",
             range: [1, 48000] as any,
             unit: "Hz",
             dims: SCALAR_DIMS,
+            default: 8000,
         }
     ];
     outputDims: Dimensions = ["M", "N"];
@@ -156,13 +161,15 @@ export class DelayLine implements AudioProcessorFactory {
         {
             name: "sample",
             dims: ["C", 1] as Dimensions,
+            default: 0,
         },
         {
             name: "delayTime",
             range: [0, 100] as any,
             unit: "seconds",
             description: "How long to delay the sample for. Changing this mid-delay will effectively pitch-shift the buffered samples. If this input is a vector of tap positions, the output matrix will be rows of each sample delayed by the time specified here.",
-            dims: ["T", 1] as Dimensions
+            dims: ["T", 1] as Dimensions,
+            default: 1
         }
     ];
     outputDims: Dimensions = ["C", "T"];

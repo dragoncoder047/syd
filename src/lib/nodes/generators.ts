@@ -12,18 +12,22 @@ export class WavetableOscillator implements AudioProcessorFactory {
             name: "frequency",
             unit: "Hz",
             dims: [1, 1] as Dimensions,
-            range: [0, 20000] as any
+            range: [0, 20000] as any,
+            default: 220,
         },
         {
             name: "wave",
             description: "The index of the wave returned by the wave-loading function.",
             dims: [1, 1] as Dimensions,
+            unit: "WAVE_INDEX",
+            default: 0,
         },
         {
             name: "phase",
             description: "Phase offset, useful for FM",
             unit: "cycles (NOT radians)!",
             dims: [1, 1] as Dimensions,
+            default: 0
         },
         {
             name: "aliasing",
