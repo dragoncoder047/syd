@@ -1,3 +1,4 @@
+import { Dimensions } from "./compiler/nodeDef";
 import { max } from "./math";
 
 export class Matrix {
@@ -29,7 +30,7 @@ export class Matrix {
         for (var i = 0; i < r; i++) for (var j = 0; j < c; j++) if (this.get(i, j) != other.get(i, j)) return false;
         return true;
     }
-    get dims() {
+    get dims(): Dimensions {
         return [this.rows, this.cols];
     }
     resize(rows: number, cols: number): this {
@@ -82,7 +83,6 @@ export class Matrix {
         }
         return m;
     }
-
     copyFrom(other: Matrix) {
         this.resize(other.rows, other.cols);
         this.data.set(other.data);

@@ -1,6 +1,6 @@
-import { AudioProcessor, AudioProcessorFactory, Dimensions } from "../../compiler/nodeDef";
+import { AudioProcessor, AudioProcessorFactory, Dimensions, Range } from "../../compiler/nodeDef";
 import { abs } from "../../math";
-import { Matrix, scalarMatrix, zipsize } from "../../matrix";
+import { Matrix, scalarMatrix } from "../../matrix";
 import { WorkletSynth } from "../../runtime/synthImpl";
 
 export class Shimmer implements AudioProcessorFactory {
@@ -16,7 +16,7 @@ export class Shimmer implements AudioProcessorFactory {
             name: "amount",
             default: .05,
             unit: "fraction of value",
-            range: [0, 1] as any,
+            range: [0, 1] as Range,
             dims: ["M", "N"] as Dimensions
         }
     ];
@@ -162,7 +162,7 @@ export class Clock implements AudioProcessorFactory {
             name: "period",
             unit: "seconds",
             dims: ["M", "N"] as Dimensions,
-            range: [0, Infinity] as any,
+            range: [0, Infinity] as Range,
             default: 1,
             description: "The interval which the clock should roll over at. If this is suddenly lowered, the clock may immediately roll over if the internal counter was less than the old period, but now greater than the new period."
         },
@@ -170,7 +170,7 @@ export class Clock implements AudioProcessorFactory {
             name: "scale",
             unit: "seconds per second",
             dims: ["M", "N"] as Dimensions,
-            range: [0, Infinity] as any,
+            range: [0, Infinity] as Range,
             default: 1,
             description: "Makes the clock run faster or slower internally. If this is suddenly increased, the clock will NOT roll over as this doesn't affect the rollover point, only how fast that point is reached."
         },

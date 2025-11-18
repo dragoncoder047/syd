@@ -15,23 +15,6 @@ export const isString = is("string") as (x: any) => x is string;
 export const isArray = Array.isArray;
 // export const isObject = is("object") as (x: any) => x is Record<string, any>;
 
-// export const isConstant = (x: any): x is null | undefined | number | string => any(x, isNull, isUndefined, isNumber) || (isString(x) && !(isRef(x) || isNodeName(x) || isInputRef(x)));
-// export const isNode = (x: any): x is NodeTree =>
-//     any(x, isString, isNumber, isUndefined, isNull)
-//         ? false
-//         : isArray(x) && isString(x[0])
-//             ? (isNamedNode(x) ? isNode(getNodeContents(x)) : true)
-//             : (isArray(x[0]) && !isEmpty(x[0]) && isString(x[0][0]));
-
-// const isTypeString = <T extends string>(starter: T) => (x: any): x is `${T}${string}` =>
-//     isString(x) && x.startsWith(starter);
-// export const isRef = isTypeString("@");
-// export const isNodeName = isTypeString("=");
-// export const isInputRef = isTypeString(">");
-// export const isNamedNode = (x: any): x is [NodeName, ...any[]] => isArray(x) && isNodeName(x[0]);
-// export const getNodeName = (x: any): NodeName | undefined => isNamedNode(x) ? x[0] : undefined;
-// export const getNodeContents = (x: any): any[] => isNamedNode(x) ? x.slice(1) : x;
-
 export const str = JSON.stringify;
 
 var gensymCounter = 0;

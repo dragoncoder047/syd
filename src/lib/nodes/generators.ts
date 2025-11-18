@@ -1,4 +1,4 @@
-import { AudioProcessor, AudioProcessorFactory, Dimensions } from "../../compiler/nodeDef";
+import { AudioProcessor, AudioProcessorFactory, Dimensions, Range } from "../../compiler/nodeDef";
 import { fract } from "../../math";
 import { scalarMatrix } from "../../matrix";
 import { Wave, WorkletSynth } from "../../runtime/synthImpl";
@@ -12,7 +12,7 @@ export class WavetableOscillator implements AudioProcessorFactory {
             name: "frequency",
             unit: "Hz",
             dims: [1, 1] as Dimensions,
-            range: [0, 20000] as any,
+            range: [0, 20000] as Range,
             default: 220,
         },
         {

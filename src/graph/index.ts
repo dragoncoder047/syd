@@ -19,11 +19,11 @@ export interface ModInstrument {
 export interface NodeGraph {
     nodes: GraphNode[];
     out: number;
-    mods: NodeGraphInput[];
+    mods: Record<string, NodeGraphInput>;
 }
 
 export type GraphNode = [
-    kind: string | SpecialNode,
+    kind: string | number | SpecialNode,
     inputs: NodeInput[],
 ];
 
@@ -40,7 +40,6 @@ export enum SpecialNodeKind {
 }
 
 export interface NodeGraphInput {
-    name: string;
     value: number;
     min: number;
     max: number;
@@ -56,7 +55,8 @@ export type NodeInput = number | [
 export enum NodeInputLocation {
     CONSTANT,
     WELL_KNOWN,
-    MOD
+    MOD,
+    FRAG_INPUT
 }
 
 export enum WellKnownInput {

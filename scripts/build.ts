@@ -13,7 +13,7 @@ const config: esbuild.BuildOptions = {
     metafile: true,
     platform: "browser",
     charset: "utf8",
-    entryPoints: ["src/index.ts", "src/sydWorklet.ts", "src/esbuildPlugin/index.ts"],
+    entryPoints: ["src/index.ts", "src/sydWorklet.ts"],
     format: "esm",
     target: "esnext",
     treeShaking: true,

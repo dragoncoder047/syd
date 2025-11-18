@@ -1,5 +1,5 @@
 import { KRateHelper } from "..";
-import { AudioProcessor, AudioProcessorFactory, Dimensions, SCALAR_DIMS } from "../../compiler/nodeDef";
+import { AudioProcessor, AudioProcessorFactory, Dimensions, Range, SCALAR_DIMS } from "../../compiler/nodeDef";
 import { TAU, cos as cosine, lerp, sin, sqrt, tan } from "../../math";
 import { Matrix } from "../../matrix";
 import { WorkletSynth } from "../../runtime/synthImpl";
@@ -21,7 +21,7 @@ export class Filter implements AudioProcessorFactory {
         },
         {
             name: "cutoff",
-            range: [0, 10000] as any,
+            range: [0, 10000] as Range,
             default: 1000,
             unit: "Hz",
             dims: SCALAR_DIMS
@@ -29,7 +29,7 @@ export class Filter implements AudioProcessorFactory {
         {
             name: "resonance",
             default: 2,
-            range: [0, 100] as any,
+            range: [0, 100] as Range,
             description: "Affects the resonance of the filter. 1 means no resonance, >1 causes the filter to emphasize frequencies around the cutoff point, <1 causes the stopband slope to decrease and flatten. The default is 2 to match ZzFX's filter parameter.",
             dims: SCALAR_DIMS
         },
@@ -134,7 +134,7 @@ export class Bitcrusher implements AudioProcessorFactory {
         },
         {
             name: "newSampleRate",
-            range: [1, 48000] as any,
+            range: [1, 48000] as Range,
             unit: "Hz",
             dims: SCALAR_DIMS,
             default: 8000,
@@ -165,7 +165,7 @@ export class DelayLine implements AudioProcessorFactory {
         },
         {
             name: "delayTime",
-            range: [0, 100] as any,
+            range: [0, 100] as Range,
             unit: "seconds",
             description: "How long to delay the sample for. Changing this mid-delay will effectively pitch-shift the buffered samples. If this input is a vector of tap positions, the output matrix will be rows of each sample delayed by the time specified here.",
             dims: ["T", 1] as Dimensions,
