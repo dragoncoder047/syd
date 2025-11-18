@@ -59,7 +59,7 @@ export class Instrument {
         var i: number;
         const liveNotes = this.liveNotes, deadNotes = this.deadNotes, liveNoteCount = liveNotes.length;
         for (i = 0; i < liveNoteCount; i++) {
-            liveNotes[i]!.processBlock(lb, rb, PassMode.ADD, true, gainForChord(liveNoteCount));
+            liveNotes[i]!.processBlock(lb, rb, i === 0 ? PassMode.SET : PassMode.ADD, true, gainForChord(liveNoteCount));
         }
         for (i = 0; i < deadNotes.length; i++) {
             var tone = deadNotes[i]![0];
