@@ -53,7 +53,7 @@ export class ProgramState {
                     pop();
                     break;
                 case Opcode.MARK_LIVE_STATE:
-                    alive = !!i1;
+                    alive = !!peek()!.toScalar();
                     break;
                 case Opcode.SMEAR_MATRIX:
                     peek()!.smear(i1, i2);

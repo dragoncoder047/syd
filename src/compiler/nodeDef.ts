@@ -2,7 +2,7 @@ import { Matrix } from "../matrix";
 import { WorkletSynth } from "../runtime/synthImpl";
 
 export type Dimensions = [string | number, string | number];
-export const SCALAR_DIMS: Dimensions = [1, 1];
+export const SCALAR_DIMS = [1, 1] as const satisfies Dimensions;
 
 export type Range = [number, number, step?: number];
 

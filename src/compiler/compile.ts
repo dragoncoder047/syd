@@ -164,7 +164,7 @@ function resolveDimensions(graph: NodeGraph, map: Record<string, AudioProcessorF
         } else {
             switch (nodeName[0]) {
                 case SpecialNodeKind.MARK_ALIVE:
-                    inputs = [[args[0]!, output = ["M", "N"]]];
+                    inputs = [[args[0]!, output = SCALAR_DIMS]];
                     break;
                 case SpecialNodeKind.BUILD_MATRIX:
                     inputs = args.map(a => [a, SCALAR_DIMS]);
@@ -180,7 +180,7 @@ function resolveDimensions(graph: NodeGraph, map: Record<string, AudioProcessorF
         const [in_] = exposed[nodeNo]!;
         for (var i = 0; i < in_.length; i++) {
             const [source, localVar] = in_[i]!;
-            // Specials are always 1x1
+            // external inputs/outputs are always 1x1
             var fromName: number | null, fromDims: Dimensions;
             if (isNumber(source)) {
                 fromName = source;
