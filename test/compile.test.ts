@@ -1,7 +1,7 @@
 import { expect, test } from "bun:test";
 import { AudioProcessorFactory, compile, ErrorReason, NodeGraph, NodeInput, NodeInputLocation, SpecialNodeKind } from "../src";
 import { Matrix } from "../src/matrix";
-import { Opcode } from "../src/compiler/prog";
+import { Opcode } from "../src/runtime/program";
 
 test("compiles", () => {
     const fragment1: NodeGraph = {

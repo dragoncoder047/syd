@@ -1,8 +1,8 @@
 import { expect, test } from "bun:test";
 import { AudioProcessorFactory, compile, ErrorReason, NodeGraph, NodeInputLocation } from "../src";
-import { Opcode } from "../src/compiler/prog";
 import { NodeFragmentEdge, unifyFragments } from "../src/graph/fragment";
 import { Matrix } from "../src/matrix";
+import { Opcode } from "../src/runtime/program";
 
 test("unify fragments", () => {
     const fragment1: NodeGraph = {

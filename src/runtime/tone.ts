@@ -1,5 +1,5 @@
+import { CompiledGraph } from "../compiler/compile";
 import { AudioProcessor } from "../compiler/nodeDef";
-import { CompiledGraph } from "../compiler/prog";
 import { Matrix } from "../matrix";
 import { AutomatedValue, AutomatedValueMethod } from "./automation";
 import { ProgramState } from "./programState";

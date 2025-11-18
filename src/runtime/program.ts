@@ -1,5 +1,3 @@
-import { Matrix } from "../matrix";
-import { AutomatedValueMethod } from "../runtime/automation";
 
 export enum Opcode {
     /** the index in the constant table */
@@ -18,17 +16,8 @@ export enum Opcode {
     TAP_REGISTER,
     CALL_NODE,
     /** input number, returns 0 if doesn't exist */
-    GET_MOD,
+    GET_MOD
 }
 
 export type Command = [Opcode, a?: number, b?: number];
 export type Program = Command[];
-
-export interface CompiledGraph {
-    code: Program;
-    registers: Matrix[];
-    constantTab: Matrix[];
-    nodes: [type: string, dimVars: Record<string, number>][];
-    mods: [name: string, initial: number, mode: AutomatedValueMethod][];
-}
-

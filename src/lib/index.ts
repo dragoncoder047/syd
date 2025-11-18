@@ -1,8 +1,9 @@
+import { CompiledGraph } from "../compiler/compile";
 import { AudioProcessorFactory, Dimensions } from "../compiler/nodeDef";
 import { OPERATORS } from "../compiler/operator";
-import { CompiledGraph, Opcode } from "../compiler/prog";
 import { lerp } from "../math";
 import { Matrix } from "../matrix";
+import { Opcode } from "../runtime/program";
 import { Bitcrusher, DelayLine, Filter } from "./nodes/effects";
 import { WavetableOscillator } from "./nodes/generators";
 import { Clock, Integrator, Shimmer } from "./nodes/logic";

@@ -1,5 +1,5 @@
+import { CompiledGraph } from "../compiler/compile";
 import { AudioProcessorFactory } from "../compiler/nodeDef";
-import { CompiledGraph } from "../compiler/prog";
 import { NODES, PASSTHROUGH_FX } from "../lib";
 import { Instrument } from "./instrument";
 import { PassMode, Tone } from "./tone";

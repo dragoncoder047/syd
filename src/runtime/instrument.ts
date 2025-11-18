@@ -1,4 +1,4 @@
-import { CompiledGraph } from "../compiler/prog";
+import { CompiledGraph } from "../compiler/compile";
 import { WorkletSynth } from "./synthImpl";
 import { PassMode, Tone } from "./tone";
 

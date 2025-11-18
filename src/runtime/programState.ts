@@ -1,8 +1,7 @@
 import { AudioProcessor } from "../compiler/nodeDef";
-import { OPERATORS } from "../compiler/operator";
-import { Opcode, Program } from "../compiler/prog";
 import { Matrix } from "../matrix";
 import { AutomatedValue } from "./automation";
+import { Opcode, Program } from "./program";
 
 export class ProgramState {
     stack: Matrix[] = [];

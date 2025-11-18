@@ -1,16 +1,16 @@
 import { NodeGraph, NodeInput, NodeInputLocation, SpecialNodeKind, WellKnownInput } from "../graph";
 import { Matrix, scalarMatrix } from "../matrix";
 import { AutomatedValueMethod } from "../runtime/automation";
+import { Opcode, Program } from "../runtime/program";
 import { isArray, isNumber, isString } from "../utils";
 import { AudioProcessorFactory, Dimensions, SCALAR_DIMS } from "./nodeDef";
-import { CompiledGraph, Opcode, Program } from "./prog";
 
-export interface CompileState {
-    registers: string[];
-    nodeNames: string[];
-    nodeDefs: AudioProcessorFactory[];
+export interface CompiledGraph {
+    code: Program;
+    registers: Matrix[];
     constantTab: Matrix[];
-    mods: [name: string, initial: number, mode: AutomatedValueMethod][],
+    nodes: [type: string, dimVars: Record<string, number>][];
+    mods: [name: string, initial: number, mode: AutomatedValueMethod][];
 }
 
 export enum ErrorReason {
@@ -282,3 +282,4 @@ function resolveDimensions(graph: NodeGraph, map: Record<string, AudioProcessorF
 function toImplMap(defs: AudioProcessorFactory[]): Record<string, AudioProcessorFactory> {
     return Object.fromEntries(defs.map(n => [n.name, n]));
 }
+
