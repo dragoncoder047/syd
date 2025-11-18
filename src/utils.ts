@@ -5,7 +5,7 @@ const typeOf = (x: any) => typeof x;
 export const is = (t: string, func: (x: any) => any = typeOf) => (x: any) => func(x) === t;
 export const isNumber = is("number") as (x: any) => x is number;
 // export const isUndefined = is("undefined") as (x: any) => x is undefined;
-// export const isString = is("string") as (x: any) => x is string;
+export const isString = is("string") as (x: any) => x is string;
 // export const isNull = (x: any): x is null => x === null;
 // export const isEmpty = (x: any[]): x is [] => x.length === 0;
 // type Predicate<T, U extends T> = (x: T) => x is U;

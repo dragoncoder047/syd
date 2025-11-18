@@ -26,7 +26,9 @@ so I joined the [beepbox modding discord server](https://discord.com/invite/Tc99
 
 ## consider these TODO items
 
-### Special channels for music: BPM, envelopes/articulation, feed-through timing
+lol I have no idea what I'm doing
+
+<!-- ### Special channels for music: BPM, envelopes/articulation, feed-through timing
 
 (I typed this up as though I was going to implement it and then didn't. Oops! Here's to more free time...)
 
@@ -77,7 +79,7 @@ As Syd is intended to create not only sound effects, but music, there are specia
     ```
 TODO: the envelope channel header conflicts with the negative duration BPM thing
 
--->
+--
 
 ## Other ideas that haven't been well thought out
 
@@ -120,3 +122,4 @@ TODO: the envelope channel header conflicts with the negative duration BPM thing
 
 * :smiley: :smiley: :smiley: Make [a BeepBox fork](https://github.com/dragoncoder047/dragonbox) that uses Syd as a backend and lets people edit the instrument graph visually, and then export to some compressed-JSON string that can be sent to a dedicated renderer
     * DragonBox is not there yet.
+ -->

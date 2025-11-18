@@ -1,7 +1,8 @@
-import { GraphNode, NodeGraph, NodeInputLocation, WellKnownInput, NodeInput, SpecialNodeKind } from "../graph";
+import { NodeGraph, NodeInput, NodeInputLocation, SpecialNodeKind, WellKnownInput } from "../graph";
 import { Matrix, scalarMatrix } from "../matrix";
 import { AutomatedValueMethod } from "../runtime/automation";
-import { AudioProcessorFactory, Dimensions, NodeInputDef, SCALAR_DIMS } from "./nodeDef";
+import { isNumber, isString } from "../utils";
+import { AudioProcessorFactory, Dimensions, SCALAR_DIMS } from "./nodeDef";
 import { CompiledGraph, Opcode, Program } from "./prog";
 
 export interface CompileState {
@@ -12,22 +13,30 @@ export interface CompileState {
     mods: [name: string, initial: number, mode: AutomatedValueMethod][],
 }
 
-interface CompileError {
+enum ErrorReason {
+    DIM_MISMATCH,
+    UNBOUND
+}
+interface MisMatchError {
     node: number
-    inputIndex: number
-    message: string
+    index: number
+    dim: 0 | 1;
+    code: ErrorReason;
 }
 
-export function compile(graph: NodeGraph, defs: AudioProcessorFactory[]): [CompiledGraph, CompileError[]] {
+type VarMap = Record<number, Record<string, number>>;
+type SmearMap = Record<number, Record<number, [number | null, number | null]>>;
+
+export function compile(graph: NodeGraph, defs: AudioProcessorFactory[]): [CompiledGraph, MisMatchError[]] {
     const map = toImplMap(defs);
     const [outputUsed, seenTwice] = findDuplicates(graph);
     // step two: resolve matrix dimensions
-    const [nodeToDimsMap, errors] = resolveDimensions(graph, map);
+    const [nodeToDimsMap, needsSmeared, errors] = resolveDimensions(graph, map);
     // step three: compile stack machine
     const program: Program = [];
     const seenInCompilation = new Set<number>();
     const flatNodes = graph.nodes
-        .flatMap(([n], i) => typeof n === "string" ? [i] : []);
+        .flatMap(([n], i) => isString(n) ? [i] : []);
     const nodeIndexToRegisterIndex: Record<number, number> =
         Object.fromEntries([...seenTwice]
             .map((nodeNo, regNo) => [nodeNo, regNo]));
@@ -40,8 +49,9 @@ export function compile(graph: NodeGraph, defs: AudioProcessorFactory[]): [Compi
         }
         seenInCompilation.add(nodeNo);
         const [nodeName, args] = graph.nodes[nodeNo]!;
-        for (var arg of args) {
-            if (typeof arg === "number") {
+        for (var argNo = 0; argNo < args.length; argNo++) {
+            const arg = args[argNo]!;
+            if (isNumber(arg)) {
                 recurse(arg);
             } else {
                 switch (arg[1]) {
@@ -67,11 +77,21 @@ export function compile(graph: NodeGraph, defs: AudioProcessorFactory[]): [Compi
                         program.push([Opcode.GET_MOD, mods.findIndex(([name]) => name === (arg as NodeInput & any[])[0])]);
                 }
             }
+            const smear = needsSmeared[nodeNo]?.[argNo];
+            if (smear) {
+                program.push([Opcode.SMEAR_MATRIX, smear[0]!, smear[1]!]);
+            }
+            if (!isString(nodeName) && nodeName[0] === SpecialNodeKind.BUILD_MATRIX) {
+
+            }
+
         }
-        if (typeof nodeName === "string") {
+        if (isString(nodeName)) {
             program.push([Opcode.CALL_NODE, nodeIndexToRegisterIndex[nodeNo]]);
         } else {
-            throw 'todo';
+            if (nodeName[0] === SpecialNodeKind.MARK_ALIVE) {
+                program.push([Opcode.MARK_LIVE_STATE]);
+            }
         }
         if (seenTwice.has(nodeNo)) {
             program.push([Opcode.TAP_REGISTER, nodeIndexToRegisterIndex[nodeNo]]);
@@ -92,8 +112,8 @@ export function compile(graph: NodeGraph, defs: AudioProcessorFactory[]): [Compi
         nodes.push([name, dimsMap]);
         if (seenTwice.has(index)) {
             const [dRows, dCols] = map[name]!.outputDims;
-            const rows = typeof dRows === "number" ? dRows : dimsMap[dRows]!;
-            const cols = typeof dCols === "number" ? dCols : dimsMap[dCols]!;
+            const rows = isNumber(dRows) ? dRows : dimsMap[dRows]!;
+            const cols = isNumber(dCols) ? dCols : dimsMap[dCols]!;
             registers[nodeIndexToRegisterIndex[index]!] = new Matrix(rows, cols);
         }
     }
@@ -115,7 +135,7 @@ function findDuplicates(graph: NodeGraph): [once: Set<number>, twice: Set<number
     for (var i = 0; i < graph.nodes.length; i++) {
         const [_, inputs] = graph.nodes[i]!;
         for (var usedNode of inputs) {
-            if (typeof usedNode === "number") {
+            if (isNumber(usedNode)) {
                 if (seenOnce.has(usedNode)) {
                     duplicated.add(usedNode);
                 }
@@ -126,45 +146,106 @@ function findDuplicates(graph: NodeGraph): [once: Set<number>, twice: Set<number
     return [seenOnce, duplicated];
 }
 
-function resolveDimensions(graph: NodeGraph, map: Record<string, AudioProcessorFactory>): [Record<number, Record<string, number>>, CompileError[]] {
-    const bindings: [result: Dimensions, [sourceNode: number | null, expected: Dimensions][], varnames: string[]][] = [], numNodes = graph.nodes.length;
+function resolveDimensions(graph: NodeGraph, map: Record<string, AudioProcessorFactory>): [VarMap, SmearMap, MisMatchError[]] {
+    const numNodes = graph.nodes.length;
+    const errors: MisMatchError[] = [];
     var nodeNo: number;
+    type OutPort = [NodeInput, Dimensions];
+    const exposed: [
+        in_: OutPort[],
+        out: Dimensions,
+    ][] = [];
     for (nodeNo = 0; nodeNo < numNodes; nodeNo++) {
         const [nodeName, args] = graph.nodes[nodeNo]!;
-        var outputDims: Dimensions, inputs: NodeInputDef[];
-        if (typeof nodeName === "string") {
-            ({ outputDims, inputs } = map[nodeName]!);
+        var inputs: OutPort[], output: Dimensions;
+        if (isString(nodeName)) {
+            output = map[nodeName]!.outputDims;
+            inputs = map[nodeName]!.inputs.map(({ dims }, i) => [args[i]!, dims]);
         } else {
             switch (nodeName[0]) {
                 case SpecialNodeKind.MARK_ALIVE:
-                    outputDims = ["M", "N"];
-                    inputs = [{ name: "x", dims: ["M", "N"], default: 1 }];
+                    inputs = [[args[0]!, output = ["M", "N"]]];
                     break;
                 case SpecialNodeKind.BUILD_MATRIX:
-                    var cols: number;
-                    outputDims = [nodeName[1], cols = nodeName[2]];
-                    inputs = args.map((_, i) => ({ name: `${Math.floor(i / cols)},${i % cols}`, dims: SCALAR_DIMS, default: 1 }));
+                    inputs = args.map(a => [a, SCALAR_DIMS]);
+                    output = [nodeName[1], nodeName[2]];
             }
         }
-        const dim: (typeof bindings)[number][1] = inputs.map(({ dims }, i) => [typeof args[i] === "number" ? args[i] : null, dims]);
-        bindings.push([
-            outputDims,
-            dim,
-            [...outputDims, ...dim.flatMap(d => d[1])].filter(x => typeof x === "string"),
-        ]);
+        exposed.push([inputs, output]);
     }
-    const errors: CompileError[] = [];
     // Build a set of everythings that must be equal
-    // And mapping of string name to node+var name
-    // This would be so much easier if this were python and I could use a tuple as a key
-    const gToNode = "help me pls";
+    type Var = [node: number | null, val: Dimensions[number]];
+    const equalities: [outFrom: Var, inTo: Var, bInIndex: number, bDimRC: 0 | 1][] = [];
     for (nodeNo = 0; nodeNo < numNodes; nodeNo++) {
-        const [out, inputs, varnames] = bindings[nodeNo]!;
-        for (var varname of varnames) {
+        const [in_] = exposed[nodeNo]!;
+        for (var i = 0; i < in_.length; i++) {
+            const [source, localVar] = in_[i]!;
+            // Specials are always 1x1
+            var fromName: number | null, fromDims: Dimensions;
+            if (isNumber(source)) {
+                fromName = source;
+                fromDims = exposed[source]![1];
+            } else {
+                fromName = null;
+                fromDims = [1, 1];
+            }
+            equalities.push(
+                [[fromName, fromDims[0]], [nodeNo, localVar[0]], i, 0],
+                [[fromName, fromDims[1]], [nodeNo, localVar[1]], i, 1]
+            );
 
         }
     }
-    // this algorithm wants to make me cry
+    // Resolve equalities
+    var changing = true;
+    const varNameMap: VarMap = {};
+    const toBeSmeared: SmearMap = {};
+    const setVar = (node: number, varName: string, value: number) => {
+        (varNameMap[node] ??= {})[varName] = value;
+    }
+    const propagate = (node: number, varName: string, value: number) => {
+        changing = true;
+        setVar(node, varName, value);
+        for (var i = 0; i < equalities.length; i++) {
+            const eq = equalities[i]!;
+            const [[node1, var1], [node2, var2]] = eq;
+            if (node1 === node && var1 === varName) {
+                eq[0][1] = value;
+            }
+            if (node2 === node && var2 === varName) {
+                eq[1][1] = value;
+            }
+        }
+    }
+    while (changing) {
+        changing = false;
+        for (i = 0; i < equalities.length; i++) {
+            const [[node1, var1], [node2, var2], port2, rc2] = equalities[i]!;
+            if (isNumber(var1) && isNumber(var2)) {
+                if (var1 !== var2) {
+                    if (var1 > 1) {
+                        errors.push({ node: node2!, index: port2, dim: rc2, code: ErrorReason.DIM_MISMATCH });
+                    } else {
+                        ((toBeSmeared[node2!] ??= {})[port2] ??= [null, null])[rc2] = var2;
+                    }
+                }
+                equalities.splice(i, 1);
+                i--;
+            } else if (isString(var1) && isNumber(var2)) {
+                propagate(node1!, var1, var2);
+            } else if (isNumber(var1) && isString(var2)) {
+                propagate(node2!, var2, var1);
+            }
+        }
+    }
+    if (equalities.length > 0) {
+        // there are unbound variables
+        for (var [_, [n2, v2], p2, rc2] of equalities) {
+            setVar(n2!, v2 as string, 1);
+            errors.push({ node: n2!, index: p2, dim: rc2, code: ErrorReason.UNBOUND });
+        }
+    }
+    return [varNameMap, toBeSmeared, errors];
 }
 
 function toImplMap(defs: AudioProcessorFactory[]): Record<string, AudioProcessorFactory> {

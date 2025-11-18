@@ -1,6 +1,6 @@
 import { AudioProcessorFactory } from "../compiler/nodeDef";
-import { CompiledVoiceData } from "../compiler/prog";
-import { nodes, passthroughFx } from "../lib";
+import { CompiledGraph } from "../compiler/prog";
+import { NODES, PASSTHROUGH_FX } from "../lib";
 import { Instrument } from "./instrument";
 import { PassMode, Tone } from "./tone";
 import { lengthToBasePitch, samplesToIntegral } from "./waveProcess";
@@ -13,13 +13,13 @@ export interface Wave {
 
 export class WorkletSynth {
     instruments: Instrument[] = [];
-    postFX: Tone;
+    postFX: Tone = null as any;
     n2i: Record<number, number> = {};
     waves: Wave[] = [];
-    nodes: AudioProcessorFactory[] = nodes();
+    nodes: AudioProcessorFactory[] = NODES;
     volume: number = 0.8;
     constructor(public dt: number) {
-        this.postFX = new Tone(passthroughFx(), this.dt, this, 0, 1);
+        this.clearPostFX();
     }
     clearAll() {
         this.clearInstruments();
@@ -32,7 +32,7 @@ export class WorkletSynth {
         this.instruments = [];
     }
     clearPostFX() {
-        this.postFX = new Tone(passthroughFx(), this.dt, this, 0, 1);
+        this.postFX = new Tone(PASSTHROUGH_FX, this.dt, this, 0, 1);
     }
     setWave(number: number, samples: Float32Array, basePitch?: number) {
         this.waves[number] = {
@@ -41,10 +41,10 @@ export class WorkletSynth {
             basePitch: basePitch ?? lengthToBasePitch(samples.length, this.dt),
         }
     }
-    setInstrument(voiceDef: CompiledVoiceData, fxDef: CompiledVoiceData, instrumentNumber: number) {
+    setInstrument(voiceDef: CompiledGraph, fxDef: CompiledGraph, instrumentNumber: number) {
         this.instruments[instrumentNumber] = new Instrument(this.dt, this, voiceDef, fxDef);
     }
-    setPostFX(fxDef: CompiledVoiceData): void {
+    setPostFX(fxDef: CompiledGraph): void {
         this.postFX = new Tone(fxDef, this.dt, this, 1, 1);
     }
     setVolume(volume: number) {
@@ -71,6 +71,7 @@ export class WorkletSynth {
         this._ifn(id)?.expressionBend(id, expression, time);
     }
     /** HOT CODE */
+    /** only private to prevent types from picking it up, it must be called */
     private process(left: Float32Array, right: Float32Array) {
         const instruments = this.instruments;
         for (var i = 0; i < instruments.length; i++) {

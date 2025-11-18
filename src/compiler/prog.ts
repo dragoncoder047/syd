@@ -11,13 +11,11 @@ export enum Opcode {
     DROP_TOP,
     MARK_LIVE_STATE,
     SET_MATRIX_EL,
-    /** opcode */
-    BINARY_OP,
+    SMEAR_MATRIX,
     /** register no. */
     GET_REGISTER,
     /** register no. */
     TAP_REGISTER,
-    CONDITIONAL_SELECT,
     CALL_NODE,
     /** input number, returns 0 if doesn't exist */
     GET_MOD,

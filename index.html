@@ -25,209 +25,141 @@
     <body>
         <h1>Syd test</h1>
         <p><a href="https://github.com/dragoncoder047/syd?tab=readme-ov-file">(What is this?)</a></p>
-        <p><button id="play">Play</button></p>
-        <p>Instrument: <textarea id="instrument" rows="10" cols="80">// radix - yuki satellites
-// https://modarchive.org/index.php?request=view_by_moduleid&query=167157
-
-mtof(p) :- (440 + 4) * (2 ** ((p - 69) * (1 / 12)));
-min(a, b) :- a < b ? a : b;
-max(a, b) :- a > b ? a : b;
-trunc(x) :- x | 0;
-echo(s, fbv, t) :- (s |> ((d = delay(# + d * fbv, t)) + s));
-pluck(t, p) :- (1 - t) ** p;
-saw(f, sR) :- (p = p + (f * (1 / sR)); (p - trunc(p)) * 2 - 1);
-
-sR = 48000;
-btR = 60 / 350;
-btRi = 1 / btR;
-t = t + (1 / sR);
-
-n0 = [
- 68,  0, 75, 67,  0,  0,  0,  0,
-  0,  0,  0,  0,  0,  0,  0,  0,
- 68,  0, 75, 67,  0,  0,  0, 65,
-  0,  0, 63,  0,  0,  0,  0,  0
-];
-n1 = [
- 37, 37,  0, 37,  0,  0,  0, 37,
- 37,  0, 37,  0,  0, 44, 44,  0,
- 41, 41,  0, 41,  0,  0,  0, 41,
- 41,  0, 41,  0,  0, 44, 44,  0
-];
-n2 = [
- 49, 56, 61, 63, 49, 56, 61, 63,
- 49, 56, 61, 68, 49, 67, 60, 63,
- 48, 53, 60, 63, 48, 53, 60, 63,
- 48, 53, 60, 61, 48, 60, 56, 53
-];
-kP = [
-  1,  0,  0,  1,  0,  0,  0,  1,
-  0,  0,  1,  0,  0,  1,  0,  0,
-  1,  0,  0,  1,  0,  0,  0,  1,
-  0,  0,  1,  0,  0,  1,  0,  0
-];
-
-n0R = btR * #n0;
-n0Ri = 1 / n0R;
-n0T = (t % n0R) * n0Ri;
-n0I = n0T * #n0;
-nT = n0I % 1;
-pNE = 1 - nT;
-n0Int = trunc(n0I);
-n0F = mtof(n0->n0Int);
-n0E = n0F <= 10 ? 0 : pNE;
-n1F = mtof(n1->n0Int);
-n1E = n1F <= 10 ? 0 : 1;
-n2F = mtof(n2->n0Int);
-n2E = n2F <= 10 ? 0 : pNE;
-kV = kP->n0Int;
-kE = kV <= 0 ? 0 : pluck(nT, 2);
-sE = (t % (btR * 8)) / (btR * 8) > 0.5 ? 1 - ((t % (btR * 4)) / (btR * 4)) : 0;
-
-0
-
-+ echo(saw(n0F, sR) * n0E * 0.5, 0.8, btR * 2)
-+ (saw(n1F, sR) + saw(n1F + 0.5, sR)) * n1E * 0.5
-+ zzfxOscillator(n2F, 0, 0) * n2E * 0.3
-
-+ zzfxOscillator(440 * 0.125 + kE ** 9 * 1000, 1, 0) * kE * 0.8
-+ zzfxOscillator(500, 1, 1, 50) * (1 - ((t % btR) * btRi)) ** 4 * 0.5
-+ zzfxOscillator(300, 1, 1, 50) * (1 - ((t * 2) % (btR * 4)) * (1 / (btR * 4))) ** 4 * 0.5
-+ (zzfxOscillator(290) * max(sE ** 10 - 0.5, 0) * 10 + zzfxOscillator(200, 1, 1, 40) * sE ** 6)</textarea></p>
+        <p>There is nothing here right now.</p>
         <canvas id="oscilloscope" width="800" height="200"></canvas>
         <div id="log"></div>
         <script type="module">
-            import * as syd from "./build/index.js";
-            import { get, make, bind, waitFor } from "https://cdn.jsdelivr.net/gh/dragoncoder047/vanilla@main/vanilla.js";
+            // import * as syd from "./build/index.js";
+            // import { get, make, bind, waitFor } from "https://cdn.jsdelivr.net/gh/dragoncoder047/vanilla@main/vanilla.js";
 
-            const canvas = get("#oscilloscope");
-            const gfx = canvas.getContext("2d");
+            // const canvas = get("#oscilloscope");
+            // const gfx = canvas.getContext("2d");
 
-            const audio = new AudioContext;
+            // const audio = new AudioContext;
 
 
-            const logArea = get("#log");
+            // const logArea = get("#log");
 
-            await syd.initWorklet(audio);
-            waitFor("#play", "click").then(started);
+            // await syd.initWorklet(audio);
+            // waitFor("#play", "click").then(started);
 
-            const synth = syd.newSynth(audio);
+            // const synth = syd.newSynth(audio);
 
-            const fftL = audio.createAnalyser();
-            const fftR = audio.createAnalyser();
-            const splitter = audio.createChannelSplitter(2);
+            // const fftL = audio.createAnalyser();
+            // const fftR = audio.createAnalyser();
+            // const splitter = audio.createChannelSplitter(2);
 
-            synth.audioNode.connect(audio.destination);
-            synth.audioNode.connect(splitter);
-            splitter.connect(fftL, 0);
-            splitter.connect(fftR, 1);
+            // synth.audioNode.connect(audio.destination);
+            // synth.audioNode.connect(splitter);
+            // splitter.connect(fftL, 0);
+            // splitter.connect(fftR, 1);
 
-            synth.audioNode.onprocessorerror = e => {
-                showError("Synth died unexpectedly: " + e);
-                console.log(e);
-            };
+            // synth.audioNode.onprocessorerror = e => {
+            //     showError("Synth died unexpectedly: " + e);
+            //     console.log(e);
+            // };
 
-            bind("#instrument", "input", debounce(300, async () => {
-                const src = get("#instrument").value;
-                const dummyName = "<textarea>";
-                const fs = { ...syd.libSrc, [dummyName]: src };
-                try {
-                    clearLog();
-                    await synth.clearAll();
-                    const env = await makeEnv();
-                    const ast = await syd.parse(src, dummyName);
-                    const evaled = await ast.eval(env);
-                    console.log("Evaled", evaled);
-                    const compiled = syd.optimizeProgram(syd.compileNode(evaled, syd.newCompileData(), new Map, syd.nodes()));
-                    console.log("Final program", compiled);
-                    showLog(syd.disassemble(compiled));
-                    await synth.setPostFX(compiled);
-                } catch (e) {
-                    showError(e instanceof syd.SydError ? e.displayOn(fs) : e.stack);
-                    throw e;
-                }
-            }));
+            // bind("#instrument", "input", debounce(300, async () => {
+            //     const src = get("#instrument").value;
+            //     const dummyName = "<textarea>";
+            //     const fs = { ...syd.libSrc, [dummyName]: src };
+            //     try {
+            //         clearLog();
+            //         await synth.clearAll();
+            //         const env = await makeEnv();
+            //         const ast = await syd.parse(src, dummyName);
+            //         const evaled = await ast.eval(env);
+            //         console.log("Evaled", evaled);
+            //         const compiled = syd.optimizeProgram(syd.compileNode(evaled, syd.newCompileData(), new Map, syd.nodes()));
+            //         console.log("Final program", compiled);
+            //         showLog(syd.disassemble(compiled));
+            //         await synth.setPostFX(compiled);
+            //     } catch (e) {
+            //         showError(e instanceof syd.SydError ? e.displayOn(fs) : e.stack);
+            //         throw e;
+            //     }
+            // }));
 
-            async function makeEnv() {
-                const env = await syd.newEnv();
-                env.functions.push([
-                    "log",
-                    1,
-                    async (args, env) => {
-                        const value = await args[0].eval(env);
-                        if (!(value instanceof syd.Value)) {
-                            showLog(`(${value.constructor.name}) ${JSON.stringify(value, null, 4)}`);
-                        }
-                        else showLog(value.value);
-                        return value;
-                    }
-                ]);
-                return env;
-            }
+            // async function makeEnv() {
+            //     const env = await syd.newEnv();
+            //     env.functions.push([
+            //         "log",
+            //         1,
+            //         async (args, env) => {
+            //             const value = await args[0].eval(env);
+            //             if (!(value instanceof syd.Value)) {
+            //                 showLog(`(${value.constructor.name}) ${JSON.stringify(value, null, 4)}`);
+            //             }
+            //             else showLog(value.value);
+            //             return value;
+            //         }
+            //     ]);
+            //     return env;
+            // }
 
-            function started() {
-                audio.resume();
-                showLog("Started audio");
-                drawOscilloscope();
-            }
+            // function started() {
+            //     audio.resume();
+            //     showLog("Started audio");
+            //     drawOscilloscope();
+            // }
 
-            function showLog(logText) {
-                logArea.prepend(make("div", {}, make("pre", {}, logText)));
-            }
-            function showError(logText) {
-                logArea.prepend(make("div.stderr", {}, make("pre", {}, logText)));
-            }
-            function clearLog() {
-                logArea.innerHTML = "";
-            }
+            // function showLog(logText) {
+            //     logArea.prepend(make("div", {}, make("pre", {}, logText)));
+            // }
+            // function showError(logText) {
+            //     logArea.prepend(make("div.stderr", {}, make("pre", {}, logText)));
+            // }
+            // function clearLog() {
+            //     logArea.innerHTML = "";
+            // }
 
-            const samplesL = new Float32Array(fftL.fftSize);
-            const samplesR = new Float32Array(fftR.fftSize);
-            const spectrumL = new Uint8Array(fftL.frequencyBinCount);
-            const spectrumR = new Uint8Array(fftR.frequencyBinCount);
-            function drawOscilloscope() {
-                requestAnimationFrame(drawOscilloscope);
-                fftL.getFloatTimeDomainData(samplesL);
-                fftR.getFloatTimeDomainData(samplesR);
-                fftL.getByteFrequencyData(spectrumL);
-                fftR.getByteFrequencyData(spectrumR);
+            // const samplesL = new Float32Array(fftL.fftSize);
+            // const samplesR = new Float32Array(fftR.fftSize);
+            // const spectrumL = new Uint8Array(fftL.frequencyBinCount);
+            // const spectrumR = new Uint8Array(fftR.frequencyBinCount);
+            // function drawOscilloscope() {
+            //     requestAnimationFrame(drawOscilloscope);
+            //     fftL.getFloatTimeDomainData(samplesL);
+            //     fftR.getFloatTimeDomainData(samplesR);
+            //     fftL.getByteFrequencyData(spectrumL);
+            //     fftR.getByteFrequencyData(spectrumR);
 
-                const ratio = window.devicePixelRatio || 1;
-                const width = canvas.width = (canvas.style.width = 500) * ratio;
-                const height = canvas.height = (canvas.style.height = 100) * ratio;
-                gfx.imageSmoothingEnabled = false;
-                gfx.clearRect(0, 0, width, height);
-                gfx.lineWidth = 1;
-                gfx.strokeStyle = "rgba(127, 150, 255, 80%)";
-                drawSamples(spectrumL, gfx, width, s => map(s, 0, 255, height, height / 2));
-                gfx.strokeStyle = "rgba(255, 150, 127, 80%)";
-                drawSamples(spectrumR, gfx, width, s => map(s, 0, 255, height, height / 2));
-                gfx.lineWidth = 2;
-                gfx.strokeStyle = "rgb(0, 0, 255, 80%)";
-                drawSamples(samplesL, gfx, width, s => map(s, -1, 1, height / 2, 0));
-                gfx.strokeStyle = "rgb(255, 0, 0, 80%)";
-                drawSamples(samplesR, gfx, width, s => map(s, -1, 1, height / 2, 0));
-            }
+            //     const ratio = window.devicePixelRatio || 1;
+            //     const width = canvas.width = (canvas.style.width = 500) * ratio;
+            //     const height = canvas.height = (canvas.style.height = 100) * ratio;
+            //     gfx.imageSmoothingEnabled = false;
+            //     gfx.clearRect(0, 0, width, height);
+            //     gfx.lineWidth = 1;
+            //     gfx.strokeStyle = "rgba(127, 150, 255, 80%)";
+            //     drawSamples(spectrumL, gfx, width, s => map(s, 0, 255, height, height / 2));
+            //     gfx.strokeStyle = "rgba(255, 150, 127, 80%)";
+            //     drawSamples(spectrumR, gfx, width, s => map(s, 0, 255, height, height / 2));
+            //     gfx.lineWidth = 2;
+            //     gfx.strokeStyle = "rgb(0, 0, 255, 80%)";
+            //     drawSamples(samplesL, gfx, width, s => map(s, -1, 1, height / 2, 0));
+            //     gfx.strokeStyle = "rgb(255, 0, 0, 80%)";
+            //     drawSamples(samplesR, gfx, width, s => map(s, -1, 1, height / 2, 0));
+            // }
 
-            function drawSamples(samples, gfx, width, transform) {
-                gfx.beginPath();
-                for (var i = 0; i < samples.length; i++) {
-                    gfx[i > 0 ? "lineTo" : "moveTo"]((i / samples.length) * width, transform(samples[i]));
-                }
-                gfx.stroke();
-            }
+            // function drawSamples(samples, gfx, width, transform) {
+            //     gfx.beginPath();
+            //     for (var i = 0; i < samples.length; i++) {
+            //         gfx[i > 0 ? "lineTo" : "moveTo"]((i / samples.length) * width, transform(samples[i]));
+            //     }
+            //     gfx.stroke();
+            // }
 
-            function debounce(timeout, fun) {
-                var tid = null;
-                return () => {
-                    clearTimeout(tid);
-                    setTimeout(fun, timeout);
-                }
-            }
+            // function debounce(timeout, fun) {
+            //     var tid = null;
+            //     return () => {
+            //         clearTimeout(tid);
+            //         setTimeout(fun, timeout);
+            //     }
+            // }
 
-            function map(n, a, b, x, y) {
-                return (n - a) * (y - x) / (b - a) + x;
-            }
+            // function map(n, a, b, x, y) {
+            //     return (n - a) * (y - x) / (b - a) + x;
+            // }
         </script>
     </body>
 

@@ -44,9 +44,11 @@ export class Matrix {
         this.cols = cols;
         return this;
     }
-    smear(rows: number, cols: number): this {
+    smear(rows: number | null, cols: number | null): this {
         var lastIndex = this.rows * this.cols;
         const last = this.data[lastIndex - 1]!;
+        rows ??= this.rows;
+        cols ??= this.cols;
         this.resize(rows, cols);
         for (; lastIndex < rows * cols; lastIndex++) {
             this.data[lastIndex] = last;

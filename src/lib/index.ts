@@ -1,5 +1,6 @@
 import { AudioProcessorFactory, Dimensions } from "../compiler/nodeDef";
 import { OPERATORS } from "../compiler/operator";
+import { CompiledGraph, Opcode } from "../compiler/prog";
 import { lerp } from "../math";
 import { Matrix } from "../matrix";
 import { Bitcrusher, DelayLine, Filter } from "./nodes/effects";
@@ -34,6 +35,14 @@ export const NODES: AudioProcessorFactory[] = [
         }
     })),
 ];
+
+export const PASSTHROUGH_FX: CompiledGraph = {
+    code: [[Opcode.PUSH_INPUT_SAMPLES]],
+    registers: [],
+    constantTab: [],
+    nodes: [],
+    mods: []
+};
 
 export class KRateHelper {
     prev: Matrix;

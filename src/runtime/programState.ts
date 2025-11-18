@@ -27,7 +27,7 @@ export class ProgramState {
         const peek = () => stack[sp - 1];
         const temp = new Matrix(1, 1);
 
-        var sp = 0, a: Matrix, b: Matrix, c: Matrix, i: number;
+        var sp = 0, i: number;
         for (var pc = 0; pc < prog.length; pc++) {
             const command = prog[pc]!;
             const op = command[0];
@@ -54,27 +54,19 @@ export class ProgramState {
                     break;
                 case Opcode.MARK_LIVE_STATE:
                     alive = !!i1;
-                    push(temp.setScalar(0));
+                    break;
+                case Opcode.SMEAR_MATRIX:
+                    peek()!.smear(i1, i2);
                     break;
                 case Opcode.SET_MATRIX_EL:
                     i = pop()!.toScalar();
                     peek()!.put(i1, i2!, i);
-                    break;
-                case Opcode.BINARY_OP:
-                    a = pop()!;
-                    peek()!.applyBinary(OPERATORS[i1]!, a);
                     break;
                 case Opcode.GET_REGISTER:
                     push(registers[i1]!);
                     break;
                 case Opcode.TAP_REGISTER:
                     registers[i1]!.copyFrom(peek()!);
-                    break;
-                case Opcode.CONDITIONAL_SELECT:
-                    a = pop()!;
-                    b = pop()!;
-                    c = pop()!;
-                    push(c.toScalar() ? b : a);
                     break;
                 case Opcode.CALL_NODE:
                     for (i = 0; i < i2!; i++) (argv[i2! - i - 1] ??= new Matrix).copyFrom(pop()!);
