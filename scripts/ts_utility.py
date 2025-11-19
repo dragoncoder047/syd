@@ -38,17 +38,17 @@ def parse_ts(ts: str, filename: str):
     return fix_tree(n_tree, None)
 
 
-def find_child(ast, kind: str) -> typing.Any:
+def find_by_kind(ast, kind: str) -> typing.Any:
     match ast:
         case dict() if ast["kind"] == kind:
             return ast
         case dict():
             for k in ast:
-                if (v := find_child(ast[k], kind)) is not None:
+                if (v := find_by_kind(ast[k], kind)) is not None:
                     return v
         case list():
             for k in ast:
-                if (v := find_child(k, kind)) is not None:
+                if (v := find_by_kind(k, kind)) is not None:
                     return v
     return None
 
@@ -73,5 +73,14 @@ def to_literal(ast) -> typing.Any:
         case "PrefixUnaryExpression"  \
                 if ast["operator"] == TYPE_ENUM["MinusToken"]:
             return -to_literal(ast["operand"])
+        case "BinaryExpression":
+            op = ast["operatorToken"]["kind"]
+            match op:
+                case "SlashToken":
+                    return to_literal(ast["left"]) / to_literal(ast["right"])
+                case "MinusToken":
+                    return to_literal(ast["left"]) - to_literal(ast["right"])
+                case _:
+                    raise RuntimeError("implement operator " + op)
         case _:
             return ast
