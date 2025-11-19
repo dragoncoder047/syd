@@ -1,38 +1,54 @@
-import { NodeDef } from "../compiler/evalState";
-import { CompiledVoiceData } from "../compiler/prog";
-import { nodes, passthroughFx } from "../lib";
+import { CompiledGraph } from "../compiler/compile";
+import { AudioProcessorFactory } from "../compiler/nodeDef";
+import { NODES, PASSTHROUGH_FX } from "../lib";
 import { Instrument } from "./instrument";
 import { PassMode, Tone } from "./tone";
+import { lengthToBasePitch, samplesToIntegral } from "./waveProcess";
 
+export interface Wave {
+    samples: Float32Array,
+    integral: Float32Array,
+    basePitch: number;
+}
 
 export class WorkletSynth {
     instruments: Instrument[] = [];
     postFX: Tone = null as any;
     n2i: Record<number, number> = {};
-    waves: Record<string, Float32Array> = {};
-    nodes: NodeDef[] = nodes();
+    waves: Wave[] = [];
+    nodes: AudioProcessorFactory[] = NODES;
     volume: number = 0.8;
     constructor(public dt: number) {
-        this.clearAll();
+        this.clearPostFX();
     }
     clearAll() {
+        this.clearInstruments();
+        this.clearPostFX();
+    }
+    clearInstrument(index: number) {
+        delete this.instruments[index];
+    }
+    clearInstruments() {
         this.instruments = [];
-        this.postFX = new Tone(passthroughFx(), this.dt, this, 0, 1);
     }
-    addWave(name: string, wave: Float32Array) {
-        this.waves[name] = wave;
+    clearPostFX() {
+        this.postFX = new Tone(PASSTHROUGH_FX, this.dt, this, 0, 1);
     }
-    addInstrument(voiceDef: CompiledVoiceData, fxDef: CompiledVoiceData): number {
-        return this.instruments.push(new Instrument(this.dt, this, voiceDef, fxDef)) - 1;
+    setWave(number: number, samples: Float32Array, basePitch?: number) {
+        this.waves[number] = {
+            samples,
+            integral: samplesToIntegral(samples),
+            basePitch: basePitch ?? lengthToBasePitch(samples.length, this.dt),
+        }
     }
-    setPostFX(fxDef: CompiledVoiceData): void {
+    setInstrument(voiceDef: CompiledGraph, fxDef: CompiledGraph, instrumentNumber: number) {
+        this.instruments[instrumentNumber] = new Instrument(this.dt, this, voiceDef, fxDef);
+    }
+    setPostFX(fxDef: CompiledGraph): void {
         this.postFX = new Tone(fxDef, this.dt, this, 1, 1);
     }
     setVolume(volume: number) {
         this.volume = volume;
-    }
-    getInstrumentCount() {
-        return this.instruments.length;
     }
     private _ifn(noteID: number) {
         return this.instruments[this.n2i[noteID]!];
@@ -55,11 +71,12 @@ export class WorkletSynth {
         this._ifn(id)?.expressionBend(id, expression, time);
     }
     /** HOT CODE */
+    /** only private to prevent types from picking it up, it must be called */
     private process(left: Float32Array, right: Float32Array) {
         const instruments = this.instruments;
         for (var i = 0; i < instruments.length; i++) {
             instruments[i]!.process(left, right);
         }
-        this.postFX?.processBlock(left, right, PassMode.SET, true, this.volume);
+        this.postFX!.processBlock(left, right, PassMode.SET, true, this.volume);
     }
 }

@@ -1,10 +1,9 @@
-export { baseEnv, nodes, nodeHelp, libSrc, newEnv } from "./lib";
-export * from "./compiler/ast";
-export * as AST from "./compiler/ast";
-export { SydError, ErrorNote, LocationTrace, ParseError, CompileError, RuntimeError } from "./compiler/errors";
-export { parse, compileNode, newCompileData, optimizeProgram } from "./compiler";
+export { compile, ErrorReason } from "./compiler/compile";
+export type { AudioProcessor, AudioProcessorFactory, Dimensions, NodeInputDef, Range } from "./compiler/nodeDef";
+export { NodeInputLocation, SpecialNodeKind, WellKnownInput, type GraphNode, type Instrument, type ModInstrument, type NodeGraph, type NodeGraphInput, type NodeInput, type PitchedInstrument, type SpecialNode } from "./graph";
+export { unifyFragments as unifyGraphFragments, type NodeFragmentEdge } from "./graph/fragment";
+export { NODES } from "./lib";
 export { newSynth } from "./runtime/synthProxy";
-export { disassemble } from "./runtime/disassemble";
 
 export function initWorklet(context: AudioContext, pathToWorkletScript?: URL | string): Promise<void> {
     if (pathToWorkletScript === undefined) {

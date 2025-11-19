@@ -25,154 +25,141 @@
     <body>
         <h1>Syd test</h1>
         <p><a href="https://github.com/dragoncoder047/syd?tab=readme-ov-file">(What is this?)</a></p>
-        <p><button id="play">Play</button></p>
-        <p>Instrument: <textarea id="instrument" rows="10" cols="80">// thanks LeoV!!
-t = t + (1 / 48000); tm = 5;
-nC = 5; nT = (t * tm) % nC;
-env = 1 - t * tm % 1; env2 = 1 - (t * tm * 0.5) % 1; env3 = 1 - (t * tm * 0.5 + 0.5) % 1; env4 = 1 - (t * tm * 0.25 + 0.5) % 1;
-f1 = nT > 3 ? 525 : (nT > 2 ? 660 : (nT > 1 ? 700 : 440));
-o1 = zzfxOscillator(f1, 2) / 8 * env ** 2 |> (fb = delay(# + fb * 0.6, 0.3));
-o2 = zzfxOscillator(f1 * (3/2) ** 1 * 0.5, 2) / 8 * env ** 2 |> (fb2 = delay(# + fb2 * 0.6, 0.4));
-o3 = zzfxOscillator(f1 * (3/2) ** 1 * 0.45, 2) / 8 * env ** 5 |> (fb3 = delay(# + fb3 * 0.6, 0.3));
-o4 = zzfxOscillator(f1 * (3/2) ** 0.0125 * 2, 2) / 8 * env ** 2 |> (fb4 = delay(# + fb4 * 0.7, 0.002)) |> (fb5 = delay(# + fb5 * 0.6, 0.3));
-o5 = zzfxOscillator(440 * 0.125 + env2 ** 30 * 1000, 1) / 2 * env2;
-o6 = zzfxOscillator(2000, 5, 1) / 5 * env3 ** 5;
-o7 = zzfxOscillator(290) / 1 * env4 ** 40 + zzfxOscillator(1000, 1, 1, 40) / 2 * env4 ** 9;
-o1 + ([-1, 1] * o2) + ([1, -1] * o3) + ([-1, 1] * o4) + o5 + o6 + o7</textarea></p>
+        <p>There is nothing here right now.</p>
         <canvas id="oscilloscope" width="800" height="200"></canvas>
         <div id="log"></div>
         <script type="module">
-            import * as syd from "./build/index.js";
-            import { get, make, bind, waitFor } from "https://cdn.jsdelivr.net/gh/dragoncoder047/vanilla@main/vanilla.js";
+            // import * as syd from "./build/index.js";
+            // import { get, make, bind, waitFor } from "https://cdn.jsdelivr.net/gh/dragoncoder047/vanilla@main/vanilla.js";
 
-            const canvas = get("#oscilloscope");
-            const gfx = canvas.getContext("2d");
+            // const canvas = get("#oscilloscope");
+            // const gfx = canvas.getContext("2d");
 
-            const audio = new AudioContext;
+            // const audio = new AudioContext;
 
 
-            const logArea = get("#log");
+            // const logArea = get("#log");
 
-            await syd.initWorklet(audio);
-            waitFor("#play", "click").then(started);
+            // await syd.initWorklet(audio);
+            // waitFor("#play", "click").then(started);
 
-            const synth = syd.newSynth(audio);
+            // const synth = syd.newSynth(audio);
 
-            const fftL = audio.createAnalyser();
-            const fftR = audio.createAnalyser();
-            const splitter = audio.createChannelSplitter(2);
+            // const fftL = audio.createAnalyser();
+            // const fftR = audio.createAnalyser();
+            // const splitter = audio.createChannelSplitter(2);
 
-            synth.audioNode.connect(audio.destination);
-            synth.audioNode.connect(splitter);
-            splitter.connect(fftL, 0);
-            splitter.connect(fftR, 1);
+            // synth.audioNode.connect(audio.destination);
+            // synth.audioNode.connect(splitter);
+            // splitter.connect(fftL, 0);
+            // splitter.connect(fftR, 1);
 
-            synth.audioNode.onprocessorerror = e => {
-                showError("Synth died unexpectedly: " + e);
-                console.log(e);
-            };
+            // synth.audioNode.onprocessorerror = e => {
+            //     showError("Synth died unexpectedly: " + e);
+            //     console.log(e);
+            // };
 
-            bind("#instrument", "input", debounce(300, async () => {
-                const src = get("#instrument").value;
-                const dummyName = "<textarea>";
-                const fs = { ...syd.libSrc, [dummyName]: src };
-                try {
-                    clearLog();
-                    await synth.clearAll();
-                    const env = await makeEnv();
-                    const ast = await syd.parse(src, dummyName);
-                    const evaled = await ast.eval(env);
-                    console.log("Evaled", evaled);
-                    const compiled = syd.optimizeProgram(syd.compileNode(evaled, syd.newCompileData(), new Map, syd.nodes()));
-                    console.log("Final program", compiled);
-                    showLog(syd.disassemble(compiled));
-                    await synth.setPostFX(compiled);
-                } catch (e) {
-                    showError(e instanceof syd.SydError ? e.displayOn(fs) : e.stack);
-                    throw e;
-                }
-            }));
+            // bind("#instrument", "input", debounce(300, async () => {
+            //     const src = get("#instrument").value;
+            //     const dummyName = "<textarea>";
+            //     const fs = { ...syd.libSrc, [dummyName]: src };
+            //     try {
+            //         clearLog();
+            //         await synth.clearAll();
+            //         const env = await makeEnv();
+            //         const ast = await syd.parse(src, dummyName);
+            //         const evaled = await ast.eval(env);
+            //         console.log("Evaled", evaled);
+            //         const compiled = syd.optimizeProgram(syd.compileNode(evaled, syd.newCompileData(), new Map, syd.nodes()));
+            //         console.log("Final program", compiled);
+            //         showLog(syd.disassemble(compiled));
+            //         await synth.setPostFX(compiled);
+            //     } catch (e) {
+            //         showError(e instanceof syd.SydError ? e.displayOn(fs) : e.stack);
+            //         throw e;
+            //     }
+            // }));
 
-            async function makeEnv() {
-                const env = await syd.newEnv();
-                env.functions.push([
-                    "log",
-                    1,
-                    async (args, env) => {
-                        const value = await args[0].eval(env);
-                        if (!(value instanceof syd.Value)) {
-                            showLog(`(${value.constructor.name}) ${JSON.stringify(value, null, 4)}`);
-                        }
-                        else showLog(value.value);
-                        return value;
-                    }
-                ]);
-                return env;
-            }
+            // async function makeEnv() {
+            //     const env = await syd.newEnv();
+            //     env.functions.push([
+            //         "log",
+            //         1,
+            //         async (args, env) => {
+            //             const value = await args[0].eval(env);
+            //             if (!(value instanceof syd.Value)) {
+            //                 showLog(`(${value.constructor.name}) ${JSON.stringify(value, null, 4)}`);
+            //             }
+            //             else showLog(value.value);
+            //             return value;
+            //         }
+            //     ]);
+            //     return env;
+            // }
 
-            function started() {
-                audio.resume();
-                showLog("Started audio");
-                drawOscilloscope();
-            }
+            // function started() {
+            //     audio.resume();
+            //     showLog("Started audio");
+            //     drawOscilloscope();
+            // }
 
-            function showLog(logText) {
-                logArea.prepend(make("div", {}, make("pre", {}, logText)));
-            }
-            function showError(logText) {
-                logArea.prepend(make("div.stderr", {}, make("pre", {}, logText)));
-            }
-            function clearLog() {
-                logArea.innerHTML = "";
-            }
+            // function showLog(logText) {
+            //     logArea.prepend(make("div", {}, make("pre", {}, logText)));
+            // }
+            // function showError(logText) {
+            //     logArea.prepend(make("div.stderr", {}, make("pre", {}, logText)));
+            // }
+            // function clearLog() {
+            //     logArea.innerHTML = "";
+            // }
 
-            const samplesL = new Float32Array(fftL.fftSize);
-            const samplesR = new Float32Array(fftR.fftSize);
-            const spectrumL = new Uint8Array(fftL.frequencyBinCount);
-            const spectrumR = new Uint8Array(fftR.frequencyBinCount);
-            function drawOscilloscope() {
-                requestAnimationFrame(drawOscilloscope);
-                fftL.getFloatTimeDomainData(samplesL);
-                fftR.getFloatTimeDomainData(samplesR);
-                fftL.getByteFrequencyData(spectrumL);
-                fftR.getByteFrequencyData(spectrumR);
+            // const samplesL = new Float32Array(fftL.fftSize);
+            // const samplesR = new Float32Array(fftR.fftSize);
+            // const spectrumL = new Uint8Array(fftL.frequencyBinCount);
+            // const spectrumR = new Uint8Array(fftR.frequencyBinCount);
+            // function drawOscilloscope() {
+            //     requestAnimationFrame(drawOscilloscope);
+            //     fftL.getFloatTimeDomainData(samplesL);
+            //     fftR.getFloatTimeDomainData(samplesR);
+            //     fftL.getByteFrequencyData(spectrumL);
+            //     fftR.getByteFrequencyData(spectrumR);
 
-                const ratio = window.devicePixelRatio || 1;
-                const width = canvas.width = (canvas.style.width = 500) * ratio;
-                const height = canvas.height = (canvas.style.height = 100) * ratio;
-                gfx.imageSmoothingEnabled = false;
-                gfx.clearRect(0, 0, width, height);
-                gfx.lineWidth = 1;
-                gfx.strokeStyle = "rgba(127, 150, 255, 80%)";
-                drawSamples(spectrumL, gfx, width, s => map(s, 0, 255, height, height / 2));
-                gfx.strokeStyle = "rgba(255, 150, 127, 80%)";
-                drawSamples(spectrumR, gfx, width, s => map(s, 0, 255, height, height / 2));
-                gfx.lineWidth = 2;
-                gfx.strokeStyle = "rgb(0, 0, 255, 80%)";
-                drawSamples(samplesL, gfx, width, s => map(s, -1, 1, height / 2, 0));
-                gfx.strokeStyle = "rgb(255, 0, 0, 80%)";
-                drawSamples(samplesR, gfx, width, s => map(s, -1, 1, height / 2, 0));
-            }
+            //     const ratio = window.devicePixelRatio || 1;
+            //     const width = canvas.width = (canvas.style.width = 500) * ratio;
+            //     const height = canvas.height = (canvas.style.height = 100) * ratio;
+            //     gfx.imageSmoothingEnabled = false;
+            //     gfx.clearRect(0, 0, width, height);
+            //     gfx.lineWidth = 1;
+            //     gfx.strokeStyle = "rgba(127, 150, 255, 80%)";
+            //     drawSamples(spectrumL, gfx, width, s => map(s, 0, 255, height, height / 2));
+            //     gfx.strokeStyle = "rgba(255, 150, 127, 80%)";
+            //     drawSamples(spectrumR, gfx, width, s => map(s, 0, 255, height, height / 2));
+            //     gfx.lineWidth = 2;
+            //     gfx.strokeStyle = "rgb(0, 0, 255, 80%)";
+            //     drawSamples(samplesL, gfx, width, s => map(s, -1, 1, height / 2, 0));
+            //     gfx.strokeStyle = "rgb(255, 0, 0, 80%)";
+            //     drawSamples(samplesR, gfx, width, s => map(s, -1, 1, height / 2, 0));
+            // }
 
-            function drawSamples(samples, gfx, width, transform) {
-                gfx.beginPath();
-                for (var i = 0; i < samples.length; i++) {
-                    gfx[i > 0 ? "lineTo" : "moveTo"]((i / samples.length) * width, transform(samples[i]));
-                }
-                gfx.stroke();
-            }
+            // function drawSamples(samples, gfx, width, transform) {
+            //     gfx.beginPath();
+            //     for (var i = 0; i < samples.length; i++) {
+            //         gfx[i > 0 ? "lineTo" : "moveTo"]((i / samples.length) * width, transform(samples[i]));
+            //     }
+            //     gfx.stroke();
+            // }
 
-            function debounce(timeout, fun) {
-                var tid = null;
-                return () => {
-                    clearTimeout(tid);
-                    setTimeout(fun, timeout);
-                }
-            }
+            // function debounce(timeout, fun) {
+            //     var tid = null;
+            //     return () => {
+            //         clearTimeout(tid);
+            //         setTimeout(fun, timeout);
+            //     }
+            // }
 
-            function map(n, a, b, x, y) {
-                return (n - a) * (y - x) / (b - a) + x;
-            }
+            // function map(n, a, b, x, y) {
+            //     return (n - a) * (y - x) / (b - a) + x;
+            // }
         </script>
     </body>
 

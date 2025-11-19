@@ -1,12 +1,19 @@
 import * as esbuild from "esbuild";
-import { sydPlugin } from "../src/esbuildPlugin";
-import { opt } from "./com";
 import { rmSync } from "fs";
+
+export function opt(name, mustString) {
+    const index = process.argv.indexOf(name);
+    if (index < 0) return undefined;
+    const option = process.argv[index + 1];
+    if (option === undefined && mustString) throw "expected option after " + JSON.stringify(name);
+    return option ?? true;
+}
 
 const outdir = "build";
 rmSync(outdir, { recursive: true, force: true });
 
-const config: esbuild.BuildOptions = {
+/** @type {esbuild.BuildOptions} */
+const config = {
     bundle: true,
     sourcemap: true,
     keepNames: true,
@@ -14,14 +21,13 @@ const config: esbuild.BuildOptions = {
     metafile: true,
     platform: "browser",
     charset: "utf8",
-    entryPoints: ["src/index.ts", "src/sydWorklet.ts", "src/esbuildPlugin/index.ts"],
+    entryPoints: ["src/index.ts", "src/sydWorklet.ts"],
     format: "esm",
     target: "esnext",
     treeShaking: true,
     splitting: true,
     outdir,
     plugins: [
-        sydPlugin(),
         {
             name: "mark_node:_as_external",
             setup(build) {
@@ -32,7 +38,7 @@ const config: esbuild.BuildOptions = {
 };
 
 if (opt("-w", false)) {
-    config.plugins!.push({
+    config.plugins.push({
         name: "logger",
         setup(build) {
             build.onEnd(result => {

@@ -4,3 +4,10 @@
 **/.DS_Store
 ._.DS_Store
 **/._.DS_Store
+
+# ignore temp beepmods
+beepmods/**
+
+
+# python stuff
+**/__pycache__/

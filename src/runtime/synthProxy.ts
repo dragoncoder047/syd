@@ -1,7 +1,7 @@
 import { str } from "../utils";
 import { WorkletSynth } from "./synthImpl";
 
-export function newSynth(context: AudioContext): ProxiedSynth {
+export function newSynth(context: AudioContext): SynthRPCProxy {
     try {
         return makeSynthProxy(new AudioWorkletNode(context, "syd", { numberOfInputs: 0, numberOfOutputs: 1, outputChannelCount: [2] }));
     } catch (e: any) {
@@ -12,8 +12,8 @@ export function newSynth(context: AudioContext): ProxiedSynth {
     }
 }
 
-function makeSynthProxy(audioNode: AudioWorkletNode): ProxiedSynth {
-    var idCounter = Number.MIN_SAFE_INTEGER;
+function makeSynthProxy(audioNode: AudioWorkletNode): SynthRPCProxy {
+    var idCounter = 0;
     const resolvers = new Map<number, ReturnType<PromiseConstructor["withResolvers"]>>();
     audioNode.port.onmessage = event => {
         const data: MessageReply = event.data;
@@ -28,7 +28,7 @@ function makeSynthProxy(audioNode: AudioWorkletNode): ProxiedSynth {
     return new Proxy<ProxyObject>({
         audioNode,
     }, {
-        get(target: any, method: keyof ProxiedSynth) {
+        get(target: any, method: keyof SynthRPCProxy) {
             if (method in target) return target[method];
             return (...args: Message["args"]) => {
                 const id = idCounter++;
@@ -41,7 +41,7 @@ function makeSynthProxy(audioNode: AudioWorkletNode): ProxiedSynth {
         set(target, p) {
             throw new TypeError(`Cannot set property of ProxiedSynth ${str(p)} which is read-only`);
         }
-    }) as ProxiedSynth;
+    }) as SynthRPCProxy;
 }
 
 type SynthMethod = {
@@ -68,6 +68,6 @@ export type MessageReply<T extends SynthMethod = SynthMethod> = {
 type ProxyObject = {
     audioNode: AudioWorkletNode;
 }
-export type ProxiedSynth = ProxyObject & {
+export type SynthRPCProxy = ProxyObject & {
     [K in SynthMethod]: PromiseFunction<WorkletSynth[K]>
 }

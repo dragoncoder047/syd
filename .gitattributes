@@ -1,2 +1,2 @@
-*.syd linguist-language=prolog
 build/** linguist-generated
+data/** linguist-generated
