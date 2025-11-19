@@ -1,12 +1,12 @@
-import re
-import pathlib
 import json
+import os
+import pathlib
 import shutil
 import subprocess
-import os
 
-import yaml
-import themefix as themefix
+# import themefix
+# import tinycss2
+import ts_utility as ts_utility
 
 curdir = pathlib.Path(__file__).parent
 data_dir = curdir / "../data/"
@@ -41,74 +41,49 @@ def get_beepmod_file(path: str) -> str:
 
 def presets():
     presets_file = get_beepmod_file("jukebox/editor/EditorConfig.ts")
+    ast = ts_utility.parse_ts(presets_file, "EditorConfig.ts")
 
-    CATEGORY_HEADER = re.compile(r"""name:\s+"(.+)",\s+presets:""")
+    categories = {}
 
-    all_data = {}
+    EditorConfig = ts_utility.find_child(ast, "ClassDeclaration")
 
-    current_category = None
-    for line in presets_file.splitlines():
-        stripline = line.strip()
-        if stripline.startswith("//"):
-            pass
-        elif stripline.startswith("])"):
-            current_category = None
-        elif (m := CATEGORY_HEADER.search(stripline)):
-            current_category = m.group(1)
-        elif current_category and "name: \"" in stripline:
-            chopped = stripline[:stripline.rfind(",")]
-            data = yaml.load(chopped, yaml.SafeLoader)
-            all_data.setdefault(current_category, []).append(data)
+    categories_Call = next(n["initializer"] for n in EditorConfig["members"]
+                           if n["kind"] == "PropertyDeclaration"
+                           and n["name"]["escapedText"] == "presetCategories")
 
-    return all_data
+    categories_Args = categories_Call["arguments"][0]
+    toplevel_map = ts_utility.to_literal(categories_Args)
+    for obj in toplevel_map:
+        name = obj["name"]
+        if name == "Custom Instruments":
+            continue
+        obj = obj["presets"]
+        if obj["kind"] == "TypeAssertionExpression":
+            obj = obj["expression"]
+        obj = obj["arguments"]
+        categories[name] = [ts_utility.to_literal(a) for a in obj]
+
+    return categories
 
 
 def themes():
     themes_file = get_beepmod_file("abyssbox/editor/ColorConfig.ts")
+    ast = ts_utility.parse_ts(themes_file, "ColorConfig.ts")
 
-    THEME_HEADER = re.compile(r""""(.+?)": `""")
-    RULE_LINE = re.compile(r"""(.+?)\s*\{""")
-    CSS_LINE = re.compile(r"""([\w-]+?):\s*(.+?);$""")
+    ColorConfig = ts_utility.find_child(ast, "ClassDeclaration")
 
-    current_theme = None
-    current_rule = None
-    all_themes = {}
-    skipping = False
-    for line in themes_file.splitlines():
-        stripline = line.strip()
-        if "/*" in line:
-            skipping = True
-        if "*/" in line:
-            skipping = False
-        if skipping:
-            continue
-        if (m := THEME_HEADER.search(stripline)):
-            themename = m.group(1)
-            if themename == "custom":
-                break
-            current_theme = all_themes[themename] = {}
-            if ":root {" in stripline:
-                # Hack cause some themes open with the `:root on the first line
-                current_rule = current_theme[":root"] = {}
-        elif current_theme is not None and (m := RULE_LINE.search(stripline)):
-            current_rule = current_theme[m.group(1)] = {}
-        elif current_rule is not None and (m := CSS_LINE.search(stripline)):
-            value = m.group(2)
-            if value in ("true", "false"):
-                value = {"true": True, "false": False}[value]
-            elif value.removeprefix("-").replace(".", "").isnumeric():
-                value = float(value)
-                if value.is_integer():
-                    value = int(value)
-            current_rule[m.group(1)] = value
-        elif stripline.startswith("}"):
-            current_rule = None
-        elif "`," in stripline:
-            current_theme = None
-        # if "public static readonly pageMargin" in stripline:
-        #     break
+    themes = next(n["initializer"] for n in ColorConfig["members"]
+                  if n["kind"] == "PropertyDeclaration"
+                  and n["name"]["escapedText"] == "themes")
 
-    return themefix.fix(all_themes)
+    themes = ts_utility.to_literal(themes)
+
+    themes["custom"] = (themes["custom"]["templateSpans"]
+                        [0]["expression"]["right"]["text"])
+
+    # now, themes is a dict[str, str]
+
+    return themes
 
 
 (data_dir / "jukebox_presets.json").write_text(json.dumps(presets(), indent=4))

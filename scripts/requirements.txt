@@ -1,1 +1,1 @@
-PyYAML
+tinycss2
