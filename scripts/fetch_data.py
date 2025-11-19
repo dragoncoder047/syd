@@ -3,6 +3,7 @@ import os
 import pathlib
 import shutil
 import subprocess
+import time
 
 # import themefix
 # import tinycss2
@@ -35,10 +36,22 @@ ensure_github_repo("jukebox", "jukeebox/jukebox_typescript")
 ensure_github_repo("abyssbox", "choptop84/abyssbox-source")
 
 
+def timed(func):
+    def inner():
+        print("starting", func.__name__)
+        start = time.perf_counter_ns()
+        result = func()
+        end = time.perf_counter_ns()
+        print("completed", func.__name__, "in", (end-start)/1e9, "seconds")
+        return result
+    return inner
+
+
 def get_beepmod_file(path: str) -> str:
     return (github_repo_dir / path).read_text()
 
 
+@timed
 def presets():
     presets_file = get_beepmod_file("jukebox/editor/EditorConfig.ts")
     ast = ts_utility.parse_ts(presets_file, "EditorConfig.ts")
@@ -66,6 +79,7 @@ def presets():
     return categories
 
 
+@timed
 def themes():
     themes_file = get_beepmod_file("abyssbox/editor/ColorConfig.ts")
     ast = ts_utility.parse_ts(themes_file, "ColorConfig.ts")
@@ -86,6 +100,7 @@ def themes():
     return themes
 
 
+@timed
 def config():
     presets_file = get_beepmod_file("jukebox/synth/SynthConfig.ts")
     ast = ts_utility.parse_ts(presets_file, "SynthConfig.ts")
