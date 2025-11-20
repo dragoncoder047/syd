@@ -4,6 +4,7 @@ import pathlib
 import shutil
 import subprocess
 import time
+from typing import Any
 
 # import themefix
 import tinycss2
@@ -131,12 +132,11 @@ def themes():
                                     + name)
                         if (values[0].type == "function"
                                 and values[0].lower_name == "url"):
+                            comp: Any = tinycss2.parse_one_component_value(
+                                [values[0]], True)
                             resources[name] = {
                                 "kind": "image",
-                                "src": (tinycss2
-                                        .parse_one_component_value(
-                                            [values[0]], True)
-                                        .arguments[0].value)}
+                                "src": comp.arguments[0].value}
                             result = name
                         else:
                             # TODO: parse colors, number, boolean

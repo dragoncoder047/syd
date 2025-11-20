@@ -1,9 +1,9 @@
 import subprocess
 import json
-import typing
+from typing import Any
 
 
-def ts_command(cmds: str, input: str):
+def ts_command(cmd: str, input: str):
     return json.loads(subprocess.check_output(
         [
             "bun",
@@ -11,11 +11,11 @@ def ts_command(cmds: str, input: str):
             ("var ts=require('typescript'),"
              "s='';"
              "for await(var c of process.stdin)s+=c;"
-             "console.log(JSON.stringify((()=>{" + cmds + "})()))")
+             f"console.log(JSON.stringify({cmd}))")
         ], input=input.encode()).decode())
 
 
-TYPE_ENUM = ts_command("return ts.SyntaxKind", "")
+TYPE_ENUM = ts_command("ts.SyntaxKind", "")
 
 
 def fix_tree(tree: dict, key) -> dict:
@@ -31,14 +31,12 @@ def fix_tree(tree: dict, key) -> dict:
 
 
 def parse_ts(ts: str, filename: str):
-    n_tree = ts_command("var f="+repr(filename)+";"
-                        "return ts.createSourceFile(f,s,"
-                        "ts.ScriptTarget.Latest)",
-                        ts)
+    n_tree = ts_command(f"ts.createSourceFile({filename!r},s,"
+                        "ts.ScriptTarget.Latest)", ts)
     return fix_tree(n_tree, None)
 
 
-def find_by_kind(ast, kind: str) -> typing.Any:
+def find_by_kind(ast, kind: str) -> Any:
     match ast:
         case dict() if ast["kind"] == kind:
             return ast
@@ -53,7 +51,7 @@ def find_by_kind(ast, kind: str) -> typing.Any:
     return None
 
 
-def to_literal(ast) -> typing.Any:
+def to_literal(ast) -> Any:
     match ast["kind"]:
         case "ArrayLiteralExpression":
             return [to_literal(x) for x in ast["elements"]]
@@ -70,17 +68,19 @@ def to_literal(ast) -> typing.Any:
             return ast == "TrueKeyword"
         case "FirstLiteralToken" if "numericLiteralFlags" in ast:
             return float(ast["text"])
-        case "PrefixUnaryExpression"  \
-                if ast["operator"] == TYPE_ENUM["MinusToken"]:
-            return -to_literal(ast["operand"])
+        case "PrefixUnaryExpression":
+            match TYPE_ENUM[str(ast["operator"])]:
+                case "MinusToken":
+                    return -to_literal(ast["operand"])
+                case op:
+                    raise RuntimeError(f"implement unary operator {op!s}")
         case "BinaryExpression":
-            op = ast["operatorToken"]["kind"]
-            match op:
+            match ast["operatorToken"]["kind"]:
                 case "SlashToken":
                     return to_literal(ast["left"]) / to_literal(ast["right"])
                 case "MinusToken":
                     return to_literal(ast["left"]) - to_literal(ast["right"])
-                case _:
-                    raise RuntimeError("implement operator " + op)
+                case op:
+                    raise RuntimeError(f"implement binary operator {op!s}")
         case _:
             return ast
