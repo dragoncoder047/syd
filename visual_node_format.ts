@@ -1,9 +1,9 @@
 interface Song {
     meta: Metadata;
     instruments: Instrument[];
-    sectionSeq: number[];
-    sections: number[][];
-    bars: Bar[];
+    mods: Record<string, Mod>;
+    timeline: TimelineEntry[];
+    patterns: Pattern[];
     postFX: NodeGraph;
 }
 
@@ -18,6 +18,7 @@ interface Metadata {
     instrumentNames?: string[];
     tuning?: SongTuning;
     rendering?: RenderingPreferences;
+    tempo?: string | number; // string if modulated, number if constant
 }
 
 interface SongTuning {
@@ -32,11 +33,21 @@ interface RenderingPreferences {
     layout?: string;
 }
 
-// a ref can be told apart from a note by the type of the elements at index 1 or 2
-type Bar = [instruments: number | number[], ...notes: (Note | NoteRef)[]];
+type TimelineEntry = [delta: number, startPatterns: number[]];
+
+/**
+ * * a ref can be told apart from a note by the type of the element at index 1 (2-tuple = note, number = ref)
+ * * a mod channel is a string name
+ */
+type Pattern = [instruments: number | number[] | string, notes: (Note | NoteRef)[]];
+
+interface Mod {
+    value: number,
+    mode: AutomatedValueMethod
+}
 
 type Note = [
-    deltaTime: number,
+    delta: number,
     start: NotePin,
     pins: [
         offset: number, // beats
@@ -59,13 +70,9 @@ type NotePin = [
 
 playback algorithm (pseudopython)
 
-for s in sectionSequence:
-    for barColumn in sections[s]:
-        for barNo in barColumn:
-            startBar(bars[barNo])
-        wait(metadata.barLength)
+for slice in timeline:
+    wait(slice.delta)
+    for patternNo in slice.startPatterns:
+        startPattern(patterns[patternNo])
 
 */
-
-// MARK: INSTRUMENT
-

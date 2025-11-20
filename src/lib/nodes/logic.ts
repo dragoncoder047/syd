@@ -1,11 +1,10 @@
-import { AudioProcessor, AudioProcessorFactory, Dimensions, Range } from "../../compiler/nodeDef";
+import { AudioProcessor, AudioProcessorFactory, Dimensions } from "../../compiler/nodeDef";
 import { abs } from "../../math";
 import { Matrix, scalarMatrix } from "../../matrix";
 import { WorkletSynth } from "../../runtime/synthImpl";
 
 export class Shimmer implements AudioProcessorFactory {
     name = "shimmer";
-    description = "Each time the input value changes, perturbs it by a small amount. No noise is added.";
     inputs = [
         {
             name: "value",
@@ -15,8 +14,6 @@ export class Shimmer implements AudioProcessorFactory {
         {
             name: "amount",
             default: .05,
-            unit: "fraction of value",
-            range: [0, 1] as Range,
             dims: ["M", "N"] as Dimensions
         }
     ];
@@ -36,10 +33,15 @@ export class Shimmer implements AudioProcessorFactory {
     }
 }
 
-enum IntegratorMode {
+export enum IntegratorMode {
     SATURATE,
     WRAP,
     PINGPONG
+}
+
+export enum SampleMode {
+    ACCUMULATOR = 0,
+    TIME_DEPENDENT = 1
 }
 
 export class Integrator implements AudioProcessorFactory {
@@ -53,7 +55,6 @@ export class Integrator implements AudioProcessorFactory {
         {
             name: "reset",
             dims: ["M", "N"] as Dimensions,
-            description: "When this changes from 0 to 1, the internal integrand is reset instantly to resetTo. A 1 on the very first sample triggers a reset as well.",
             default: 0,
         },
         {
@@ -64,16 +65,7 @@ export class Integrator implements AudioProcessorFactory {
         {
             name: "mode",
             dims: ["M", "N"] as Dimensions,
-            description: "If boundaryMode is 0 (clamp), the integrand will saturate when it reaches high or low. If boundaryMode is 1 (wrap), the integrand will jump down to low when it passes high, and vice versa. If boundaryMode is 2 (pingpong) it will swap back and forth between forwards and backwards.",
             default: IntegratorMode.WRAP,
-            constantOptions: {
-                clamp: IntegratorMode.SATURATE,
-                saturate: IntegratorMode.SATURATE,
-                wrap: IntegratorMode.WRAP,
-                loop: IntegratorMode.WRAP,
-                pingpong: IntegratorMode.PINGPONG,
-                reflect: IntegratorMode.PINGPONG,
-            }
         },
         {
             name: "low",
@@ -87,13 +79,8 @@ export class Integrator implements AudioProcessorFactory {
         },
         {
             name: "sampleMode",
-            description: "If sampleMode is 1 (integrate) the derivative value will be treated as a value with units, and will be scaled by the sample rate - useful when it is a continuous value varying in real units with time. If sampleMode is 0 (accumulate) the derivative value will not be scaled and will be added on every sample - this is useful in combination with the clock node to create a stepping motion.",
             dims: ["M", "N"] as Dimensions,
-            default: 1,
-            constantOptions: {
-                integrate: 1,
-                accumulate: 0,
-            }
+            default: SampleMode.TIME_DEPENDENT
         }
     ];
     outputDims: Dimensions = ["M", "N"];
@@ -115,12 +102,12 @@ export class Integrator implements AudioProcessorFactory {
                     mode = m_mode.get(row, col) as IntegratorMode,
                     low = m_low.get(row, col),
                     high = m_high.get(row, col),
-                    sampleMode = m_sampleMode.get(row, col),
+                    sampleMode = m_sampleMode.get(row, col) as SampleMode,
                     sign = m_signs.get(row, col),
                     prevReset = m_prevReset.get(row, col),
                     bound = abs(high - low);
                 // do the integration
-                i += diff * (sampleMode ? synth.dt : 1) * sign;
+                i += diff * (sampleMode ? 1 : synth.dt) * sign;
                 // handle wrapping or stuff
                 var newSign = sign;
                 switch (mode) {
@@ -156,23 +143,16 @@ export class Integrator implements AudioProcessorFactory {
 
 export class Clock implements AudioProcessorFactory {
     name = "clock";
-    description = "A clock, that counts time internally and outputs 1 when the timer rolls over, and 0 otherwise.";
     inputs = [
         {
             name: "period",
-            unit: "seconds",
             dims: ["M", "N"] as Dimensions,
-            range: [0, Infinity] as Range,
             default: 1,
-            description: "The interval which the clock should roll over at. If this is suddenly lowered, the clock may immediately roll over if the internal counter was less than the old period, but now greater than the new period."
         },
         {
             name: "scale",
-            unit: "seconds per second",
             dims: ["M", "N"] as Dimensions,
-            range: [0, Infinity] as Range,
             default: 1,
-            description: "Makes the clock run faster or slower internally. If this is suddenly increased, the clock will NOT roll over as this doesn't affect the rollover point, only how fast that point is reached."
         },
     ];
     outputDims: Dimensions = ["M", "N"];

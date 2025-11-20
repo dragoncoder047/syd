@@ -94,7 +94,7 @@ export function compile(graph: NodeGraph, defs: AudioProcessorFactory[]): [Compi
                         }
                         break;
                     case NodeInputLocation.MOD:
-                        program.push([Opcode.GET_MOD, mods.findIndex(([name]) => name === (arg as NodeInput & any[])[0])]);
+                        program.push([Opcode.GET_MOD, arg[0]]);
                 }
             }
             const smear = needsSmeared[nodeNo]?.[argNo];

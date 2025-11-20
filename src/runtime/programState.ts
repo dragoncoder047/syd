@@ -1,6 +1,5 @@
 import { AudioProcessor } from "../compiler/nodeDef";
 import { Matrix } from "../matrix";
-import { AutomatedValue } from "./automation";
 import { Opcode, Program } from "./program";
 
 export class ProgramState {
@@ -12,7 +11,7 @@ export class ProgramState {
         public registers: Matrix[],
         public nodes: AudioProcessor[],
         public constantTab: Matrix[]) { }
-    run(input: Matrix, pitch: number, expression: number, gate: number, mods: AutomatedValue[], isStartOfBlock: boolean, blockProgress: number, alive: boolean): boolean {
+    run(input: Matrix, pitch: number, expression: number, gate: number, mods: Record<string, number>, isStartOfBlock: boolean, blockProgress: number, alive: boolean): boolean {
         const stack = this.stack;
         const argv = this.argCache;
         const prog = this.instructions;
@@ -30,7 +29,7 @@ export class ProgramState {
         for (var pc = 0; pc < prog.length; pc++) {
             const command = prog[pc]!;
             const op = command[0];
-            const i1 = command[1]!;
+            const i1 = command[1]! as number;
             const i2 = command[2]!;
             switch (op) {
                 case Opcode.PUSH_CONSTANT:
@@ -72,7 +71,7 @@ export class ProgramState {
                     push(nodes[i1]!(argv, isStartOfBlock, blockProgress));
                     break;
                 case Opcode.GET_MOD:
-                    pushScalar(mods[i1]?.value ?? 0);
+                    pushScalar(mods[i1] ?? 0);
                     break;
                 default:
                     throw new Error(`unimplemented opcode ${Opcode[op]} snuck in...`);

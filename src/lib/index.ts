@@ -58,6 +58,6 @@ export class KRateHelper {
         this.prev.copyFrom(this.current);
     }
     loadForSample(progress: number) {
-        this.sample.applyUnary((_, row, col) => lerp(this.prev.get(row, col), this.current.get(row, col), progress));
+        return this.sample.applyUnary((_, row, col) => lerp(this.prev.get(row, col), this.current.get(row, col), progress));
     }
 }

@@ -81,3 +81,24 @@ test("compining graph with un-unified input returns an error but uses the defaul
         ]
     ])
 });
+test("fragment with constant inputs inlined constants", () => {
+    const fragment: NodeGraph = {
+        mods: {},
+        out: 0,
+        nodes: [
+            ["a", [1, 0]],
+            ["b", [1, 0, ["z", NodeInputLocation.FRAG_INPUT]]],
+        ]
+    };
+    const links: NodeFragmentEdge[] = [
+        { from: 123, to: [0, "z"], constant: true }
+    ];
+    expect(unifyFragments([fragment], links, 0)).toEqual({
+        nodes: [
+            ["a", [1, 0]],
+            ["b", [1, 0, [123, NodeInputLocation.CONSTANT]]],
+        ],
+        out: 0,
+        mods: {}
+    });
+});

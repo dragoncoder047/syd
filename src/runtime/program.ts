@@ -19,5 +19,5 @@ export enum Opcode {
     GET_MOD
 }
 
-export type Command = [Opcode, a?: number, b?: number];
+export type Command = [Opcode, a?: number | string, b?: number];
 export type Program = Command[];

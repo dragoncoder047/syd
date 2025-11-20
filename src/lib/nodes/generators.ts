@@ -1,44 +1,31 @@
-import { AudioProcessor, AudioProcessorFactory, Dimensions, Range } from "../../compiler/nodeDef";
+import { AudioProcessor, AudioProcessorFactory, Dimensions } from "../../compiler/nodeDef";
 import { fract } from "../../math";
 import { scalarMatrix } from "../../matrix";
-import { Wave, WorkletSynth } from "../../runtime/synthImpl";
+import { WorkletSynth } from "../../runtime/synthImpl";
 
 
 export class WavetableOscillator implements AudioProcessorFactory {
     name = "osc";
-    description = "A wavetable oscillator, which plays back a list of samples on loop, pitch-shifted to produce the right note. Basically an arbitrary function generator. If the wavetable was loaded as a sample, the basePitch is used. If no basePitch was provided the sample is interpreted as one complete cycle of the wave."
     inputs = [
         {
             name: "frequency",
-            unit: "Hz",
             dims: [1, 1] as Dimensions,
-            range: [0, 20000] as Range,
             default: 220,
         },
         {
             name: "wave",
-            description: "The index of the wave returned by the wave-loading function.",
             dims: [1, 1] as Dimensions,
-            unit: "WAVE_INDEX",
             default: 0,
         },
         {
             name: "phase",
-            description: "Phase offset, useful for FM",
-            unit: "cycles (NOT radians)!",
             dims: [1, 1] as Dimensions,
             default: 0
         },
         {
             name: "aliasing",
-            description: "When off (the default), antiderivative antialiasing is applied to the wave to reduce distortion at high frequencies. When on, samples are output verbatim (which is what you want for true samples).",
             default: 0,
             dims: [1, 1] as Dimensions,
-            unit: "boolean",
-            constantOptions: {
-                on: 1,
-                off: 0,
-            }
         }
     ];
     outputDims: Dimensions = [1, 1];

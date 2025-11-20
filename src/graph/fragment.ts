@@ -2,18 +2,19 @@ import { NodeGraph, NodeInputLocation } from ".";
 import { isArray, isNumber } from "../utils";
 
 export interface NodeFragmentEdge {
+    constant?: boolean;
     from: number;
     to: [number, string];
 }
 
-export function unifyFragments(fragments: NodeGraph[], edges: NodeFragmentEdge[], outFrag: number): NodeGraph {
+export function unifyGraphFragments(fragments: NodeGraph[], edges: NodeFragmentEdge[], outFrag: number): NodeGraph {
     const merged: NodeGraph = {
         nodes: [],
         out: null as any,
         mods: {},
     };
     const fragToRenumberMap: Record<number, Record<number, number>> = {};
-    const nodeToFragmentMap: Record<number, [number, number]> = {};
+    const nodeToFragmentMap: Record<number, [frag: number, localNodeNo: number]> = {};
     for (var fragNo = 0; fragNo < fragments.length; fragNo++) {
         const { nodes, mods } = fragments[fragNo]!;
         // Save the mods.
@@ -34,15 +35,15 @@ export function unifyFragments(fragments: NodeGraph[], edges: NodeFragmentEdge[]
     merged.out = globalOutputNumberOfFragment(outFrag);
     // Finally, process all the links and re-numberings
     for (var globalNodeNo = 0; globalNodeNo < merged.nodes.length; globalNodeNo++) {
-        const [_, args] = merged.nodes[globalNodeNo]!;
+        const args = merged.nodes[globalNodeNo]![1];
         const [srcFragment] = nodeToFragmentMap[globalNodeNo]!;
         for (var argNo = 0; argNo < args.length; argNo++) {
             const arg = args[argNo]!;
             if (isArray(arg) && arg[1] === NodeInputLocation.FRAG_INPUT) {
                 // Find the output node of fragment N
                 const inputName = arg[0] as string;
-                const inFrag = edges.find(({ to: [toFrag, toName] }) => toFrag === srcFragment && toName == inputName)!.from;
-                args[argNo] = globalOutputNumberOfFragment(inFrag);
+                const { from, constant } = edges.find(({ to: [toFrag, toName] }) => toFrag === srcFragment && toName == inputName)!;
+                args[argNo] = constant ? [from, NodeInputLocation.CONSTANT] : globalOutputNumberOfFragment(from);
             } else if (isNumber(arg)) {
                 // Intra-fragment renumbering
                 args[argNo] = fragToRenumberMap[srcFragment]![arg]!;

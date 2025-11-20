@@ -28,7 +28,6 @@ so I joined the [beepbox modding discord server](https://discord.com/invite/Tc99
 
 lol I have no idea what I'm doing
 
-* make mod/automation channels globally named
 * add a 3rd mod channel kind that gets fed the samples from one instrument through an envelope detector and maps the envelope to a range
 * visual instrument editor UI has "node builder" classes that return a graph fragment
   * they have a rectangle area with ports on left and right

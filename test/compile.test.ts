@@ -153,12 +153,12 @@ test("compile with smeared nodes", () => {
 });
 
 test("compile with matrix builder", () => {
-    const constant = (n: number): NodeInput => [n, NodeInputLocation.CONSTANT];
+    const k = (n: number): NodeInput => [n, NodeInputLocation.CONSTANT];
     const fragment1: NodeGraph = {
         mods: {},
         out: 0,
         nodes: [
-            [[SpecialNodeKind.BUILD_MATRIX, 2, 3], [constant(1), constant(2), constant(3), constant(4), constant(5), constant(6)]],
+            [[SpecialNodeKind.BUILD_MATRIX, 2, 3], [k(1), k(2), k(3), k(4), k(5), k(6)]],
         ]
     };
     const nodes: AudioProcessorFactory[] = [];
@@ -176,12 +176,12 @@ test("compile with matrix builder", () => {
     ])
 });
 test("compile with matrix builder with inputs", () => {
-    const constant = (n: number): NodeInput => [n, NodeInputLocation.CONSTANT];
+    const k = (n: number): NodeInput => [n, NodeInputLocation.CONSTANT];
     const fragment1: NodeGraph = {
         mods: {},
         out: 0,
         nodes: [
-            [[SpecialNodeKind.BUILD_MATRIX, 2, 3], [constant(1), 1, constant(3), constant(4), 1, constant(6)]],
+            [[SpecialNodeKind.BUILD_MATRIX, 2, 3], [k(1), 1, k(3), k(4), 1, k(6)]],
             ["a", []]
         ]
     };

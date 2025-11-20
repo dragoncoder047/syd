@@ -1,16 +1,12 @@
 import { CompiledGraph } from "../compiler/compile";
 import { WorkletSynth } from "./synthImpl";
-import { PassMode, Tone } from "./tone";
+import { Tone } from "./tone";
 
 export class Instrument {
     liveNotes: Tone[] = [];
     liveNoteIds: number[] = [];
     deadNotes: [Tone, number][] = [];
     fx: Tone;
-    inputs: Record<string, any> = {};
-    prevInputs: Record<string, any> = null as any;
-    lb = new Float32Array();
-    rb = new Float32Array();
     constructor(
         public dt: number,
         public synth: WorkletSynth,
@@ -39,43 +35,30 @@ export class Instrument {
     expressionBend(id: number, expression: number, time: number) {
         this.liveNotes[id]?.expression.goto(expression, this.dt, time);
     }
-    automate(param: string, value: any, time: number, note?: number) {
-        if (note !== undefined) this.liveNotes[this.liveNoteIds.indexOf(note)]!.automate(param, value, time);
-        else {
-            for (var i = 0; i < this.liveNotes.length; i++) this.liveNotes[i]!.automate(param, value, time);
-            this.fx.automate(value, this.dt, time);
-        }
-    }
     /** HOT CODE */
-    process(left: Float32Array, right: Float32Array) {
-        var lb = this.lb, rb = this.rb, len = left.length;
-        if (lb.buffer.byteLength < left.buffer.byteLength) {
-            this.lb = lb = new Float32Array(len);
-            this.rb = rb = new Float32Array(len);
-        } else if (lb.length !== len) {
-            this.lb = lb = new Float32Array(lb.buffer, 0, len);
-            this.rb = rb = new Float32Array(rb.buffer, 0, len);
-        }
+    nextSample(isStartOfBlock: boolean, blockProgress: number, inputs: Record<string, number>) {
         var i: number;
         const liveNotes = this.liveNotes, deadNotes = this.deadNotes, liveNoteCount = liveNotes.length;
+        const curGain = gainForChord(liveNoteCount);
+        var leftSample = 0, rightSample = 0;
         for (i = 0; i < liveNoteCount; i++) {
-            liveNotes[i]!.processBlock(lb, rb, i === 0 ? PassMode.SET : PassMode.ADD, true, gainForChord(liveNoteCount));
+            const note = liveNotes[i]!;
+            const sample = note.processSample(0, 0, true, curGain, inputs, isStartOfBlock, blockProgress);
+            leftSample += sample[0]!;
+            rightSample += sample[1]!;
         }
         for (i = 0; i < deadNotes.length; i++) {
-            var tone = deadNotes[i]![0];
-            var gain = deadNotes[i]![1];
-            tone.alive = false;
-            tone.processBlock(lb, rb, PassMode.ADD, false, gain);
-            if (!tone.alive) {
+            const [note, gain] = deadNotes[i]!;
+            note.alive = false;
+            const sample = note.processSample(0, 0, false, gain, inputs, isStartOfBlock, blockProgress);
+            leftSample += sample[0]!;
+            rightSample += sample[1]!;
+            if (!note.alive) {
                 deadNotes[i] = deadNotes.pop()!;
                 i--;
             }
         }
-        this.fx.processBlock(lb, rb, PassMode.SET, true, 1);
-        for (i = 0; i < len; i++) {
-            left[i]! += lb[i]!;
-            right[i]! += rb[i]!;
-        }
+        return this.fx.processSample(leftSample, rightSample, true, 1, inputs, isStartOfBlock, blockProgress);
     }
 }
 

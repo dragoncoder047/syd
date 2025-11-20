@@ -1,5 +1,5 @@
 import { KRateHelper } from "..";
-import { AudioProcessor, AudioProcessorFactory, Dimensions, Range, SCALAR_DIMS } from "../../compiler/nodeDef";
+import { AudioProcessor, AudioProcessorFactory, Dimensions, SCALAR_DIMS } from "../../compiler/nodeDef";
 import { TAU, cos as cosine, lerp, sin, sqrt, tan } from "../../math";
 import { Matrix } from "../../matrix";
 import { WorkletSynth } from "../../runtime/synthImpl";
@@ -12,7 +12,6 @@ enum FilterType {
 
 export class Filter implements AudioProcessorFactory {
     name = "filter";
-    description = "Biquad filter as implemented in BeepBox.";
     inputs = [
         {
             name: "sample",
@@ -21,28 +20,18 @@ export class Filter implements AudioProcessorFactory {
         },
         {
             name: "cutoff",
-            range: [0, 10000] as Range,
             default: 1000,
-            unit: "Hz",
             dims: SCALAR_DIMS
         },
         {
             name: "resonance",
             default: 2,
-            range: [0, 100] as Range,
-            description: "Affects the resonance of the filter. 1 means no resonance, >1 causes the filter to emphasize frequencies around the cutoff point, <1 causes the stopband slope to decrease and flatten. The default is 2 to match ZzFX's filter parameter.",
             dims: SCALAR_DIMS
         },
         {
             name: "kind",
-            description: "Selects what band the filter will process. A low-pass filter dampens frequencies higher than the cutoff, making the sound more muffled. A high-pass filter dampens frequencies below the cutoff, making the sound more tinny. A peak filter enhances or dampens frequencies close to the cutoff, adding or suppressing shrieks at that point.",
             dims: SCALAR_DIMS,
             default: FilterType.LOWPASS,
-            constantOptions: {
-                lowpass: FilterType.LOWPASS,
-                highpass: FilterType.HIGHPASS,
-                peak: FilterType.PEAK,
-            }
         }
     ];
     outputDims: Dimensions = ["N", 1];
@@ -104,8 +93,7 @@ export class Filter implements AudioProcessorFactory {
                 cData[5] = b2;
             }
             const samples = inputs[0]!.asColumn();
-            coefficients.loadForSample(progress);
-            const params = coefficients.sample.data;
+            const params = coefficients.loadForSample(progress).data;
             b0 = params[1]!;
             a1 = params[2]!;
             b1 = params[3]!;
@@ -125,7 +113,6 @@ export class Filter implements AudioProcessorFactory {
 
 export class Bitcrusher implements AudioProcessorFactory {
     name = "bitcrusher";
-    description = "The classic low-fidelity effect produced by resampling the audio at a lower sample rate. Called 'frequency crush' in BeepBox.";
     inputs = [
         {
             name: "sample",
@@ -134,8 +121,6 @@ export class Bitcrusher implements AudioProcessorFactory {
         },
         {
             name: "newSampleRate",
-            range: [1, 48000] as Range,
-            unit: "Hz",
             dims: SCALAR_DIMS,
             default: 8000,
         }
@@ -156,7 +141,6 @@ export class Bitcrusher implements AudioProcessorFactory {
 
 export class DelayLine implements AudioProcessorFactory {
     name = "delay";
-    description = "Singular delay line. No self-feedback or interpolation between samples.";
     inputs = [
         {
             name: "sample",
@@ -165,9 +149,6 @@ export class DelayLine implements AudioProcessorFactory {
         },
         {
             name: "delayTime",
-            range: [0, 100] as Range,
-            unit: "seconds",
-            description: "How long to delay the sample for. Changing this mid-delay will effectively pitch-shift the buffered samples. If this input is a vector of tap positions, the output matrix will be rows of each sample delayed by the time specified here.",
             dims: ["T", 1] as Dimensions,
             default: 1
         }
