@@ -90903,7 +90903,7 @@
                             "pulseWidth": 5.0
                         },
                         {
-                            "frequency": "3\u00d7",
+                            "frequency": "3\ufffd\ufffd",
                             "amplitude": 8.0,
                             "waveform": "sawtooth",
                             "pulseWidth": 5.0
@@ -100808,7 +100808,7 @@
                             "pulseWidth": 5.0
                         },
                         {
-                            "frequency": "1\u00d7",
+                            "frequency": "1\ufffd\ufffd",
                             "amplitude": 0.0,
                             "waveform": "sine",
                             "pulseWidth": 5.0

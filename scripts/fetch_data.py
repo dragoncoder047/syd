@@ -6,7 +6,7 @@ import subprocess
 import time
 
 # import themefix
-# import tinycss2
+import tinycss2
 import ts_utility as ts_utility
 
 curdir = pathlib.Path(__file__).parent
@@ -97,7 +97,85 @@ def themes():
 
     # now, themes is a dict[str, str]
 
-    return themes
+    parsed_themes = {}
+    for theme in themes:
+        css = themes[theme]
+        parsed = tinycss2.parse_stylesheet(css, True, True)
+        overrides = {}
+        resources = {}
+        cssvars = {}
+        for chunk in parsed:
+            match chunk.type:
+                case "qualified-rule":
+                    rule = tinycss2.serialize(chunk.prelude).strip()
+                    contents = tinycss2.parse_blocks_contents(
+                        chunk.content, True, True)
+                    # process global rules
+                    for pair in contents:
+                        if pair.type == "error":
+                            print(f"[{theme}] {pair.message}")
+                            continue
+                        name = pair.lower_name
+                        values: list = [x for x in pair.value
+                                        if x.type != "whitespace"]
+                        override = False
+                        if name.startswith("--"):
+                            name = name.removeprefix("--")
+                        else:
+                            override = True
+                        if rule not in (":root", "*"):
+                            override = True
+                            name = (".".join(
+                                map(lambda x: x.serialize().strip(),
+                                    chunk.prelude))
+                                    + name)
+                        if (values[0].type == "function"
+                                and values[0].lower_name == "url"):
+                            resources[name] = {
+                                "kind": "image",
+                                "src": (tinycss2
+                                        .parse_one_component_value(
+                                            [values[0]], True)
+                                        .arguments[0].value)}
+                            result = name
+                        else:
+                            # TODO: parse colors, number, boolean
+                            result = tinycss2.serialize(values)
+                        if override:
+                            overrides[name] = result
+                        else:
+                            cssvars[name] = result
+                case "at-rule":
+                    match chunk.at_keyword:
+                        case "font-face":
+                            contents = tinycss2.parse_blocks_contents(
+                                chunk.content, True, True)
+                            font_name = (next(
+                                [x for x in rule.value
+                                 if x.type != "whitespace"]
+                                for rule in contents
+                                if rule.lower_name == "font-family")
+                                [0].value)
+                            font_src = next(
+                                [x for x in rule.value
+                                 if x.type != "whitespace"]
+                                for rule in contents
+                                if rule.lower_name == "src")
+                            resources[font_name] = {"kind": "font", "src": (
+                                font_src[0].arguments[0].value)}
+                        case str() as a:
+                            raise ValueError(a)
+                case "error":
+                    print(f"[{theme}] {chunk.message}")
+                case str() as a:
+                    raise NameError(a)
+        parsed_themes[theme] = {
+            "values": cssvars,
+            "overrides": overrides,
+            "resources": resources
+        }
+
+    return parsed_themes
 
 
 @timed
