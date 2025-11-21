@@ -1,4 +1,5 @@
 import json
+import math
 import os
 import pathlib
 import shutil
@@ -29,8 +30,12 @@ def ensure_github_repo(folder: str, repo_id: str):
              repo_folder.resolve().absolute()])
     old_dir = os.getcwd()
     os.chdir(repo_folder)
-    subprocess.check_call(["git", "pull"])
-    os.chdir(old_dir)
+    try:
+        subprocess.check_call(["git", "pull"])
+    except subprocess.CalledProcessError as e:
+        print("Command filed with exit code", e.returncode)
+    finally:
+        os.chdir(old_dir)
 
 
 ensure_github_repo("jukebox", "jukeebox/jukebox_typescript")
@@ -59,7 +64,7 @@ def presets():
 
     categories = {}
 
-    EditorConfig = ts_utility.find_by_kind(ast, "ClassDeclaration")
+    EditorConfig = ts_utility.first_of_kind(ast, "ClassDeclaration")
 
     categories_Call = next(n["initializer"] for n in EditorConfig["members"]
                            if n["kind"] == "PropertyDeclaration"
@@ -85,11 +90,9 @@ def themes():
     themes_file = get_beepmod_file("abyssbox/editor/ColorConfig.ts")
     ast = ts_utility.parse_ts(themes_file, "ColorConfig.ts")
 
-    ColorConfig = ts_utility.find_by_kind(ast, "ClassDeclaration")
+    ColorConfig = ts_utility.first_of_kind(ast, "ClassDeclaration")
 
-    themes = next(n["initializer"] for n in ColorConfig["members"]
-                  if n["kind"] == "PropertyDeclaration"
-                  and n["name"]["escapedText"] == "themes")
+    themes = ts_utility.get_prop_of_class(ColorConfig, "themes")
 
     themes = ts_utility.to_literal(themes)
 
@@ -184,18 +187,16 @@ def config():
     ast = ts_utility.parse_ts(presets_file, "SynthConfig.ts")
     data = {}
 
-    TypePresets = ts_utility.find_by_kind(ast, "FirstStatement")
+    TypePresets = ts_utility.first_of_kind(ast, "FirstStatement")
     data["instrumentTypes"] = ts_utility.to_literal(
         ast=TypePresets["declarationList"]["declarations"][0]["initializer"])
 
-    Config = next(n for n in ast["statements"] if n["kind"] ==
-                  "ClassDeclaration" and n["name"]["escapedText"] == "Config")
-    rawChipWaves = next(n for n in Config["members"]
-                        if n["name"]["escapedText"] == "rawChipWaves")
-    waves = ts_utility.to_literal(
-        rawChipWaves["initializer"]["arguments"][0])
+    Config = ts_utility.find_class(ast, "Config")
+    rawChipWaves = ts_utility.get_prop_of_class(Config, "rawChipWaves")
+    rawChipWaves_dictarray = ts_utility.to_literal(
+        rawChipWaves["arguments"][0])
     waves_by_name = {}
-    for wave in waves:
+    for wave in rawChipWaves_dictarray:
         operation = wave["samples"]["expression"]["escapedText"]
         name = wave["name"]
         samples = ts_utility.to_literal(
@@ -210,12 +211,11 @@ def config():
         waves_by_name[name] = samples
     data["chipWaves"] = waves_by_name
 
-    unisons = next(n for n in Config["members"]
-                   if n["name"]["escapedText"] == "unisons")
-    unison_ele = ts_utility.to_literal(
-        unisons["initializer"]["arguments"][0])
+    unisons = ts_utility.get_prop_of_class(Config, "unisons")
+    unisons_dictarray = ts_utility.to_literal(
+        unisons["arguments"][0])
     unisons_by_name = {}
-    for unison in unison_ele:
+    for unison in unisons_dictarray:
         offsets = []
         voices = unison["voices"]
         divisor = max(1, voices - 1)
@@ -232,6 +232,43 @@ def config():
             "voiceDetunes": offsets
         }
     data["unisons"] = unisons_by_name
+
+    # holy shit i made this powerful
+    modulators_by_name = ts_utility.to_literal(
+        ts_utility.get_prop_of_class(Config, "modulators"),
+        classes={
+            "Config": Config,
+            "this": Config,
+            "EffectType": ts_utility.find_enum_to_imap(ast, "EffectType"),
+            "GranularEnvelopeType": ts_utility.find_enum_to_imap(
+                ast, "GranularEnvelopeType"),
+            "Math": {
+                "members": ([
+                    {
+                        "kind": "PropertyDeclaration",
+                        "name": {
+                            "kind": "Identifier",
+                            "escapedText": k},
+                        "initializer": f}
+                    for k in dir(math)
+                    if callable(f := getattr(math, k))
+                ]
+                    + [
+                    {
+                        "kind": "PropertyDeclaration",
+                        "name": {
+                            "kind": "Identifier",
+                            "escapedText": k},
+                        "initializer": f}
+                    for k, f in {
+                        "round": round
+                    }.items()]
+                )
+            }
+        }, try_eval=True)
+
+    data["mods"] = modulators_by_name
+
     return data
 
 

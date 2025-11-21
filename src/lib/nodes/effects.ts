@@ -37,11 +37,12 @@ export class Filter implements AudioProcessorFactory {
     outputDims: Dimensions = ["N", 1];
     make(synth: WorkletSynth, sizeVars: { N: number }): AudioProcessor {
         const N = sizeVars.N;
-        var x2 = new Matrix(N, 1), x1 = new Matrix(N,), y2 = new Matrix(N, 1), y1 = new Matrix(N, 1);
-        var ch = 1;
+        const x2 = new Matrix(N, 1), x1 = new Matrix(N,), y2 = new Matrix(N, 1), y1 = new Matrix(N, 1);
         const coefficients = new KRateHelper(3, 2),
             cData = coefficients.current.data;
         cData[0]! = 1; // a0 not used, but for completeness
+        const historyList = [x1, x2, y1, y2];
+        const historyNumbers = [0, 0, 0, 0] as [number, number, number, number];
         return (inputs, start, progress) => {
             var alpha: number,
                 a0: number,
@@ -99,9 +100,9 @@ export class Filter implements AudioProcessorFactory {
             b1 = params[3]!;
             a2 = params[4]!;
             b2 = params[5]!;
-            const out = samples.applyUnary((sample, channel) =>
-                /** $y[n]=b_{0}x[n]+b_{1}x[n-1]+b_{2}x[n-2]-a_{1}y[n-1]-a_{2}y[n-2]$ */
-                b0 * sample + b1 * x1.get(channel, 1) + b2 * x2.get(channel, 1) - a1 * y1.get(channel, 1) - a2 * y2.get(channel, 1));
+            const out = samples.applyMulti((sample, [x1, x2, y1, y2]) =>
+                b0 * sample + b1 * x1 + b2 * x2 - a1 * y1 - a2 * y2,
+                historyList, historyNumbers);
             x2.copyFrom(x1);
             x1.copyFrom(samples);
             y2.copyFrom(y1);

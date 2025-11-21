@@ -120,11 +120,23 @@ export class Matrix {
         return this;
     }
     applyBinary(op: (x: number, y: number, row: number, col: number) => number, right: Matrix): this {
-        zipsize([this, right]);
+        zipsize(this, [right]);
         const rows = this.rows, cols = this.cols;
         for (var i = 0; i < rows; i++)
             for (var j = 0; j < cols; j++)
                 this.put(i, j, op(this.get(i, j), right.get(i, j), i, j));
+        return this;
+    }
+    applyMulti<A extends number[]>(op: ((first: number, args: A, row: number, col: number) => number), rest: Matrix[], argArray: A): this {
+        zipsize(this, rest);
+        for (var i = 0; i < this.rows; i++) {
+            for (var j = 0; j < this.cols; j++) {
+                for (var a = 0; a <= rest.length; a++) {
+                    argArray[a] = rest[a]!.get(i, j);
+                }
+                this.put(i, j, op(this.get(i, j), argArray, i, j));
+            }
+        }
         return this;
     }
     matMul(right: Matrix): Matrix {
@@ -206,29 +218,15 @@ export function scalarMatrix(n: number): Matrix {
 }
 
 /** ensures all of the matrices are all the same size or expands 1x1s to match */
-export function zipsize(l1: Matrix[], l2?: Matrix[], l3?: Matrix[]) {
-    var w = 0, h = 0, i = 0, len1 = l1.length, len2 = l2?.length, len3 = l3?.length;
+function zipsize(m1: Matrix, l: Matrix[]) {
+    var w = m1.cols, h = m1.rows, i = 0, len1 = l.length;
     for (; i < len1; i++) {
-        w = max(l1[i]!.cols, w);
-        h = max(l1[i]!.rows, h);
+        w = max(l[i]!.cols, w);
+        h = max(l[i]!.rows, h);
     }
-    if (l2) for (i = 0; i < len2!; i++) {
-        w = max(l2[i]!.cols, w);
-        h = max(l2[i]!.rows, h);
-    }
-    if (l3) for (i = 0; i < len3!; i++) {
-        w = max(l3[i]!.cols, w);
-        h = max(l3[i]!.rows, h);
-    }
-    checkOrSmear(l1, w, h);
-    if (l2) checkOrSmear(l2, w, h);
-    if (l3) checkOrSmear(l3, w, h);
-}
-
-function checkOrSmear(l: Matrix[], w: number, h: number) {
-    var i, len = l.length;
-    for (i = 0; i < len; i++) {
-        const m = l[i]!;
+    var len = l.length;
+    for (i = 0; i <= len; i++) {
+        const m = i === len ? m1 : l[i]!;
         if (m.rows === 1 && m.cols === 1) m.smear(h, w);
         else if (m.rows !== h && m.cols !== w) {
             throw new Error(`matrix size mismatch. expected ${h}x${w} or 1x1 but got ${m.rows}x${m.cols}`);
