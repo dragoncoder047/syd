@@ -1,30 +1,30 @@
 import { expect, test } from "bun:test";
 import { AudioProcessorFactory, compile, ErrorReason, NodeGraph, NodeInputLocation } from "../src";
-import { NodeFragmentEdge, unifyFragments } from "../src/graph/fragment";
+import { GraphFragment, NodeFragmentEdge, unifyGraphFragments } from "../src/graph/fragment";
 import { Matrix } from "../src/matrix";
 import { Opcode } from "../src/runtime/program";
 
 test("unify fragments", () => {
-    const fragment1: NodeGraph = {
+    const fragment1: GraphFragment = {
         mods: {},
-        out: 0,
+        out: { x: 0 },
         nodes: [
             ["a", [1, 0]],
             ["b", [1, 0, ["z", NodeInputLocation.FRAG_INPUT]]],
         ]
     };
-    const fragment2: NodeGraph = {
+    const fragment2: GraphFragment = {
         mods: {},
-        out: 0,
+        out: { x: 0 },
         nodes: [
             ["c", [1, 0]],
             ["d", [1, 0]],
         ]
     };
     const links: NodeFragmentEdge[] = [
-        { from: 1, to: [0, "z"] }
+        { from: [1, "x"], to: [0, "z"] }
     ];
-    expect(unifyFragments([fragment1, fragment2], links, 0)).toEqual({
+    expect(unifyGraphFragments([fragment1, fragment2], links, 0, "x")).toEqual({
         nodes: [
             ["a", [1, 0]],
             ["b", [1, 0, 2]],
@@ -82,18 +82,18 @@ test("compining graph with un-unified input returns an error but uses the defaul
     ])
 });
 test("fragment with constant inputs inlined constants", () => {
-    const fragment: NodeGraph = {
+    const fragment: GraphFragment = {
         mods: {},
-        out: 0,
+        out: { x: 0 },
         nodes: [
             ["a", [1, 0]],
             ["b", [1, 0, ["z", NodeInputLocation.FRAG_INPUT]]],
         ]
     };
     const links: NodeFragmentEdge[] = [
-        { from: 123, to: [0, "z"], constant: true }
+        { value: 123, to: [0, "z"], constant: true }
     ];
-    expect(unifyFragments([fragment], links, 0)).toEqual({
+    expect(unifyGraphFragments([fragment], links, 0, "x")).toEqual({
         nodes: [
             ["a", [1, 0]],
             ["b", [1, 0, [123, NodeInputLocation.CONSTANT]]],
