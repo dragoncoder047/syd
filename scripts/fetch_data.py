@@ -233,41 +233,74 @@ def config():
         }
     data["unisons"] = unisons_by_name
 
+    classes = {
+        "Config": Config,
+        "this": Config,
+        "EffectType": ts_utility.find_enum_to_imap(ast, "EffectType"),
+        "GranularEnvelopeType": ts_utility.find_enum_to_imap(
+            ast, "GranularEnvelopeType"),
+        "EnvelopeComputeIndex": ts_utility.find_enum_to_imap(
+            ast, "EnvelopeComputeIndex"),
+        "InstrumentType": ts_utility.find_enum_to_imap(
+            ast, "InstrumentType"),
+        "Math": {
+            "members": ([
+                {
+                        "kind": "PropertyDeclaration",
+                        "name": {
+                            "kind": "Identifier",
+                            "escapedText": k},
+                        "initializer": f}
+                for k in dir(math)
+                if callable(f := getattr(math, k))
+            ]
+                + [
+                {
+                    "kind": "PropertyDeclaration",
+                    "name": {
+                            "kind": "Identifier",
+                            "escapedText": k},
+                    "initializer": f}
+                for k, f in {
+                    "round": round
+                }.items()]
+            )
+        }
+    }
+
     # holy shit i made this powerful
     modulators_by_name = ts_utility.to_literal(
         ts_utility.get_prop_of_class(Config, "modulators"),
-        classes={
-            "Config": Config,
-            "this": Config,
-            "EffectType": ts_utility.find_enum_to_imap(ast, "EffectType"),
-            "GranularEnvelopeType": ts_utility.find_enum_to_imap(
-                ast, "GranularEnvelopeType"),
-            "Math": {
-                "members": ([
-                    {
-                        "kind": "PropertyDeclaration",
-                        "name": {
-                            "kind": "Identifier",
-                            "escapedText": k},
-                        "initializer": f}
-                    for k in dir(math)
-                    if callable(f := getattr(math, k))
-                ]
-                    + [
-                    {
-                        "kind": "PropertyDeclaration",
-                        "name": {
-                            "kind": "Identifier",
-                            "escapedText": k},
-                        "initializer": f}
-                    for k, f in {
-                        "round": round
-                    }.items()]
-                )
-            }
-        }, try_eval=True)
-
+        classes=classes, try_eval=True)
     data["mods"] = modulators_by_name
+
+    envelopes_by_name = ts_utility.to_literal(
+        ts_utility.get_prop_of_class(Config, "instrumentAutomationTargets"),
+        classes=classes, try_eval=True)
+    data["envs"] = envelopes_by_name
+
+    fm_4op_algos = ts_utility.to_literal(
+        ts_utility.get_prop_of_class(Config, "algorithms"),
+        classes=classes, try_eval=True)
+    fm_4op_feedbacks = ts_utility.to_literal(
+        ts_utility.get_prop_of_class(Config, "feedbacks"),
+        classes=classes, try_eval=True)
+    fm_6op_algos = ts_utility.to_literal(
+        ts_utility.get_prop_of_class(Config, "algorithms6Op"),
+        classes=classes, try_eval=True)
+    fm_6op_feedbacks = ts_utility.to_literal(
+        ts_utility.get_prop_of_class(Config, "feedbacks6Op"),
+        classes=classes, try_eval=True)
+    data["fmAlgos"] = {
+        "4": {
+            "forward": fm_4op_algos,
+            "feedback": fm_4op_feedbacks,
+        },
+        "6": {
+            "forward": fm_6op_algos,
+            "feedback": fm_6op_feedbacks,
+        },
+    }
 
     return data
 

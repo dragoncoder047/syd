@@ -61938,7 +61938,7 @@
                     "fadeInSeconds": 0,
                     "fadeOutTicks": -1,
                     "algorithm": "Custom",
-                    "feedbackType": "1\u27f2 2\u27f2 3\u27f2 4\ufffd\ufffd\ufffd 5\u27f2 6\u27f2",
+                    "feedbackType": "1\u27f2 2\u27f2 3\u27f2 4\u27f2 5\u27f2 6\u27f2",
                     "feedbackAmplitude": 1,
                     "customAlgorithm": {
                         "mods": [
@@ -96618,7 +96618,7 @@
                     "reverb": 3,
                     "fadeInSeconds": 0,
                     "fadeOutTicks": -24,
-                    "algorithm": "1\u20032\u20033\u21905\ufffd\ufffd4\u21906",
+                    "algorithm": "1\u20032\u20033\u21905\u20034\u21906",
                     "feedbackType": "3\u21924",
                     "feedbackAmplitude": 7,
                     "operators": [

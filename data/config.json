@@ -7597,5 +7597,2408 @@
                 "This settings will not work if your lower envelope bound is higher than your upper envelope bound"
             ]
         }
+    },
+    "envs": {
+        "none": {
+            "computeIndex": null,
+            "displayName": "none",
+            "perNote": false,
+            "interleave": false,
+            "isFilter": false,
+            "maxCount": 1,
+            "effect": null,
+            "compatibleInstruments": null
+        },
+        "noteVolume": {
+            "computeIndex": "noteVolume",
+            "displayName": "note volume",
+            "perNote": true,
+            "interleave": false,
+            "isFilter": false,
+            "maxCount": 1,
+            "effect": null,
+            "compatibleInstruments": null
+        },
+        "pulseWidth": {
+            "computeIndex": "pulseWidth",
+            "displayName": "pulse width",
+            "perNote": true,
+            "interleave": false,
+            "isFilter": false,
+            "maxCount": 1,
+            "effect": null,
+            "compatibleInstruments": [
+                "pwm",
+                "supersaw"
+            ]
+        },
+        "stringSustain": {
+            "computeIndex": "stringSustain",
+            "displayName": "sustain",
+            "perNote": true,
+            "interleave": false,
+            "isFilter": false,
+            "maxCount": 1,
+            "effect": null,
+            "compatibleInstruments": [
+                "pickedString"
+            ]
+        },
+        "unison": {
+            "computeIndex": "unison",
+            "displayName": "unison",
+            "perNote": true,
+            "interleave": false,
+            "isFilter": false,
+            "maxCount": 1,
+            "effect": null,
+            "compatibleInstruments": [
+                "chip",
+                "harmonics",
+                "pickedString",
+                "customChipWave",
+                "pwm",
+                "noise",
+                "spectrum",
+                "drumset",
+                "fm",
+                "fm6op"
+            ]
+        },
+        "operatorFrequency": {
+            "computeIndex": "operatorFrequency0",
+            "displayName": "fm# freq",
+            "perNote": true,
+            "interleave": true,
+            "isFilter": false,
+            "maxCount": 6,
+            "effect": null,
+            "compatibleInstruments": [
+                "fm",
+                "fm6op"
+            ]
+        },
+        "operatorAmplitude": {
+            "computeIndex": "operatorAmplitude0",
+            "displayName": "fm# volume",
+            "perNote": true,
+            "interleave": false,
+            "isFilter": false,
+            "maxCount": 6,
+            "effect": null,
+            "compatibleInstruments": [
+                "fm",
+                "fm6op"
+            ]
+        },
+        "feedbackAmplitude": {
+            "computeIndex": "feedbackAmplitude",
+            "displayName": "fm feedback",
+            "perNote": true,
+            "interleave": false,
+            "isFilter": false,
+            "maxCount": 1,
+            "effect": null,
+            "compatibleInstruments": [
+                "fm",
+                "fm6op"
+            ]
+        },
+        "pitchShift": {
+            "computeIndex": "pitchShift",
+            "displayName": "pitch shift",
+            "perNote": true,
+            "interleave": false,
+            "isFilter": false,
+            "maxCount": 1,
+            "effect": "pitchShift",
+            "compatibleInstruments": null
+        },
+        "detune": {
+            "computeIndex": "detune",
+            "displayName": "detune",
+            "perNote": true,
+            "interleave": false,
+            "isFilter": false,
+            "maxCount": 1,
+            "effect": "detune",
+            "compatibleInstruments": null
+        },
+        "vibratoDepth": {
+            "computeIndex": "vibratoDepth",
+            "displayName": "vibrato depth",
+            "perNote": true,
+            "interleave": false,
+            "isFilter": false,
+            "maxCount": 1,
+            "effect": "vibrato",
+            "compatibleInstruments": null
+        },
+        "noteFilterAllFreqs": {
+            "computeIndex": "noteFilterAllFreqs",
+            "displayName": "n. filter freqs",
+            "perNote": true,
+            "interleave": false,
+            "isFilter": true,
+            "maxCount": 1,
+            "effect": "noteFilter",
+            "compatibleInstruments": null
+        },
+        "noteFilterFreq": {
+            "computeIndex": "noteFilterFreq0",
+            "displayName": "n. filter # freq",
+            "perNote": true,
+            "interleave": false,
+            "isFilter": true,
+            "maxCount": 12,
+            "effect": "noteFilter",
+            "compatibleInstruments": null
+        },
+        "decimalOffset": {
+            "computeIndex": "decimalOffset",
+            "displayName": "decimal offset",
+            "perNote": true,
+            "interleave": false,
+            "isFilter": false,
+            "maxCount": 1,
+            "effect": null,
+            "compatibleInstruments": [
+                "pwm",
+                "supersaw"
+            ]
+        },
+        "supersawDynamism": {
+            "computeIndex": "supersawDynamism",
+            "displayName": "dynamism",
+            "perNote": true,
+            "interleave": false,
+            "isFilter": false,
+            "maxCount": 1,
+            "effect": null,
+            "compatibleInstruments": [
+                "supersaw"
+            ]
+        },
+        "supersawSpread": {
+            "computeIndex": "supersawSpread",
+            "displayName": "spread",
+            "perNote": true,
+            "interleave": false,
+            "isFilter": false,
+            "maxCount": 1,
+            "effect": null,
+            "compatibleInstruments": [
+                "supersaw"
+            ]
+        },
+        "supersawShape": {
+            "computeIndex": "supersawShape",
+            "displayName": "saw\u2194pulse",
+            "perNote": true,
+            "interleave": false,
+            "isFilter": false,
+            "maxCount": 1,
+            "effect": null,
+            "compatibleInstruments": [
+                "supersaw"
+            ]
+        },
+        "panning": {
+            "computeIndex": "panning",
+            "displayName": "panning",
+            "perNote": false,
+            "interleave": false,
+            "isFilter": false,
+            "maxCount": 1,
+            "effect": "panning",
+            "compatibleInstruments": null
+        },
+        "distortion": {
+            "computeIndex": "distortion",
+            "displayName": "distortion",
+            "perNote": false,
+            "interleave": false,
+            "isFilter": false,
+            "maxCount": 1,
+            "effect": "distortion",
+            "compatibleInstruments": null
+        },
+        "bitcrusherQuantization": {
+            "computeIndex": "bitcrusherQuantization",
+            "displayName": "bitcrush",
+            "perNote": false,
+            "interleave": false,
+            "isFilter": false,
+            "maxCount": 1,
+            "effect": "bitcrusher",
+            "compatibleInstruments": null
+        },
+        "bitcrusherFrequency": {
+            "computeIndex": "bitcrusherFrequency",
+            "displayName": "freq crush",
+            "perNote": false,
+            "interleave": false,
+            "isFilter": false,
+            "maxCount": 1,
+            "effect": "bitcrusher",
+            "compatibleInstruments": null
+        },
+        "chorus": {
+            "computeIndex": "chorus",
+            "displayName": "chorus",
+            "perNote": false,
+            "interleave": false,
+            "isFilter": false,
+            "maxCount": 1,
+            "effect": "chorus",
+            "compatibleInstruments": null
+        },
+        "echoSustain": {
+            "computeIndex": "echoSustain",
+            "displayName": "echo",
+            "perNote": false,
+            "interleave": false,
+            "isFilter": false,
+            "maxCount": 1,
+            "effect": "echo",
+            "compatibleInstruments": null
+        },
+        "reverb": {
+            "computeIndex": "reverb",
+            "displayName": "reverb",
+            "perNote": false,
+            "interleave": false,
+            "isFilter": false,
+            "maxCount": 1,
+            "effect": "reverb",
+            "compatibleInstruments": null
+        },
+        "arpeggioSpeed": {
+            "computeIndex": "arpeggioSpeed",
+            "displayName": "arpeggio speed",
+            "perNote": false,
+            "interleave": false,
+            "isFilter": false,
+            "maxCount": 1,
+            "effect": "chord",
+            "compatibleInstruments": null
+        },
+        "ringModulation": {
+            "computeIndex": "ringModulation",
+            "displayName": "ring mod",
+            "perNote": false,
+            "interleave": false,
+            "isFilter": false,
+            "maxCount": 1,
+            "effect": "ringModulation",
+            "compatibleInstruments": null
+        },
+        "ringModulationHz": {
+            "computeIndex": "ringModulationHz",
+            "displayName": "ring mod hz",
+            "perNote": false,
+            "interleave": false,
+            "isFilter": false,
+            "maxCount": 1,
+            "effect": "ringModulation",
+            "compatibleInstruments": null
+        },
+        "granular": {
+            "computeIndex": "granular",
+            "displayName": "granular",
+            "perNote": false,
+            "interleave": false,
+            "isFilter": false,
+            "maxCount": 1,
+            "effect": "granular",
+            "compatibleInstruments": null
+        },
+        "grainFreq": {
+            "computeIndex": "grainAmount",
+            "displayName": "grain freq",
+            "perNote": false,
+            "interleave": false,
+            "isFilter": false,
+            "maxCount": 1,
+            "effect": "granular",
+            "compatibleInstruments": null
+        },
+        "grainSize": {
+            "computeIndex": "grainSize",
+            "displayName": "grain size",
+            "perNote": false,
+            "interleave": false,
+            "isFilter": false,
+            "maxCount": 1,
+            "effect": "granular",
+            "compatibleInstruments": null
+        },
+        "grainRange": {
+            "computeIndex": "grainRange",
+            "displayName": "grain range",
+            "perNote": false,
+            "interleave": false,
+            "isFilter": false,
+            "maxCount": 1,
+            "effect": "granular",
+            "compatibleInstruments": null
+        },
+        "echoDelay": {
+            "computeIndex": "echoDelay",
+            "displayName": "echo delay",
+            "perNote": false,
+            "interleave": false,
+            "isFilter": false,
+            "maxCount": 1,
+            "effect": "echo",
+            "compatibleInstruments": null
+        }
+    },
+    "fmAlgos": {
+        "4": {
+            "forward": {
+                "1\u2190(2\u20023\u20024)": {
+                    "carrierCount": 1,
+                    "associatedCarrier": [
+                        1,
+                        1,
+                        1,
+                        1
+                    ],
+                    "modulatedBy": [
+                        [
+                            2,
+                            3,
+                            4
+                        ],
+                        [],
+                        [],
+                        []
+                    ]
+                },
+                "1\u2190(2\u20023\u21904)": {
+                    "carrierCount": 1,
+                    "associatedCarrier": [
+                        1,
+                        1,
+                        1,
+                        1
+                    ],
+                    "modulatedBy": [
+                        [
+                            2,
+                            3
+                        ],
+                        [],
+                        [
+                            4
+                        ],
+                        []
+                    ]
+                },
+                "1\u21902\u2190(3\u20024)": {
+                    "carrierCount": 1,
+                    "associatedCarrier": [
+                        1,
+                        1,
+                        1,
+                        1
+                    ],
+                    "modulatedBy": [
+                        [
+                            2
+                        ],
+                        [
+                            3,
+                            4
+                        ],
+                        [],
+                        []
+                    ]
+                },
+                "1\u2190(2\u20023)\u21904": {
+                    "carrierCount": 1,
+                    "associatedCarrier": [
+                        1,
+                        1,
+                        1,
+                        1
+                    ],
+                    "modulatedBy": [
+                        [
+                            2,
+                            3
+                        ],
+                        [
+                            4
+                        ],
+                        [
+                            4
+                        ],
+                        []
+                    ]
+                },
+                "1\u21902\u21903\u21904": {
+                    "carrierCount": 1,
+                    "associatedCarrier": [
+                        1,
+                        1,
+                        1,
+                        1
+                    ],
+                    "modulatedBy": [
+                        [
+                            2
+                        ],
+                        [
+                            3
+                        ],
+                        [
+                            4
+                        ],
+                        []
+                    ]
+                },
+                "1\u21903\u20032\u21904": {
+                    "carrierCount": 2,
+                    "associatedCarrier": [
+                        1,
+                        2,
+                        1,
+                        2
+                    ],
+                    "modulatedBy": [
+                        [
+                            3
+                        ],
+                        [
+                            4
+                        ],
+                        [],
+                        []
+                    ]
+                },
+                "1\u20032\u2190(3\u20024)": {
+                    "carrierCount": 2,
+                    "associatedCarrier": [
+                        1,
+                        2,
+                        2,
+                        2
+                    ],
+                    "modulatedBy": [
+                        [],
+                        [
+                            3,
+                            4
+                        ],
+                        [],
+                        []
+                    ]
+                },
+                "1\u20032\u21903\u21904": {
+                    "carrierCount": 2,
+                    "associatedCarrier": [
+                        1,
+                        2,
+                        2,
+                        2
+                    ],
+                    "modulatedBy": [
+                        [],
+                        [
+                            3
+                        ],
+                        [
+                            4
+                        ],
+                        []
+                    ]
+                },
+                "(1\u20022)\u21903\u21904": {
+                    "carrierCount": 2,
+                    "associatedCarrier": [
+                        1,
+                        2,
+                        2,
+                        2
+                    ],
+                    "modulatedBy": [
+                        [
+                            3
+                        ],
+                        [
+                            3
+                        ],
+                        [
+                            4
+                        ],
+                        []
+                    ]
+                },
+                "(1\u20022)\u2190(3\u20024)": {
+                    "carrierCount": 2,
+                    "associatedCarrier": [
+                        1,
+                        2,
+                        2,
+                        2
+                    ],
+                    "modulatedBy": [
+                        [
+                            3,
+                            4
+                        ],
+                        [
+                            3,
+                            4
+                        ],
+                        [],
+                        []
+                    ]
+                },
+                "1\u20032\u20033\u21904": {
+                    "carrierCount": 3,
+                    "associatedCarrier": [
+                        1,
+                        2,
+                        3,
+                        3
+                    ],
+                    "modulatedBy": [
+                        [],
+                        [],
+                        [
+                            4
+                        ],
+                        []
+                    ]
+                },
+                "(1\u20022\u20023)\u21904": {
+                    "carrierCount": 3,
+                    "associatedCarrier": [
+                        1,
+                        2,
+                        3,
+                        3
+                    ],
+                    "modulatedBy": [
+                        [
+                            4
+                        ],
+                        [
+                            4
+                        ],
+                        [
+                            4
+                        ],
+                        []
+                    ]
+                },
+                "1\u20032\u20033\u20034": {
+                    "carrierCount": 4,
+                    "associatedCarrier": [
+                        1,
+                        2,
+                        3,
+                        4
+                    ],
+                    "modulatedBy": [
+                        [],
+                        [],
+                        [],
+                        []
+                    ]
+                },
+                "1\u2190(2 3)\u20032\u21904": {
+                    "carrierCount": 2,
+                    "associatedCarrier": [
+                        1,
+                        2,
+                        1,
+                        2
+                    ],
+                    "modulatedBy": [
+                        [
+                            2,
+                            3
+                        ],
+                        [
+                            4
+                        ],
+                        [],
+                        []
+                    ]
+                },
+                "1\u2190(2 (3 (4": {
+                    "carrierCount": 3,
+                    "associatedCarrier": [
+                        1,
+                        2,
+                        3,
+                        3
+                    ],
+                    "modulatedBy": [
+                        [
+                            2,
+                            3,
+                            4
+                        ],
+                        [
+                            3,
+                            4
+                        ],
+                        [
+                            4
+                        ],
+                        []
+                    ]
+                }
+            },
+            "feedback": {
+                "1\u27f2": {
+                    "indices": [
+                        [
+                            1
+                        ],
+                        [],
+                        [],
+                        []
+                    ]
+                },
+                "2\u27f2": {
+                    "indices": [
+                        [],
+                        [
+                            2
+                        ],
+                        [],
+                        []
+                    ]
+                },
+                "3\u27f2": {
+                    "indices": [
+                        [],
+                        [],
+                        [
+                            3
+                        ],
+                        []
+                    ]
+                },
+                "4\u27f2": {
+                    "indices": [
+                        [],
+                        [],
+                        [],
+                        [
+                            4
+                        ]
+                    ]
+                },
+                "1\u27f2\u20032\u27f2": {
+                    "indices": [
+                        [
+                            1
+                        ],
+                        [
+                            2
+                        ],
+                        [],
+                        []
+                    ]
+                },
+                "3\u27f2\u20034\u27f2": {
+                    "indices": [
+                        [],
+                        [],
+                        [
+                            3
+                        ],
+                        [
+                            4
+                        ]
+                    ]
+                },
+                "1\u27f2\u20032\u27f2\u20033\u27f2": {
+                    "indices": [
+                        [
+                            1
+                        ],
+                        [
+                            2
+                        ],
+                        [
+                            3
+                        ],
+                        []
+                    ]
+                },
+                "2\u27f2\u20033\u27f2\u20034\u27f2": {
+                    "indices": [
+                        [],
+                        [
+                            2
+                        ],
+                        [
+                            3
+                        ],
+                        [
+                            4
+                        ]
+                    ]
+                },
+                "1\u27f2 2\u27f2 3\u27f2 4\u27f2": {
+                    "indices": [
+                        [
+                            1
+                        ],
+                        [
+                            2
+                        ],
+                        [
+                            3
+                        ],
+                        [
+                            4
+                        ]
+                    ]
+                },
+                "1\u21922": {
+                    "indices": [
+                        [],
+                        [
+                            1
+                        ],
+                        [],
+                        []
+                    ]
+                },
+                "1\u21923": {
+                    "indices": [
+                        [],
+                        [],
+                        [
+                            1
+                        ],
+                        []
+                    ]
+                },
+                "1\u21924": {
+                    "indices": [
+                        [],
+                        [],
+                        [],
+                        [
+                            1
+                        ]
+                    ]
+                },
+                "2\u21923": {
+                    "indices": [
+                        [],
+                        [],
+                        [
+                            2
+                        ],
+                        []
+                    ]
+                },
+                "2\u21924": {
+                    "indices": [
+                        [],
+                        [],
+                        [],
+                        [
+                            2
+                        ]
+                    ]
+                },
+                "3\u21924": {
+                    "indices": [
+                        [],
+                        [],
+                        [],
+                        [
+                            3
+                        ]
+                    ]
+                },
+                "1\u21923\u20032\u21924": {
+                    "indices": [
+                        [],
+                        [],
+                        [
+                            1
+                        ],
+                        [
+                            2
+                        ]
+                    ]
+                },
+                "1\u21924\u20032\u21923": {
+                    "indices": [
+                        [],
+                        [],
+                        [
+                            2
+                        ],
+                        [
+                            1
+                        ]
+                    ]
+                },
+                "1\u21922\u21923\u21924": {
+                    "indices": [
+                        [],
+                        [
+                            1
+                        ],
+                        [
+                            2
+                        ],
+                        [
+                            3
+                        ]
+                    ]
+                },
+                "1\u21942 3\u21944": {
+                    "indices": [
+                        [
+                            2
+                        ],
+                        [
+                            1
+                        ],
+                        [
+                            4
+                        ],
+                        [
+                            3
+                        ]
+                    ]
+                },
+                "1\u21944 2\u21943": {
+                    "indices": [
+                        [
+                            4
+                        ],
+                        [
+                            3
+                        ],
+                        [
+                            2
+                        ],
+                        [
+                            1
+                        ]
+                    ]
+                },
+                "2\u21921\u21924\u21923\u21922": {
+                    "indices": [
+                        [
+                            2
+                        ],
+                        [
+                            3
+                        ],
+                        [
+                            4
+                        ],
+                        [
+                            1
+                        ]
+                    ]
+                },
+                "1\u21922\u21923\u21924\u21921": {
+                    "indices": [
+                        [
+                            4
+                        ],
+                        [
+                            1
+                        ],
+                        [
+                            2
+                        ],
+                        [
+                            3
+                        ]
+                    ]
+                },
+                "(1 2 3)\u21924": {
+                    "indices": [
+                        [],
+                        [],
+                        [],
+                        [
+                            1,
+                            2,
+                            3
+                        ]
+                    ]
+                },
+                "ALL": {
+                    "indices": [
+                        [
+                            1,
+                            2,
+                            3,
+                            4
+                        ],
+                        [
+                            1,
+                            2,
+                            3,
+                            4
+                        ],
+                        [
+                            1,
+                            2,
+                            3,
+                            4
+                        ],
+                        [
+                            1,
+                            2,
+                            3,
+                            4
+                        ]
+                    ]
+                }
+            }
+        },
+        "6": {
+            "forward": {
+                "Custom": {
+                    "carrierCount": 1,
+                    "associatedCarrier": [
+                        1,
+                        1,
+                        1,
+                        1,
+                        1,
+                        1
+                    ],
+                    "modulatedBy": [
+                        [
+                            2,
+                            3,
+                            4,
+                            5,
+                            6
+                        ],
+                        [],
+                        [],
+                        [],
+                        [],
+                        []
+                    ]
+                },
+                "1\u21902\u21903\u21904\u21905\u21906": {
+                    "carrierCount": 1,
+                    "associatedCarrier": [
+                        1,
+                        1,
+                        1,
+                        1,
+                        1,
+                        1
+                    ],
+                    "modulatedBy": [
+                        [
+                            2
+                        ],
+                        [
+                            3
+                        ],
+                        [
+                            4
+                        ],
+                        [
+                            5
+                        ],
+                        [
+                            6
+                        ],
+                        []
+                    ]
+                },
+                "1\u21903\u20032\u21904\u21905\u21906": {
+                    "carrierCount": 2,
+                    "associatedCarrier": [
+                        1,
+                        2,
+                        2,
+                        2,
+                        2,
+                        2
+                    ],
+                    "modulatedBy": [
+                        [
+                            3
+                        ],
+                        [
+                            4
+                        ],
+                        [],
+                        [
+                            5
+                        ],
+                        [
+                            6
+                        ],
+                        []
+                    ]
+                },
+                "1\u21903\u21904\u20032\u21905\u21906": {
+                    "carrierCount": 2,
+                    "associatedCarrier": [
+                        1,
+                        1,
+                        1,
+                        2,
+                        2,
+                        2
+                    ],
+                    "modulatedBy": [
+                        [
+                            3
+                        ],
+                        [
+                            5
+                        ],
+                        [
+                            4
+                        ],
+                        [],
+                        [
+                            6
+                        ],
+                        []
+                    ]
+                },
+                "1\u21904\u20032\u21905\u20033\u21906": {
+                    "carrierCount": 3,
+                    "associatedCarrier": [
+                        1,
+                        2,
+                        3,
+                        1,
+                        2,
+                        3
+                    ],
+                    "modulatedBy": [
+                        [
+                            4
+                        ],
+                        [
+                            5
+                        ],
+                        [
+                            6
+                        ],
+                        [],
+                        [],
+                        []
+                    ]
+                },
+                "1\u21903\u20022\u2190(4\u20025\u21906)": {
+                    "carrierCount": 2,
+                    "associatedCarrier": [
+                        1,
+                        2,
+                        2,
+                        2,
+                        2,
+                        2
+                    ],
+                    "modulatedBy": [
+                        [
+                            3
+                        ],
+                        [
+                            4,
+                            5
+                        ],
+                        [],
+                        [],
+                        [
+                            6
+                        ],
+                        []
+                    ]
+                },
+                "1\u2190(3\u20024)\u20022\u21905\u21906": {
+                    "carrierCount": 2,
+                    "associatedCarrier": [
+                        1,
+                        2,
+                        2,
+                        2,
+                        2,
+                        2
+                    ],
+                    "modulatedBy": [
+                        [
+                            3,
+                            4
+                        ],
+                        [
+                            5
+                        ],
+                        [],
+                        [],
+                        [
+                            6
+                        ],
+                        []
+                    ]
+                },
+                "1\u21903\u20022\u2190(4\u20025\u20026)": {
+                    "carrierCount": 2,
+                    "associatedCarrier": [
+                        1,
+                        2,
+                        2,
+                        2,
+                        2,
+                        2
+                    ],
+                    "modulatedBy": [
+                        [
+                            3
+                        ],
+                        [
+                            4,
+                            5,
+                            6
+                        ],
+                        [],
+                        [],
+                        [],
+                        []
+                    ]
+                },
+                "1\u21903\u20022\u2190(4\u20025)\u21906": {
+                    "carrierCount": 2,
+                    "associatedCarrier": [
+                        1,
+                        2,
+                        2,
+                        2,
+                        2,
+                        2
+                    ],
+                    "modulatedBy": [
+                        [
+                            3
+                        ],
+                        [
+                            4,
+                            5
+                        ],
+                        [],
+                        [
+                            6
+                        ],
+                        [
+                            6
+                        ],
+                        []
+                    ]
+                },
+                "1\u21903\u20022\u21904\u2190(5\u20026)": {
+                    "carrierCount": 2,
+                    "associatedCarrier": [
+                        1,
+                        2,
+                        2,
+                        2,
+                        2,
+                        2
+                    ],
+                    "modulatedBy": [
+                        [
+                            3
+                        ],
+                        [
+                            4
+                        ],
+                        [],
+                        [
+                            5,
+                            6
+                        ],
+                        [],
+                        []
+                    ]
+                },
+                "1\u2190(2\u20023\u20024\u20025\u20026)": {
+                    "carrierCount": 1,
+                    "associatedCarrier": [
+                        1,
+                        1,
+                        1,
+                        1,
+                        1,
+                        1
+                    ],
+                    "modulatedBy": [
+                        [
+                            2,
+                            3,
+                            4,
+                            5,
+                            6
+                        ],
+                        [],
+                        [],
+                        [],
+                        [],
+                        []
+                    ]
+                },
+                "1\u2190(2\u20023\u21905\u20024\u21906)": {
+                    "carrierCount": 1,
+                    "associatedCarrier": [
+                        1,
+                        1,
+                        1,
+                        1,
+                        1,
+                        1
+                    ],
+                    "modulatedBy": [
+                        [
+                            2,
+                            3,
+                            4
+                        ],
+                        [],
+                        [
+                            5
+                        ],
+                        [
+                            6
+                        ],
+                        [],
+                        []
+                    ]
+                },
+                "1\u2190(2\u20023\u20024\u21905\u21906)": {
+                    "carrierCount": 1,
+                    "associatedCarrier": [
+                        1,
+                        1,
+                        1,
+                        1,
+                        1,
+                        1
+                    ],
+                    "modulatedBy": [
+                        [
+                            2,
+                            3,
+                            4
+                        ],
+                        [],
+                        [],
+                        [
+                            5
+                        ],
+                        [
+                            6
+                        ],
+                        []
+                    ]
+                },
+                "1\u21904\u21905\u2003(2\u20033)\u21906": {
+                    "carrierCount": 3,
+                    "associatedCarrier": [
+                        1,
+                        2,
+                        3,
+                        1,
+                        2,
+                        3
+                    ],
+                    "modulatedBy": [
+                        [
+                            4
+                        ],
+                        [
+                            6
+                        ],
+                        [
+                            6
+                        ],
+                        [
+                            5
+                        ],
+                        [],
+                        []
+                    ]
+                },
+                "1\u2190(3\u20034)\u21905 2\u21906": {
+                    "carrierCount": 2,
+                    "associatedCarrier": [
+                        1,
+                        2,
+                        2,
+                        2,
+                        2,
+                        2
+                    ],
+                    "modulatedBy": [
+                        [
+                            3,
+                            4
+                        ],
+                        [
+                            6
+                        ],
+                        [
+                            5
+                        ],
+                        [
+                            5
+                        ],
+                        [],
+                        []
+                    ]
+                },
+                "(1\u20032)\u21904\u20033\u2190(5\u20036)": {
+                    "carrierCount": 3,
+                    "associatedCarrier": [
+                        1,
+                        2,
+                        3,
+                        1,
+                        2,
+                        3
+                    ],
+                    "modulatedBy": [
+                        [
+                            4
+                        ],
+                        [
+                            4
+                        ],
+                        [
+                            5,
+                            6
+                        ],
+                        [],
+                        [],
+                        []
+                    ]
+                },
+                "(1\u20032)\u21905\u2003(3\u20034)\u21906": {
+                    "carrierCount": 4,
+                    "associatedCarrier": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        4,
+                        4
+                    ],
+                    "modulatedBy": [
+                        [
+                            5
+                        ],
+                        [
+                            5
+                        ],
+                        [
+                            6
+                        ],
+                        [
+                            6
+                        ],
+                        [],
+                        []
+                    ]
+                },
+                "(1\u20032\u20033)\u2190(4\u20035\u20036)": {
+                    "carrierCount": 3,
+                    "associatedCarrier": [
+                        1,
+                        2,
+                        3,
+                        1,
+                        2,
+                        3
+                    ],
+                    "modulatedBy": [
+                        [
+                            4,
+                            5,
+                            6
+                        ],
+                        [
+                            4,
+                            5,
+                            6
+                        ],
+                        [
+                            4,
+                            5,
+                            6
+                        ],
+                        [],
+                        [],
+                        []
+                    ]
+                },
+                "1\u21905\u2003(2\u20033\u20034)\u21906": {
+                    "carrierCount": 4,
+                    "associatedCarrier": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        4,
+                        4
+                    ],
+                    "modulatedBy": [
+                        [
+                            5
+                        ],
+                        [
+                            6
+                        ],
+                        [
+                            6
+                        ],
+                        [
+                            6
+                        ],
+                        [],
+                        []
+                    ]
+                },
+                "1\u20032\u21905\u2003(3\u20034)\u21906": {
+                    "carrierCount": 4,
+                    "associatedCarrier": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        4,
+                        4
+                    ],
+                    "modulatedBy": [
+                        [],
+                        [
+                            5
+                        ],
+                        [
+                            6
+                        ],
+                        [
+                            6
+                        ],
+                        [],
+                        []
+                    ]
+                },
+                "1\u20032\u2003(3\u20034\u20035)\u21906": {
+                    "carrierCount": 5,
+                    "associatedCarrier": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        5
+                    ],
+                    "modulatedBy": [
+                        [],
+                        [],
+                        [
+                            6
+                        ],
+                        [
+                            6
+                        ],
+                        [
+                            6
+                        ],
+                        []
+                    ]
+                },
+                "1\u20032\u20033\u2003(4\u20035)\u21906": {
+                    "carrierCount": 5,
+                    "associatedCarrier": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        5
+                    ],
+                    "modulatedBy": [
+                        [],
+                        [],
+                        [],
+                        [
+                            6
+                        ],
+                        [
+                            6
+                        ],
+                        []
+                    ]
+                },
+                "1\u20032\u21904\u20033\u2190(5\u20036)": {
+                    "carrierCount": 3,
+                    "associatedCarrier": [
+                        1,
+                        2,
+                        3,
+                        3,
+                        3,
+                        3
+                    ],
+                    "modulatedBy": [
+                        [],
+                        [
+                            4
+                        ],
+                        [
+                            5,
+                            6
+                        ],
+                        [],
+                        [],
+                        []
+                    ]
+                },
+                "1\u21904\u20032\u2190(5\u20036)\u20033": {
+                    "carrierCount": 3,
+                    "associatedCarrier": [
+                        1,
+                        2,
+                        3,
+                        3,
+                        3,
+                        3
+                    ],
+                    "modulatedBy": [
+                        [
+                            4
+                        ],
+                        [
+                            5,
+                            6
+                        ],
+                        [],
+                        [],
+                        [],
+                        []
+                    ]
+                },
+                "1\u20032\u20033\u21905\u20034\u21906": {
+                    "carrierCount": 4,
+                    "associatedCarrier": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        4,
+                        4
+                    ],
+                    "modulatedBy": [
+                        [],
+                        [],
+                        [
+                            5
+                        ],
+                        [
+                            6
+                        ],
+                        [],
+                        []
+                    ]
+                },
+                "1\u2003(2\u20033)\u21905\u21906\u20034": {
+                    "carrierCount": 4,
+                    "associatedCarrier": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        4,
+                        4
+                    ],
+                    "modulatedBy": [
+                        [],
+                        [
+                            5
+                        ],
+                        [
+                            5
+                        ],
+                        [],
+                        [
+                            6
+                        ],
+                        []
+                    ]
+                },
+                "1\u20032\u20033\u21905\u21906\u20034": {
+                    "carrierCount": 4,
+                    "associatedCarrier": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        4,
+                        4
+                    ],
+                    "modulatedBy": [
+                        [],
+                        [],
+                        [
+                            5,
+                            6
+                        ],
+                        [],
+                        [],
+                        []
+                    ]
+                },
+                "(1\u20032\u20033\u20034\u20035)\u21906": {
+                    "carrierCount": 5,
+                    "associatedCarrier": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        5
+                    ],
+                    "modulatedBy": [
+                        [
+                            6
+                        ],
+                        [
+                            6
+                        ],
+                        [
+                            6
+                        ],
+                        [
+                            6
+                        ],
+                        [
+                            6
+                        ],
+                        []
+                    ]
+                },
+                "1\u20032\u20033\u20034\u20035\u21906": {
+                    "carrierCount": 5,
+                    "associatedCarrier": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        5
+                    ],
+                    "modulatedBy": [
+                        [],
+                        [],
+                        [],
+                        [],
+                        [
+                            6
+                        ],
+                        []
+                    ]
+                },
+                "1\u20032\u20033\u20034\u20035\u20036": {
+                    "carrierCount": 6,
+                    "associatedCarrier": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        6
+                    ],
+                    "modulatedBy": [
+                        [],
+                        [],
+                        [],
+                        [],
+                        [],
+                        []
+                    ]
+                },
+                "1\u2190(2 (3 (4 (5 (6": {
+                    "carrierCount": 5,
+                    "associatedCarrier": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        5
+                    ],
+                    "modulatedBy": [
+                        [
+                            2,
+                            3,
+                            4,
+                            5,
+                            6
+                        ],
+                        [
+                            3,
+                            4,
+                            5,
+                            6
+                        ],
+                        [
+                            4,
+                            5,
+                            6
+                        ],
+                        [
+                            5,
+                            6
+                        ],
+                        [
+                            6
+                        ],
+                        []
+                    ]
+                },
+                "1\u2190(2(3(4(5(6": {
+                    "carrierCount": 1,
+                    "associatedCarrier": [
+                        1,
+                        1,
+                        1,
+                        1,
+                        1,
+                        1
+                    ],
+                    "modulatedBy": [
+                        [
+                            2,
+                            3,
+                            4,
+                            5,
+                            6
+                        ],
+                        [
+                            3,
+                            4,
+                            5,
+                            6
+                        ],
+                        [
+                            4,
+                            5,
+                            6
+                        ],
+                        [
+                            5,
+                            6
+                        ],
+                        [
+                            6
+                        ],
+                        []
+                    ]
+                },
+                "1\u21904(2\u21905(3\u21906": {
+                    "carrierCount": 3,
+                    "associatedCarrier": [
+                        1,
+                        2,
+                        3,
+                        1,
+                        2,
+                        3
+                    ],
+                    "modulatedBy": [
+                        [
+                            2,
+                            3,
+                            4
+                        ],
+                        [
+                            3,
+                            5
+                        ],
+                        [
+                            6
+                        ],
+                        [],
+                        [],
+                        []
+                    ]
+                },
+                "1\u21904(2\u21905 3\u21906": {
+                    "carrierCount": 3,
+                    "associatedCarrier": [
+                        1,
+                        2,
+                        3,
+                        1,
+                        2,
+                        3
+                    ],
+                    "modulatedBy": [
+                        [
+                            2,
+                            3,
+                            4
+                        ],
+                        [
+                            5
+                        ],
+                        [
+                            6
+                        ],
+                        [],
+                        [],
+                        []
+                    ]
+                }
+            },
+            "feedback": {
+                "Custom": {
+                    "indices": [
+                        [
+                            2,
+                            3,
+                            4,
+                            5,
+                            6
+                        ],
+                        [],
+                        [],
+                        [],
+                        [],
+                        []
+                    ]
+                },
+                "1\u27f2": {
+                    "indices": [
+                        [
+                            1
+                        ],
+                        [],
+                        [],
+                        [],
+                        [],
+                        []
+                    ]
+                },
+                "2\u27f2": {
+                    "indices": [
+                        [],
+                        [
+                            2
+                        ],
+                        [],
+                        [],
+                        [],
+                        []
+                    ]
+                },
+                "3\u27f2": {
+                    "indices": [
+                        [],
+                        [],
+                        [
+                            3
+                        ],
+                        [],
+                        [],
+                        []
+                    ]
+                },
+                "4\u27f2": {
+                    "indices": [
+                        [],
+                        [],
+                        [],
+                        [
+                            4
+                        ],
+                        [],
+                        []
+                    ]
+                },
+                "5\u27f2": {
+                    "indices": [
+                        [],
+                        [],
+                        [],
+                        [],
+                        [
+                            5
+                        ],
+                        []
+                    ]
+                },
+                "6\u27f2": {
+                    "indices": [
+                        [],
+                        [],
+                        [],
+                        [],
+                        [],
+                        [
+                            6
+                        ]
+                    ]
+                },
+                "1\u27f2\u20022\u27f2": {
+                    "indices": [
+                        [
+                            1
+                        ],
+                        [
+                            2
+                        ],
+                        [],
+                        [],
+                        [],
+                        []
+                    ]
+                },
+                "3\u27f2\u20024\u27f2": {
+                    "indices": [
+                        [],
+                        [],
+                        [
+                            3
+                        ],
+                        [
+                            4
+                        ],
+                        [],
+                        []
+                    ]
+                },
+                "1\u27f2\u20022\u27f2\u20023\u27f2": {
+                    "indices": [
+                        [
+                            1
+                        ],
+                        [
+                            2
+                        ],
+                        [
+                            3
+                        ],
+                        [],
+                        [],
+                        []
+                    ]
+                },
+                "2\u27f2\u20023\u27f2\u20024\u27f2": {
+                    "indices": [
+                        [],
+                        [
+                            2
+                        ],
+                        [
+                            3
+                        ],
+                        [
+                            4
+                        ],
+                        [],
+                        []
+                    ]
+                },
+                "1\u27f2 2\u27f2 3\u27f2 4\u27f2": {
+                    "indices": [
+                        [
+                            1
+                        ],
+                        [
+                            2
+                        ],
+                        [
+                            3
+                        ],
+                        [
+                            4
+                        ],
+                        [],
+                        []
+                    ]
+                },
+                "1\u27f2 2\u27f2 3\u27f2 4\u27f2 5\u27f2": {
+                    "indices": [
+                        [
+                            1
+                        ],
+                        [
+                            2
+                        ],
+                        [
+                            3
+                        ],
+                        [
+                            4
+                        ],
+                        [
+                            5
+                        ],
+                        []
+                    ]
+                },
+                "1\u27f2 2\u27f2 3\u27f2 4\u27f2 5\u27f2 6\u27f2": {
+                    "indices": [
+                        [
+                            1
+                        ],
+                        [
+                            2
+                        ],
+                        [
+                            3
+                        ],
+                        [
+                            4
+                        ],
+                        [
+                            5
+                        ],
+                        [
+                            6
+                        ]
+                    ]
+                },
+                "1\u21922": {
+                    "indices": [
+                        [],
+                        [
+                            1
+                        ],
+                        [],
+                        [],
+                        [],
+                        []
+                    ]
+                },
+                "1\u21923": {
+                    "indices": [
+                        [],
+                        [],
+                        [
+                            1
+                        ],
+                        [],
+                        [],
+                        []
+                    ]
+                },
+                "1\u21924": {
+                    "indices": [
+                        [],
+                        [],
+                        [],
+                        [
+                            1
+                        ],
+                        [],
+                        []
+                    ]
+                },
+                "1\u21925": {
+                    "indices": [
+                        [],
+                        [],
+                        [],
+                        [],
+                        [
+                            1
+                        ],
+                        []
+                    ]
+                },
+                "1\u21926": {
+                    "indices": [
+                        [],
+                        [],
+                        [],
+                        [],
+                        [],
+                        [
+                            1
+                        ]
+                    ]
+                },
+                "2\u21923": {
+                    "indices": [
+                        [],
+                        [],
+                        [
+                            2
+                        ],
+                        [],
+                        [],
+                        []
+                    ]
+                },
+                "2\u21924": {
+                    "indices": [
+                        [],
+                        [],
+                        [],
+                        [
+                            2
+                        ],
+                        [],
+                        []
+                    ]
+                },
+                "3\u21924": {
+                    "indices": [
+                        [],
+                        [],
+                        [],
+                        [
+                            3
+                        ],
+                        [],
+                        []
+                    ]
+                },
+                "4\u21925": {
+                    "indices": [
+                        [],
+                        [],
+                        [],
+                        [],
+                        [
+                            4
+                        ],
+                        []
+                    ]
+                },
+                "1\u21924\u20022\u21925 3\u21926": {
+                    "indices": [
+                        [],
+                        [],
+                        [],
+                        [
+                            1
+                        ],
+                        [
+                            2
+                        ],
+                        [
+                            3
+                        ]
+                    ]
+                },
+                "1\u21925\u20022\u21926 3\u21924": {
+                    "indices": [
+                        [],
+                        [],
+                        [],
+                        [
+                            3
+                        ],
+                        [
+                            1
+                        ],
+                        [
+                            2
+                        ]
+                    ]
+                },
+                "1\u21922\u21923\u21924\u21925\u21926": {
+                    "indices": [
+                        [],
+                        [
+                            1
+                        ],
+                        [
+                            2
+                        ],
+                        [
+                            3
+                        ],
+                        [
+                            4
+                        ],
+                        [
+                            5
+                        ]
+                    ]
+                },
+                "2\u21921\u21926\u21925\u21924\u21923\u21922": {
+                    "indices": [
+                        [
+                            2
+                        ],
+                        [
+                            3
+                        ],
+                        [
+                            4
+                        ],
+                        [
+                            5
+                        ],
+                        [
+                            6
+                        ],
+                        [
+                            1
+                        ]
+                    ]
+                },
+                "1\u21922\u21923\u21924\u21925\u21926\u21921": {
+                    "indices": [
+                        [
+                            6
+                        ],
+                        [
+                            1
+                        ],
+                        [
+                            2
+                        ],
+                        [
+                            3
+                        ],
+                        [
+                            4
+                        ],
+                        [
+                            5
+                        ]
+                    ]
+                },
+                "1\u21942 3\u21944 5\u21946": {
+                    "indices": [
+                        [
+                            2
+                        ],
+                        [
+                            1
+                        ],
+                        [
+                            4
+                        ],
+                        [
+                            3
+                        ],
+                        [
+                            6
+                        ],
+                        [
+                            5
+                        ]
+                    ]
+                },
+                "1\u21944 2\u21945 3\u21946": {
+                    "indices": [
+                        [
+                            4
+                        ],
+                        [
+                            5
+                        ],
+                        [
+                            6
+                        ],
+                        [
+                            1
+                        ],
+                        [
+                            2
+                        ],
+                        [
+                            3
+                        ]
+                    ]
+                },
+                "(1,2,3,4,5)\u21926": {
+                    "indices": [
+                        [],
+                        [],
+                        [],
+                        [],
+                        [],
+                        [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5
+                        ]
+                    ]
+                },
+                "ALL": {
+                    "indices": [
+                        [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6
+                        ],
+                        [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6
+                        ],
+                        [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6
+                        ],
+                        [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6
+                        ],
+                        [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6
+                        ],
+                        [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6
+                        ]
+                    ]
+                }
+            }
+        }
     }
 }
