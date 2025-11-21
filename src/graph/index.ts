@@ -47,21 +47,23 @@ export interface NodeGraphInput {
     mode: AutomatedValueMethod;
 }
 
-export type NodeInput = number | [
-    indexOrValue: number | string,
-    from: NodeInputLocation,
-];
+export type NodeInput =
+    | number
+    | [NodeInputLocation.CONSTANT, number]
+    | [NodeInputLocation.MOD, string]
+    | [NodeInputLocation.FRAG_INPUT, string]
+    | [
+        | NodeInputLocation.SAMPLE_INPUT
+        | NodeInputLocation.PITCH_VAL
+        | NodeInputLocation.GATE_VAL
+        | NodeInputLocation.EXPRESSION_VAL]
 
 export enum NodeInputLocation {
     CONSTANT,
-    WELL_KNOWN,
     MOD,
-    FRAG_INPUT
-}
-
-export enum WellKnownInput {
-    PASS_IN,
-    PITCH,
-    GATE,
-    EXPRESSION
+    FRAG_INPUT,
+    SAMPLE_INPUT,
+    PITCH_VAL,
+    GATE_VAL,
+    EXPRESSION_VAL
 }

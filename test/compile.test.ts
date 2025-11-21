@@ -153,7 +153,7 @@ test("compile with smeared nodes", () => {
 });
 
 test("compile with matrix builder", () => {
-    const k = (n: number): NodeInput => [n, NodeInputLocation.CONSTANT];
+    const k = (n: number): NodeInput => [NodeInputLocation.CONSTANT, n];
     const fragment1: NodeGraph = {
         mods: {},
         out: 0,
@@ -176,7 +176,7 @@ test("compile with matrix builder", () => {
     ])
 });
 test("compile with matrix builder with inputs", () => {
-    const k = (n: number): NodeInput => [n, NodeInputLocation.CONSTANT];
+    const k = (n: number): NodeInput => [NodeInputLocation.CONSTANT, n];
     const fragment1: NodeGraph = {
         mods: {},
         out: 0,

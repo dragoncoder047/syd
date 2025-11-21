@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 import { AudioProcessorFactory, compile, ErrorReason, NodeGraph, NodeInputLocation } from "../src";
-import { GraphFragment, NodeFragmentEdge, unifyGraphFragments } from "../src/graph/fragment";
+import { getFragmentInputs, GraphFragment, NodeFragmentEdge, unifyGraphFragments } from "../src/graph/fragment";
 import { Matrix } from "../src/matrix";
 import { Opcode } from "../src/runtime/program";
 
@@ -10,7 +10,7 @@ test("unify fragments", () => {
         out: { x: 0 },
         nodes: [
             ["a", [1, 0]],
-            ["b", [1, 0, ["z", NodeInputLocation.FRAG_INPUT]]],
+            ["b", [1, 0, [NodeInputLocation.FRAG_INPUT, "z"]]],
         ]
     };
     const fragment2: GraphFragment = {
@@ -41,7 +41,7 @@ test("compining graph with un-unified input returns an error but uses the defaul
         mods: {},
         out: 0,
         nodes: [
-            ["b", [["z", NodeInputLocation.FRAG_INPUT]]],
+            ["b", [[NodeInputLocation.FRAG_INPUT, "z"]]],
         ]
     };
     const nodes: AudioProcessorFactory[] = [
@@ -87,7 +87,7 @@ test("fragment with constant inputs inlined constants", () => {
         out: { x: 0 },
         nodes: [
             ["a", [1, 0]],
-            ["b", [1, 0, ["z", NodeInputLocation.FRAG_INPUT]]],
+            ["b", [1, 0, [NodeInputLocation.FRAG_INPUT, "z"]]],
         ]
     };
     const links: NodeFragmentEdge[] = [
@@ -96,9 +96,20 @@ test("fragment with constant inputs inlined constants", () => {
     expect(unifyGraphFragments([fragment], links, 0, "x")).toEqual({
         nodes: [
             ["a", [1, 0]],
-            ["b", [1, 0, [123, NodeInputLocation.CONSTANT]]],
+            ["b", [1, 0, [NodeInputLocation.CONSTANT, 123]]],
         ],
         out: 0,
         mods: {}
     });
+});
+test("fragment get all inputs", () => {
+    const fragment: GraphFragment = {
+        mods: {},
+        out: { x: 0 },
+        nodes: [
+            ["a", [1, 0]],
+            ["b", [1, 0, [NodeInputLocation.FRAG_INPUT, "z"], [NodeInputLocation.FRAG_INPUT, "y"]]],
+        ]
+    };
+    expect(getFragmentInputs(fragment)).toEqual(["z", "y"])
 });

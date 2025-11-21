@@ -1,4 +1,4 @@
-import { NodeGraph, NodeInput, NodeInputLocation, SpecialNodeKind, WellKnownInput } from "../graph";
+import { NodeGraph, NodeInput, NodeInputLocation, SpecialNodeKind } from "../graph";
 import { Matrix, scalarMatrix } from "../matrix";
 import { AutomatedValueMethod } from "../runtime/automation";
 import { Opcode, Program } from "../runtime/program";
@@ -63,7 +63,7 @@ export function compile(graph: NodeGraph, defs: AudioProcessorFactory[]): [Compi
             if (isNumber(arg)) {
                 recurse(arg);
             } else {
-                switch (arg[1]) {
+                switch (arg[0]) {
                     case NodeInputLocation.FRAG_INPUT:
                         errors.push({
                             node: nodeNo,
@@ -75,23 +75,20 @@ export function compile(graph: NodeGraph, defs: AudioProcessorFactory[]): [Compi
                         argIsConstant = true;
                         break;
                     case NodeInputLocation.CONSTANT:
-                        argConstantValue = arg[0] as number;
+                        argConstantValue = arg[1] as number;
                         argIsConstant = true;
                         break;
-                    case NodeInputLocation.WELL_KNOWN:
-                        switch (arg[0] as WellKnownInput) {
-                            case WellKnownInput.PASS_IN:
-                                program.push([Opcode.PUSH_INPUT_SAMPLES]);
-                                break;
-                            case WellKnownInput.PITCH:
-                                program.push([Opcode.PUSH_PITCH]);
-                                break;
-                            case WellKnownInput.GATE:
-                                program.push([Opcode.PUSH_GATE]);
-                                break;
-                            case WellKnownInput.EXPRESSION:
-                                program.push([Opcode.PUSH_EXPRESSION]);
-                        }
+                    case NodeInputLocation.SAMPLE_INPUT:
+                        program.push([Opcode.PUSH_INPUT_SAMPLES]);
+                        break;
+                    case NodeInputLocation.PITCH_VAL:
+                        program.push([Opcode.PUSH_PITCH]);
+                        break;
+                    case NodeInputLocation.GATE_VAL:
+                        program.push([Opcode.PUSH_GATE]);
+                        break;
+                    case NodeInputLocation.EXPRESSION_VAL:
+                        program.push([Opcode.PUSH_EXPRESSION]);
                         break;
                     case NodeInputLocation.MOD:
                         program.push([Opcode.GET_MOD, arg[0]]);

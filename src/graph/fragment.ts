@@ -12,6 +12,18 @@ export type GraphFragment = Omit<NodeGraph, "out"> & {
     out: Record<string, number>;
 };
 
+export function getFragmentInputs(fragment: GraphFragment): string[] {
+    const out: string[] = [];
+    for (var [_name, inputs] of fragment.nodes) {
+        for (var input of inputs) {
+            if (isArray(input) && input[0] == NodeInputLocation.FRAG_INPUT) {
+                out.push(input[1] as string);
+            }
+        }
+    }
+    return out;
+}
+
 export function unifyGraphFragments(fragments: GraphFragment[], edges: NodeFragmentEdge[], outFrag: number, outPort: string): NodeGraph {
     const merged: NodeGraph = {
         nodes: [],
@@ -44,11 +56,11 @@ export function unifyGraphFragments(fragments: GraphFragment[], edges: NodeFragm
         const [srcFragment] = nodeToFragmentMap[globalNodeNo]!;
         for (var argNo = 0; argNo < args.length; argNo++) {
             const arg = args[argNo]!;
-            if (isArray(arg) && arg[1] === NodeInputLocation.FRAG_INPUT) {
+            if (isArray(arg) && arg[0] === NodeInputLocation.FRAG_INPUT) {
                 // Find the output node of fragment N
-                const inputName = arg[0] as string;
+                const inputName = arg[1] as string;
                 const { from, constant, value } = edges.find(({ to: [toFrag, toName] }) => toFrag === srcFragment && toName == inputName)!;
-                args[argNo] = constant ? [value!, NodeInputLocation.CONSTANT] : globalOutputNumberOfFragment(from![0], from![1]);
+                args[argNo] = constant ? [NodeInputLocation.CONSTANT, value!] : globalOutputNumberOfFragment(from![0], from![1]);
             } else if (isNumber(arg)) {
                 // Intra-fragment renumbering
                 args[argNo] = fragToRenumberMap[srcFragment]![arg]!;
