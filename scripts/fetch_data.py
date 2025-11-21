@@ -33,7 +33,7 @@ def ensure_github_repo(folder: str, repo_id: str):
     try:
         subprocess.check_call(["git", "pull"])
     except subprocess.CalledProcessError as e:
-        print("Command filed with exit code", e.returncode)
+        print("Command failed with exit code", e.returncode)
     finally:
         os.chdir(old_dir)
 
