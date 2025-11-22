@@ -1,6 +1,5 @@
-import { NodeGraph, NodeInput, NodeInputLocation, SpecialNodeKind } from "../graph";
+import { NodeGraph, NodeInput, NodeInputLocation as NodeInputLocation, SpecialNodeKind } from "../graph/types";
 import { Matrix, scalarMatrix } from "../matrix";
-import { AutomatedValueMethod } from "../runtime/automation";
 import { Opcode, Program } from "../runtime/program";
 import { isArray, isNumber, isString } from "../utils";
 import { AudioProcessorFactory, Dimensions, SCALAR_DIMS } from "./nodeDef";
@@ -10,7 +9,6 @@ export interface CompiledGraph {
     registers: Matrix[];
     constantTab: Matrix[];
     nodes: [type: string, dimVars: Record<string, number>][];
-    mods: [name: string, initial: number, mode: AutomatedValueMethod][];
 }
 
 export enum ErrorReason {
@@ -42,7 +40,6 @@ export function compile(graph: NodeGraph, defs: AudioProcessorFactory[]): [Compi
         Object.fromEntries([...seenTwice]
             .map((nodeNo, regNo) => [nodeNo, regNo]));
     const constantTab: Matrix[] = [];
-    const mods: CompiledGraph["mods"] = Object.entries(graph.mods).map(([name, { value, mode }]) => [name, value, mode]);
     const recurse = (nodeNo: number) => {
         if (seenInCompilation.has(nodeNo)) {
             program.push([Opcode.GET_REGISTER, nodeIndexToRegisterIndex[nodeNo]]);
@@ -150,7 +147,6 @@ export function compile(graph: NodeGraph, defs: AudioProcessorFactory[]): [Compi
         registers,
         constantTab,
         nodes,
-        mods,
     }, errors]
 }
 

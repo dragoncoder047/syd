@@ -11,6 +11,8 @@ export interface PitchedInstrument {
 export interface ModInstrument {
     isMod: true;
     name: string;
+    value: number,
+    mode: AutomatedValueMethod
     min: number;
     max: number;
     step?: number;
@@ -19,7 +21,6 @@ export interface ModInstrument {
 export interface NodeGraph {
     nodes: GraphNode[];
     out: number;
-    mods: Record<string, NodeGraphInput>;
 }
 
 export type GraphNode = [
@@ -37,14 +38,6 @@ export enum SpecialNodeKind {
     // Passes through
     MARK_ALIVE,
     BUILD_MATRIX,
-}
-
-export interface NodeGraphInput {
-    value: number;
-    min: number;
-    max: number;
-    step?: number;
-    mode: AutomatedValueMethod;
 }
 
 export type NodeInput =

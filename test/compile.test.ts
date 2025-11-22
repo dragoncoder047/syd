@@ -5,7 +5,6 @@ import { Opcode } from "../src/runtime/program";
 
 test("compiles", () => {
     const fragment1: NodeGraph = {
-        mods: {},
         out: 0,
         nodes: [
             ["a", [1, 0]],
@@ -47,7 +46,6 @@ test("compiles", () => {
             ],
             registers: [Matrix.scalar(0)],
             constantTab: [],
-            mods: [],
             nodes: [
                 ["a", { M: 2, N: 3, P: 1, Q: 1 }],
                 ["b", {}]
@@ -59,7 +57,6 @@ test("compiles", () => {
 
 test("compile with warnings", () => {
     const fragment1: NodeGraph = {
-        mods: {},
         out: 0,
         nodes: [
             ["a", [0]],
@@ -88,7 +85,6 @@ test("compile with warnings", () => {
             ],
             registers: [new Matrix(2, 4)],
             constantTab: [],
-            mods: [],
             nodes: [
                 ["a", { N: 2 }],
             ]
@@ -106,7 +102,6 @@ test("compile with warnings", () => {
 
 test("compile with smeared nodes", () => {
     const fragment1: NodeGraph = {
-        mods: {},
         out: 0,
         nodes: [
             ["a", [1]],
@@ -142,7 +137,6 @@ test("compile with smeared nodes", () => {
             ],
             registers: [],
             constantTab: [],
-            mods: [],
             nodes: [
                 ["a", {}],
                 ["b", {}]
@@ -155,7 +149,6 @@ test("compile with smeared nodes", () => {
 test("compile with matrix builder", () => {
     const k = (n: number): NodeInput => [NodeInputLocation.CONSTANT, n];
     const fragment1: NodeGraph = {
-        mods: {},
         out: 0,
         nodes: [
             [[SpecialNodeKind.BUILD_MATRIX, 2, 3], [k(1), k(2), k(3), k(4), k(5), k(6)]],
@@ -169,7 +162,6 @@ test("compile with matrix builder", () => {
             ],
             registers: [],
             constantTab: [Matrix.of2DList([[1, 2, 3], [4, 5, 6]])],
-            mods: [],
             nodes: []
         },
         []
@@ -178,7 +170,6 @@ test("compile with matrix builder", () => {
 test("compile with matrix builder with inputs", () => {
     const k = (n: number): NodeInput => [NodeInputLocation.CONSTANT, n];
     const fragment1: NodeGraph = {
-        mods: {},
         out: 0,
         nodes: [
             [[SpecialNodeKind.BUILD_MATRIX, 2, 3], [k(1), 1, k(3), k(4), 1, k(6)]],
@@ -205,7 +196,6 @@ test("compile with matrix builder with inputs", () => {
             ],
             registers: [Matrix.scalar(0)],
             constantTab: [Matrix.of2DList([[1, 0, 3], [4, 0, 6]])],
-            mods: [],
             nodes: [
                 ["a", {}]
             ]

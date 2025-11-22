@@ -28,10 +28,14 @@ so I joined the [beepbox modding discord server](https://discord.com/invite/Tc99
 
 lol I have no idea what I'm doing
 
-* add a 3rd mod channel kind that gets fed the samples from one instrument through an envelope detector and maps the envelope to a range
+* can implement all mod channels by adding a "set mod" primitive
+  * it only adds to VALUE if SET is not false
+  * add a 3rd mod channel kind that gets fed the samples from one instrument through an envelope detector and maps the envelope to a range
+* remove per-instrument fx
+* lemon's text channel idea
+  * formant filter?
+  * need text-to-phoneme algorithm
 * visual instrument editor UI has "node builder" classes that return a graph fragment
   * they have a rectangle area with ports on left and right
-  * Use external js library for routing edges and layouting
-* importer for beepbox instruments & themes
-  * script to pull instruments from JukeBox and themes from AbyssBox
-  * base theme from styles.ts and ColorConfig values
+  * port libavoid algorithm to javascript <https://people.eng.unimelb.edu.au/pstuckey/papers/gd09.pdf>
+  * add a "rubber wire" force-directed floppy simulation mode

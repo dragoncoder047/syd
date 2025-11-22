@@ -1,4 +1,4 @@
-import { NodeGraph, NodeInputLocation } from ".";
+import { NodeGraph, NodeInputLocation } from "./types";
 import { isArray, isNumber } from "../utils";
 
 export interface NodeFragmentEdge {
@@ -28,15 +28,15 @@ export function unifyGraphFragments(fragments: GraphFragment[], edges: NodeFragm
     const merged: NodeGraph = {
         nodes: [],
         out: null as any,
-        mods: {},
+        inputs: {},
     };
     const fragToRenumberMap: Record<number, Record<number, number>> = {};
     const nodeToFragmentMap: Record<number, [frag: number, localNodeNo: number]> = {};
     for (var fragNo = 0; fragNo < fragments.length; fragNo++) {
-        const { nodes, mods } = fragments[fragNo]!;
+        const { nodes, inputs: mods } = fragments[fragNo]!;
         // Save the mods.
         for (var [name, mod] of Object.entries(mods)) {
-            merged.mods[name] = mod;
+            merged.inputs[name] = mod;
         }
         // Compute re-numberings for all nodes.
         fragToRenumberMap[fragNo] = {};
