@@ -5,43 +5,41 @@ export enum AutomatedValueMethod {
 }
 
 export class AutomatedValue {
-    delta: number = 0;
-    value: number = 0;
-    target: number = 0;
-    timeLeft: number = 0;
+    d = 0;
+    t = 0;
+    m = 0;
     constructor(
-        initial: number,
-        public mode: AutomatedValueMethod,
+        public c: number,
+        public a: AutomatedValueMethod,
     ) {
-        this.value = initial;
     }
     goto(newValue: number, dt: number, time: number) {
-        switch (this.mode) {
+        switch (this.a) {
             case AutomatedValueMethod.LINEAR:
-                this.delta = dt * (newValue - this.value) / time;
+                this.d = dt * (newValue - this.c) / time;
                 break;
             case AutomatedValueMethod.EXPONENTIAL:
-                if ((this.value * newValue) <= 0) {
+                if ((this.c * newValue) <= 0) {
                     throw new Error("cannot cross 0 when in exponential mode");
                 }
-                this.delta = Math.pow(newValue / this.value, dt / time);
+                this.d = Math.pow(newValue / this.c, dt / time);
         }
-        this.target = newValue;
-        this.timeLeft = time;
+        this.t = newValue;
+        this.m = time;
         if (!time) {
-            this.value = newValue;
+            this.c = newValue;
         }
     }
     /** HOT CODE */
     update(dt: number) {
-        this.timeLeft -= dt;
-        if (this.timeLeft < 0) {
-            this.timeLeft = 0;
-            return this.value = this.target;
+        this.m -= dt;
+        if (this.m < 0) {
+            this.m = 0;
+            return this.c = this.t;
         }
-        switch (this.mode) {
-            case AutomatedValueMethod.LINEAR: return this.value += this.delta;
-            case AutomatedValueMethod.EXPONENTIAL: return this.value *= this.delta;
+        switch (this.a) {
+            case AutomatedValueMethod.LINEAR: return this.c += this.d;
+            case AutomatedValueMethod.EXPONENTIAL: return this.c *= this.d;
         }
     }
 }

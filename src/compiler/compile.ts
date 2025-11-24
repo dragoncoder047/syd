@@ -35,6 +35,7 @@ export function compile(graph: NodeGraph, defs: AudioProcessorFactory[]): [Compi
     const program: Program = [];
     const seenInCompilation = new Set<number>();
     const flatNodes = graph.nodes
+        // TODO: account for "number" named nodes that function as constants
         .flatMap(([n], i) => isString(n) ? [i] : []);
     const nodeIndexToRegisterIndex: Record<number, number> =
         Object.fromEntries([...seenTwice]
@@ -75,9 +76,6 @@ export function compile(graph: NodeGraph, defs: AudioProcessorFactory[]): [Compi
                         argConstantValue = arg[1] as number;
                         argIsConstant = true;
                         break;
-                    case NodeInputLocation.SAMPLE_INPUT:
-                        program.push([Opcode.PUSH_INPUT_SAMPLES]);
-                        break;
                     case NodeInputLocation.PITCH_VAL:
                         program.push([Opcode.PUSH_PITCH]);
                         break;
@@ -87,8 +85,8 @@ export function compile(graph: NodeGraph, defs: AudioProcessorFactory[]): [Compi
                     case NodeInputLocation.EXPRESSION_VAL:
                         program.push([Opcode.PUSH_EXPRESSION]);
                         break;
-                    case NodeInputLocation.MOD:
-                        program.push([Opcode.GET_MOD, arg[0]]);
+                    case NodeInputLocation.CHANNEL:
+                        program.push([Opcode.GET_CHANNEL, arg[0]]);
                 }
             }
             const smear = needsSmeared[nodeNo]?.[argNo];
@@ -112,10 +110,19 @@ export function compile(graph: NodeGraph, defs: AudioProcessorFactory[]): [Compi
 
         }
         if (!isArray(nodeName)) {
-            program.push([Opcode.CALL_NODE, flatNodes.indexOf(nodeNo), args.length]);
+            if (isNumber(nodeName)) {
+                program.push([Opcode.PUSH_CONSTANT, constantTab.push(scalarMatrix(nodeName)) - 1])
+            }
+            else {
+                program.push([Opcode.CALL_NODE, flatNodes.indexOf(nodeNo), args.length]);
+            }
         } else {
-            if (nodeName[0] === SpecialNodeKind.MARK_ALIVE) {
-                program.push([Opcode.MARK_LIVE_STATE]);
+            switch (nodeName[0]) {
+                case SpecialNodeKind.MARK_ALIVE:
+                    program.push([Opcode.MARK_LIVE_STATE]);
+                    break;
+                case SpecialNodeKind.SAVE_TO_CHANNEL:
+                    program.push([Opcode.MAYBE_STORE_TO_CHANNEL, nodeName[1]]);
             }
         }
         if (seenTwice.has(nodeNo)) {
@@ -193,6 +200,9 @@ function resolveDimensions(graph: NodeGraph, map: Record<string, AudioProcessorF
                 case SpecialNodeKind.BUILD_MATRIX:
                     inputs = args.map(a => [a, SCALAR_DIMS]);
                     output = [nodeName[1], nodeName[2]];
+                    break;
+                case SpecialNodeKind.SAVE_TO_CHANNEL:
+                    inputs = [[args[0]!, output = SCALAR_DIMS], [args[1]!, [2, 1]]];
             }
         }
         exposed.push([inputs, output]);
@@ -204,14 +214,20 @@ function resolveDimensions(graph: NodeGraph, map: Record<string, AudioProcessorF
         const [in_] = exposed[nodeNo]!;
         for (var i = 0; i < in_.length; i++) {
             const [source, localVar] = in_[i]!;
-            // external inputs/outputs are always 1x1
             var fromName: number | null, fromDims: Dimensions;
             if (isNumber(source)) {
                 fromName = source;
                 fromDims = exposed[source]![1];
             } else {
                 fromName = null;
-                fromDims = [1, 1];
+                fromDims = [{
+                    [NodeInputLocation.CONSTANT]: 1,
+                    [NodeInputLocation.EXPRESSION_VAL]: 1,
+                    [NodeInputLocation.FRAG_INPUT]: 1,
+                    [NodeInputLocation.GATE_VAL]: 1,
+                    [NodeInputLocation.CHANNEL]: 2,
+                    [NodeInputLocation.PITCH_VAL]: 1,
+                }[source[0]], 1];
             }
             equalities.push(
                 [[fromName, fromDims[0]], [nodeNo, localVar[0]], i, 0],

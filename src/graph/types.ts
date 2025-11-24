@@ -28,34 +28,32 @@ export type GraphNode = [
     inputs: NodeInput[],
 ];
 
-export type SpecialNode = [
-    specialKind: SpecialNodeKind,
-    data1: any,
-    data2?: any
-];
+export type SpecialNode =
+    | [SpecialNodeKind.MARK_ALIVE]
+    | [SpecialNodeKind.BUILD_MATRIX, rows: number, cols: number]
+    | [SpecialNodeKind.SAVE_TO_CHANNEL, channel: string];
 
 export enum SpecialNodeKind {
     // Passes through
     MARK_ALIVE,
     BUILD_MATRIX,
+    SAVE_TO_CHANNEL,
 }
 
 export type NodeInput =
     | number
     | [NodeInputLocation.CONSTANT, number]
-    | [NodeInputLocation.MOD, string]
+    | [NodeInputLocation.CHANNEL, string]
     | [NodeInputLocation.FRAG_INPUT, string]
     | [
-        | NodeInputLocation.SAMPLE_INPUT
         | NodeInputLocation.PITCH_VAL
         | NodeInputLocation.GATE_VAL
         | NodeInputLocation.EXPRESSION_VAL]
 
 export enum NodeInputLocation {
     CONSTANT,
-    MOD,
+    CHANNEL,
     FRAG_INPUT,
-    SAMPLE_INPUT,
     PITCH_VAL,
     GATE_VAL,
     EXPRESSION_VAL

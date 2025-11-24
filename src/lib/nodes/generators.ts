@@ -35,22 +35,22 @@ export class WavetableOscillator implements AudioProcessorFactory {
         return inputs => {
             var sample = 0;
             const wantedFrequency = inputs[0]!.toScalar();
-            const wave = synth.waves[inputs[1]!.toScalar()];
+            const wave = synth.w[inputs[1]!.toScalar()];
             const phaseMod = inputs[2]!.toScalar();
             const aliasing = inputs[3]!.toScalar() > 0;
             if (wave) {
-                const baseFrequency = wave.basePitch;
+                const baseFrequency = wave.b;
                 const loopsPerSecond = wantedFrequency / baseFrequency;
                 const loopsPerSample = loopsPerSecond * synth.dt;
                 phase = fract(phase + loopsPerSample);
-                const fIndex = fract(phase + phaseMod) * wave.integral.length;
+                const fIndex = fract(phase + phaseMod) * wave.i.length;
                 if (aliasing) {
-                    sample = wave.samples[fIndex | 0]!;
+                    sample = wave.s[fIndex | 0]!;
                 } else {
                     const iIndex = fIndex | 0;
                     const alpha = fIndex - iIndex;
-                    var next = wave.integral[iIndex]!;
-                    next += (wave.integral[iIndex + 1]! - next) * alpha;
+                    var next = wave.i[iIndex]!;
+                    next += (wave.i[iIndex + 1]! - next) * alpha;
                     sample = next - prev;
                     next = prev;
                 }

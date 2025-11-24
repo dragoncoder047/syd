@@ -16,22 +16,16 @@ export class Matrix {
         return this.data[0]!;
     }
     asColumn(): this {
-        if (this.rows == 1) this.transpose();
+        if (this.rows == 1) return this.transpose();
         if (this.cols != 1)
             throw new Error("expected a column vector, but got a matrix");
         return this;
-    }
-    get isColumnVector() {
-        return this.cols == 1;
     }
     equals(other: Matrix) {
         if (other.rows != this.rows || other.cols != this.cols) return false;
         const r = other.rows, c = other.cols;
         for (var i = 0; i < r; i++) for (var j = 0; j < c; j++) if (this.get(i, j) != other.get(i, j)) return false;
         return true;
-    }
-    get dims(): Dimensions {
-        return [this.rows, this.cols];
     }
     resize(rows: number, cols: number): this {
         if (rows < 1 || cols < 1) throw new Error(`invalid dimensions: ${rows}x${cols}`);
@@ -45,15 +39,17 @@ export class Matrix {
         this.cols = cols;
         return this;
     }
+    fill(value: number): this {
+        this.data.fill(value, 0, this.rows * this.cols);
+        return this;
+    }
     smear(rows: number | null, cols: number | null): this {
-        var lastIndex = this.rows * this.cols;
+        const lastIndex = this.rows * this.cols;
         const last = this.data[lastIndex - 1]!;
         rows ??= this.rows;
         cols ??= this.cols;
         this.resize(rows, cols);
-        for (; lastIndex < rows * cols; lastIndex++) {
-            this.data[lastIndex] = last;
-        }
+        this.data.fill(last, lastIndex, rows * cols)
         return this;
     }
     setScalar(value: number): this {
@@ -72,7 +68,7 @@ export class Matrix {
         return m;
     }
     static resurrect(x: { rows: number, cols: number, data: Float32Array }) {
-        return new Matrix().copyFrom(x as Matrix);
+        return new this().copyFrom(x as Matrix);
     }
     static of2DList(xs: number[][]) {
         const rows = xs.length;

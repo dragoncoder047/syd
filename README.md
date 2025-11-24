@@ -28,14 +28,15 @@ so I joined the [beepbox modding discord server](https://discord.com/invite/Tc99
 
 lol I have no idea what I'm doing
 
-* can implement all mod channels by adding a "set mod" primitive
-  * it only adds to VALUE if SET is not false
-  * add a 3rd mod channel kind that gets fed the samples from one instrument through an envelope detector and maps the envelope to a range
-* remove per-instrument fx
+* make all connections using channels? and remove "return value" of nodes (just leave garbage on stack, but graph designates which output channel(s) it goes to)
+* write unit tests for constant nodes and stuff (compilation, unification/simplification)
 * lemon's text channel idea
   * formant filter?
   * need text-to-phoneme algorithm
 * visual instrument editor UI has "node builder" classes that return a graph fragment
   * they have a rectangle area with ports on left and right
   * port libavoid algorithm to javascript <https://people.eng.unimelb.edu.au/pstuckey/papers/gd09.pdf>
+    * idea for spaced routing: each internal node of visibility graph records how many links can fit through the gap; the node can be reused only for that many different connectors (outer nodes have infinite space and infinite capacity)
+    * how to add 45 degree segments?
+    * then at end just for each internal node used multiple times, find all of the paths, go to one end and sort them by the opposing coordinate of the endpoints, and then distribute them around the center of the gap
   * add a "rubber wire" force-directed floppy simulation mode

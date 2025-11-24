@@ -6,7 +6,6 @@ import { Opcode } from "../src/runtime/program";
 
 test("unify fragments", () => {
     const fragment1: GraphFragment = {
-        inputs: {},
         out: { x: 0 },
         nodes: [
             ["a", [1, 0]],
@@ -14,7 +13,6 @@ test("unify fragments", () => {
         ]
     };
     const fragment2: GraphFragment = {
-        inputs: {},
         out: { x: 0 },
         nodes: [
             ["c", [1, 0]],
@@ -32,13 +30,11 @@ test("unify fragments", () => {
             ["d", [3, 2]],
         ],
         out: 0,
-        inputs: {}
     });
 });
 
 test("compining graph with un-unified input returns an error but uses the default", () => {
     const fragment1: NodeGraph = {
-        inputs: {},
         out: 0,
         nodes: [
             ["b", [[NodeInputLocation.FRAG_INPUT, "z"]]],
@@ -66,7 +62,6 @@ test("compining graph with un-unified input returns an error but uses the defaul
             ],
             registers: [],
             constantTab: [Matrix.scalar(123)],
-            mods: [],
             nodes: [
                 ["b", {}]
             ]
@@ -83,7 +78,6 @@ test("compining graph with un-unified input returns an error but uses the defaul
 });
 test("fragment with constant inputs inlined constants", () => {
     const fragment: GraphFragment = {
-        inputs: {},
         out: { x: 0 },
         nodes: [
             ["a", [1, 0]],
@@ -99,12 +93,10 @@ test("fragment with constant inputs inlined constants", () => {
             ["b", [1, 0, [NodeInputLocation.CONSTANT, 123]]],
         ],
         out: 0,
-        inputs: {}
     });
 });
 test("fragment get all inputs", () => {
     const fragment: GraphFragment = {
-        inputs: {},
         out: { x: 0 },
         nodes: [
             ["a", [1, 0]],

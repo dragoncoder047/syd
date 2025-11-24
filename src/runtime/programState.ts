@@ -1,23 +1,25 @@
 import { AudioProcessor } from "../compiler/nodeDef";
 import { Matrix } from "../matrix";
+import { Channels } from "./channels";
 import { Opcode, Program } from "./program";
 
 export class ProgramState {
-    stack: Matrix[] = [];
-    argCache: Matrix[] = [];
-    result = new Matrix;
+    s: Matrix[] = [];
+    a: Matrix[] = [];
+    x = new Matrix;
     constructor(
-        public instructions: Program,
-        public registers: Matrix[],
-        public nodes: AudioProcessor[],
-        public constantTab: Matrix[]) { }
-    run(input: Matrix, pitch: number, expression: number, gate: number, mods: Record<string, number>, isStartOfBlock: boolean, blockProgress: number, alive: boolean): boolean {
-        const stack = this.stack;
-        const argv = this.argCache;
-        const prog = this.instructions;
-        const registers = this.registers;
-        const constants = this.constantTab;
-        const nodes = this.nodes;
+        public p: Program,
+        public r: Matrix[],
+        public n: AudioProcessor[],
+        public c: Matrix[]) { }
+    run(pitch: number, expression: number, gate: number, channels: Channels, isStartOfBlock: boolean, blockProgress: number, alive: boolean): boolean {
+        const stack = this.s;
+        const argv = this.a;
+        const prog = this.p;
+        const registers = this.r;
+        const constants = this.c;
+        const nodes = this.n;
+        const outSample = this.x;
 
         const push = (x: Matrix) => (stack[sp++] ??= new Matrix).copyFrom(x);
         const pushScalar = (x: number) => push(temp.setScalar(x));
@@ -27,16 +29,10 @@ export class ProgramState {
 
         var sp = 0, i: number;
         for (var pc = 0; pc < prog.length; pc++) {
-            const command = prog[pc]!;
-            const op = command[0];
-            const i1 = command[1]! as number;
-            const i2 = command[2]!;
+            const [op, i1, i2] = prog[pc]!;
             switch (op) {
                 case Opcode.PUSH_CONSTANT:
-                    push(constants[i1]!);
-                    break;
-                case Opcode.PUSH_INPUT_SAMPLES:
-                    push(input);
+                    push(constants[i1 as number]!);
                     break;
                 case Opcode.PUSH_PITCH:
                     pushScalar(pitch);
@@ -54,30 +50,35 @@ export class ProgramState {
                     alive = !!peek()!.toScalar();
                     break;
                 case Opcode.SMEAR_MATRIX:
-                    peek()!.smear(i1, i2);
+                    peek()!.smear(i1 as number, i2!);
                     break;
                 case Opcode.SET_MATRIX_EL:
                     i = pop()!.toScalar();
-                    peek()!.put(i1, i2!, i);
+                    peek()!.put(i1 as number, i2!, i);
                     break;
                 case Opcode.GET_REGISTER:
-                    push(registers[i1]!);
+                    push(registers[i1 as number]!);
                     break;
                 case Opcode.TAP_REGISTER:
-                    registers[i1]!.copyFrom(peek()!);
+                    registers[i1 as number]!.copyFrom(peek()!);
                     break;
                 case Opcode.CALL_NODE:
                     for (i = 0; i < i2!; i++) (argv[i2! - i - 1] ??= new Matrix).copyFrom(pop()!);
-                    push(nodes[i1]!(argv, isStartOfBlock, blockProgress));
+                    push(nodes[i1 as number]!(argv, isStartOfBlock, blockProgress));
                     break;
-                case Opcode.GET_MOD:
-                    pushScalar(mods[i1] ?? 0);
+                case Opcode.GET_CHANNEL:
+                    push(channels.get(i1 as string));
+                    break;
+                case Opcode.MAYBE_STORE_TO_CHANNEL:
+                    var a = pop()!, b = pop()!;
+                    if (a.toScalar() > 0) channels.put(i1 as string, b);
                     break;
                 default:
                     throw new Error(`unimplemented opcode ${Opcode[op]} snuck in...`);
             }
         }
-        this.result.copyFrom(pop()!);
+        outSample.copyFrom(pop()!);
+        if (outSample.rows !== 2 && outSample.cols !== 1) outSample.smear(2, 1);
         return alive;
     }
 }

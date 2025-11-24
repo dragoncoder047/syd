@@ -28,16 +28,11 @@ export function unifyGraphFragments(fragments: GraphFragment[], edges: NodeFragm
     const merged: NodeGraph = {
         nodes: [],
         out: null as any,
-        inputs: {},
     };
     const fragToRenumberMap: Record<number, Record<number, number>> = {};
     const nodeToFragmentMap: Record<number, [frag: number, localNodeNo: number]> = {};
     for (var fragNo = 0; fragNo < fragments.length; fragNo++) {
-        const { nodes, inputs: mods } = fragments[fragNo]!;
-        // Save the mods.
-        for (var [name, mod] of Object.entries(mods)) {
-            merged.inputs[name] = mod;
-        }
+        const { nodes } = fragments[fragNo]!;
         // Compute re-numberings for all nodes.
         fragToRenumberMap[fragNo] = {};
         for (var localNodeNo = 0; localNodeNo < nodes.length; localNodeNo++) {
