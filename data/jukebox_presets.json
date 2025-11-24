@@ -10778,7 +10778,7 @@
                 }
             },
             {
-                "name": "dubstep bwah - Lognes",
+                "name": "dubstep bwah (Lognes)",
                 "generalMidi": false,
                 "settings": {
                     "type": "FM",
@@ -11098,7 +11098,7 @@
                 }
             },
             {
-                "name": "synth marimba - Main",
+                "name": "synth marimba (Main)",
                 "generalMidi": false,
                 "settings": {
                     "type": "Picked String",
@@ -11170,7 +11170,7 @@
                 }
             },
             {
-                "name": "italian accordian - Neputendo",
+                "name": "italian accordian (Neputendo)",
                 "generalMidi": false,
                 "settings": {
                     "type": "custom chip",
@@ -11332,7 +11332,7 @@
                 }
             },
             {
-                "name": "chip supersaw - Neputendo",
+                "name": "chip supersaw (Neputendo)",
                 "generalMidi": false,
                 "settings": {
                     "type": "custom chip",
@@ -11503,7 +11503,7 @@
                 }
             },
             {
-                "name": "fm supersaw - Answering Machine",
+                "name": "fm supersaw (Answering Machine)",
                 "generalMidi": false,
                 "settings": {
                     "type": "FM6op",
@@ -11560,7 +11560,7 @@
                     "reverb": 0,
                     "fadeInSeconds": 0,
                     "fadeOutTicks": -1,
-                    "algorithm": "1\u20032\u20033\u20034\u20035\u20036",
+                    "algorithm": "1\u20032\u20033\u20034\u20035\ufffd\ufffd6",
                     "feedbackType": "1\u27f2",
                     "feedbackAmplitude": 0,
                     "operators": [
@@ -11676,7 +11676,7 @@
                 }
             },
             {
-                "name": "mrow - Nobo",
+                "name": "mrow (Nobo)",
                 "generalMidi": false,
                 "settings": {
                     "type": "FM",
@@ -61696,7 +61696,7 @@
             }
         ]
     ],
-    "DX7FM's FM Presets": [
+    "DX7FM's Presets": [
         [
             {
                 "name": "Simple Bass",
@@ -66310,7 +66310,7 @@
                 }
             },
             {
-                "name": "coolsaw - DX7FM",
+                "name": "coolsaw",
                 "generalMidi": false,
                 "settings": {
                     "type": "chip",
@@ -66352,7 +66352,7 @@
                 }
             },
             {
-                "name": "Gadget Bass - DX7FM",
+                "name": "Gadget Bass",
                 "generalMidi": false,
                 "settings": {
                     "type": "FM",
@@ -92840,6 +92840,886 @@
             }
         ]
     ],
+    "HappyLemonLime's Presets": [
+        [
+            {
+                "name": "cave oo",
+                "generalMidi": false,
+                "settings": {
+                    "type": "FM6op",
+                    "volume": 0,
+                    "eqFilter": [
+                        {
+                            "type": "low-pass",
+                            "cutoffHz": 11313.71,
+                            "linearGain": 1.4142
+                        }
+                    ],
+                    "eqFilterType": false,
+                    "eqSimpleCut": 10,
+                    "eqSimplePeak": 0,
+                    "envelopeSpeed": 12,
+                    "discreteEnvelope": false,
+                    "eqSubFilters0": [
+                        {
+                            "type": "low-pass",
+                            "cutoffHz": 11313.71,
+                            "linearGain": 1.4142
+                        }
+                    ],
+                    "effects": [
+                        "panning",
+                        "transition type",
+                        "chord type",
+                        "echo",
+                        "reverb"
+                    ],
+                    "transition": "interrupt",
+                    "clicklessTransition": false,
+                    "chord": "strum",
+                    "fastTwoNoteArp": false,
+                    "arpeggioSpeed": 12,
+                    "pan": 0,
+                    "panDelay": 10,
+                    "echoSustain": 57,
+                    "echoDelayBeats": 1.5,
+                    "reverb": 6,
+                    "fadeInSeconds": 0.0125,
+                    "fadeOutTicks": 24,
+                    "algorithm": "1\u21902\u21903\u21904\u21905\u21906",
+                    "feedbackType": "1\u27f2",
+                    "feedbackAmplitude": 0,
+                    "operators": [
+                        {
+                            "frequency": "1\u00d7",
+                            "amplitude": 15,
+                            "waveform": "sine",
+                            "pulseWidth": 5
+                        },
+                        {
+                            "frequency": "1\u00d7",
+                            "amplitude": 0,
+                            "waveform": "sine",
+                            "pulseWidth": 5
+                        },
+                        {
+                            "frequency": "1\u00d7",
+                            "amplitude": 0,
+                            "waveform": "sine",
+                            "pulseWidth": 5
+                        },
+                        {
+                            "frequency": "1\u00d7",
+                            "amplitude": 0,
+                            "waveform": "sine",
+                            "pulseWidth": 5
+                        },
+                        {
+                            "frequency": "1\u00d7",
+                            "amplitude": 0,
+                            "waveform": "sine",
+                            "pulseWidth": 5
+                        },
+                        {
+                            "frequency": "1\u00d7",
+                            "amplitude": 0,
+                            "waveform": "sine",
+                            "pulseWidth": 5
+                        }
+                    ],
+                    "envelopes": [
+                        {
+                            "target": "noteVolume",
+                            "envelope": "twang 3"
+                        }
+                    ],
+                    "isDrum": false
+                }
+            },
+            {
+                "name": "Melancholy Piano",
+                "generalMidi": false,
+                "settings": {
+                    "type": "Picked String",
+                    "eqFilter": [
+                        {
+                            "type": "low-pass",
+                            "cutoffHz": 4756.83,
+                            "linearGain": 0.25
+                        }
+                    ],
+                    "eqFilterType": false,
+                    "eqSimpleCut": 10,
+                    "eqSimplePeak": 0,
+                    "envelopeSpeed": 12,
+                    "discreteEnvelope": false,
+                    "eqSubFilters0": [
+                        {
+                            "type": "low-pass",
+                            "cutoffHz": 4756.83,
+                            "linearGain": 0.25
+                        }
+                    ],
+                    "effects": [
+                        "transition type",
+                        "detune",
+                        "vibrato",
+                        "reverb"
+                    ],
+                    "transition": "normal",
+                    "clicklessTransition": false,
+                    "detuneCents": 20,
+                    "vibrato": "custom",
+                    "vibratoDepth": 0.04,
+                    "vibratoDelay": 0,
+                    "vibratoSpeed": 2,
+                    "vibratoType": 1,
+                    "reverb": 71,
+                    "fadeInSeconds": 0,
+                    "fadeOutTicks": 12,
+                    "harmonics": [
+                        86,
+                        100,
+                        86,
+                        71,
+                        71,
+                        71,
+                        71,
+                        71,
+                        71,
+                        57,
+                        57,
+                        57,
+                        57,
+                        57,
+                        57,
+                        43,
+                        43,
+                        43,
+                        43,
+                        43,
+                        43,
+                        29,
+                        29,
+                        29,
+                        29,
+                        43,
+                        43,
+                        29
+                    ],
+                    "unison": "custom",
+                    "unisonVoices": 1,
+                    "unisonSpread": 0,
+                    "unisonOffset": -0.1,
+                    "unisonExpression": 1.4,
+                    "unisonSign": 1,
+                    "stringSustain": 71,
+                    "envelopes": [
+                        {
+                            "target": "vibratoDepth",
+                            "envelope": "twang 1"
+                        },
+                        {
+                            "target": "noteVolume",
+                            "envelope": "linear 1"
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "Saphire",
+                "generalMidi": false,
+                "settings": {
+                    "type": "chip",
+                    "eqFilter": [],
+                    "eqFilterType": false,
+                    "eqSimpleCut": 10,
+                    "eqSimplePeak": 0,
+                    "envelopeSpeed": 12,
+                    "discreteEnvelope": false,
+                    "eqSubFilters0": [],
+                    "effects": [
+                        "transition type",
+                        "chord type",
+                        "bitcrusher",
+                        "echo"
+                    ],
+                    "transition": "normal",
+                    "clicklessTransition": false,
+                    "chord": "strum",
+                    "fastTwoNoteArp": false,
+                    "arpeggioSpeed": 12,
+                    "bitcrusherOctave": 5.5,
+                    "bitcrusherQuantization": 14,
+                    "panDelay": 10,
+                    "echoSustain": 29,
+                    "echoDelayBeats": 0.75,
+                    "fadeInSeconds": 0,
+                    "fadeOutTicks": -1,
+                    "wave": "alto sax",
+                    "unison": "none",
+                    "isUsingAdvancedLoopControls": false,
+                    "chipWaveLoopStart": 0,
+                    "chipWaveLoopEnd": 32,
+                    "chipWaveLoopMode": 0,
+                    "chipWavePlayBackwards": false,
+                    "chipWaveStartOffset": 0,
+                    "envelopes": []
+                }
+            },
+            {
+                "name": "Mushrooms",
+                "generalMidi": false,
+                "settings": {
+                    "type": "chip",
+                    "eqFilter": [
+                        {
+                            "type": "low-pass",
+                            "cutoffHz": 3363.59,
+                            "linearGain": 0.7071
+                        }
+                    ],
+                    "eqFilterType": false,
+                    "eqSimpleCut": 10,
+                    "eqSimplePeak": 0,
+                    "envelopeSpeed": 12,
+                    "discreteEnvelope": false,
+                    "eqSubFilters0": [
+                        {
+                            "type": "low-pass",
+                            "cutoffHz": 3363.59,
+                            "linearGain": 0.7071
+                        }
+                    ],
+                    "eqSubFilters1": [],
+                    "effects": [
+                        "chord type",
+                        "vibrato",
+                        "echo",
+                        "reverb"
+                    ],
+                    "chord": "simultaneous",
+                    "fastTwoNoteArp": false,
+                    "arpeggioSpeed": 12,
+                    "vibrato": "delayed",
+                    "vibratoDepth": 0.3,
+                    "vibratoDelay": 18.5,
+                    "vibratoSpeed": 10,
+                    "vibratoType": 0,
+                    "panDelay": 10,
+                    "echoSustain": 57,
+                    "echoDelayBeats": 0.25,
+                    "reverb": 13,
+                    "fadeInSeconds": 0.0263,
+                    "fadeOutTicks": 12,
+                    "wave": "lemmbox HD triangle",
+                    "unison": "none",
+                    "isUsingAdvancedLoopControls": false,
+                    "chipWaveLoopStart": 0,
+                    "chipWaveLoopEnd": 1000,
+                    "chipWaveLoopMode": 0,
+                    "chipWavePlayBackwards": false,
+                    "chipWaveStartOffset": 0,
+                    "envelopes": [
+                        {
+                            "target": "noteVolume",
+                            "envelope": "punch"
+                        },
+                        {
+                            "target": "noteVolume",
+                            "envelope": "twang 1"
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "Distant Chip Sax",
+                "generalMidi": false,
+                "settings": {
+                    "type": "chip",
+                    "eqFilter": [
+                        {
+                            "type": "high-pass",
+                            "cutoffHz": 125,
+                            "linearGain": 2.8284
+                        }
+                    ],
+                    "eqFilterType": false,
+                    "eqSimpleCut": 10,
+                    "eqSimplePeak": 0,
+                    "envelopeSpeed": 12,
+                    "discreteEnvelope": false,
+                    "eqSubFilters0": [
+                        {
+                            "type": "high-pass",
+                            "cutoffHz": 125,
+                            "linearGain": 2.8284
+                        }
+                    ],
+                    "effects": [
+                        "transition type",
+                        "vibrato",
+                        "note filter",
+                        "distortion",
+                        "bitcrusher",
+                        "echo"
+                    ],
+                    "transition": "interrupt",
+                    "clicklessTransition": false,
+                    "vibrato": "custom",
+                    "vibratoDepth": 0.12,
+                    "vibratoDelay": 16,
+                    "vibratoSpeed": 8,
+                    "vibratoType": 0,
+                    "noteFilterType": false,
+                    "noteSimpleCut": 10,
+                    "noteSimplePeak": 0,
+                    "noteFilter": [],
+                    "noteSubFilters0": [],
+                    "distortion": 71,
+                    "aliases": false,
+                    "bitcrusherOctave": 4.5,
+                    "bitcrusherQuantization": 43,
+                    "panDelay": 10,
+                    "echoSustain": 43,
+                    "echoDelayBeats": 0.75,
+                    "fadeInSeconds": 0,
+                    "fadeOutTicks": -1,
+                    "wave": "alto sax",
+                    "unison": "none",
+                    "isUsingAdvancedLoopControls": false,
+                    "chipWaveLoopStart": 0,
+                    "chipWaveLoopEnd": 32,
+                    "chipWaveLoopMode": 0,
+                    "chipWavePlayBackwards": false,
+                    "chipWaveStartOffset": 0,
+                    "envelopes": []
+                }
+            },
+            {
+                "name": "Picked Sine Pad",
+                "generalMidi": false,
+                "settings": {
+                    "type": "chip",
+                    "eqFilter": [
+                        {
+                            "type": "low-pass",
+                            "cutoffHz": 13454.34,
+                            "linearGain": 0.5
+                        }
+                    ],
+                    "eqFilterType": false,
+                    "eqSimpleCut": 10,
+                    "eqSimplePeak": 0,
+                    "envelopeSpeed": 12,
+                    "discreteEnvelope": false,
+                    "eqSubFilters0": [
+                        {
+                            "type": "low-pass",
+                            "cutoffHz": 13454.34,
+                            "linearGain": 0.5
+                        }
+                    ],
+                    "effects": [
+                        "transition type",
+                        "echo"
+                    ],
+                    "transition": "normal",
+                    "clicklessTransition": false,
+                    "panDelay": 10,
+                    "echoSustain": 43,
+                    "echoDelayBeats": 0.75,
+                    "fadeInSeconds": 0,
+                    "fadeOutTicks": -1,
+                    "wave": "sine",
+                    "unison": "none",
+                    "isUsingAdvancedLoopControls": false,
+                    "chipWaveLoopStart": 0,
+                    "chipWaveLoopEnd": 32,
+                    "chipWaveLoopMode": 0,
+                    "chipWavePlayBackwards": false,
+                    "chipWaveStartOffset": 0,
+                    "envelopes": [
+                        {
+                            "target": "noteVolume",
+                            "envelope": "decay 1"
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "Artifact Chip",
+                "generalMidi": false,
+                "settings": {
+                    "type": "chip",
+                    "eqFilter": [],
+                    "eqFilterType": false,
+                    "eqSimpleCut": 10,
+                    "eqSimplePeak": 0,
+                    "envelopeSpeed": 12,
+                    "eqSubFilters0": [],
+                    "effects": [
+                        "transition type",
+                        "chord type",
+                        "pitch shift",
+                        "vibrato",
+                        "bitcrusher",
+                        "reverb"
+                    ],
+                    "transition": "continue",
+                    "clicklessTransition": false,
+                    "chord": "strum",
+                    "fastTwoNoteArp": false,
+                    "arpeggioSpeed": 12,
+                    "monoChordTone": 1,
+                    "pitchShiftSemitones": 9,
+                    "vibrato": "delayed",
+                    "vibratoDepth": 0.3,
+                    "vibratoDelay": 18.5,
+                    "vibratoSpeed": 10,
+                    "vibratoType": 0,
+                    "bitcrusherOctave": 3,
+                    "bitcrusherQuantization": 29,
+                    "panDelay": 10,
+                    "reverb": 26,
+                    "fadeInSeconds": 0,
+                    "fadeOutTicks": -24,
+                    "wave": "alto sax",
+                    "unison": "none",
+                    "isUsingAdvancedLoopControls": false,
+                    "chipWaveLoopStart": 0,
+                    "chipWaveLoopEnd": 32,
+                    "chipWaveLoopMode": 0,
+                    "chipWavePlayBackwards": false,
+                    "chipWaveStartOffset": 0,
+                    "envelopes": [
+                        {
+                            "target": "pitchShift",
+                            "envelope": "twang",
+                            "inverse": false,
+                            "perEnvelopeSpeed": 4,
+                            "perEnvelopeLowerBound": 0,
+                            "perEnvelopeUpperBound": 1,
+                            "discrete": false
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "Bowed Saw",
+                "generalMidi": false,
+                "settings": {
+                    "type": "supersaw",
+                    "eqFilter": [
+                        {
+                            "type": "low-pass",
+                            "cutoffHz": 1000,
+                            "linearGain": 1
+                        }
+                    ],
+                    "eqFilterType": false,
+                    "eqSimpleCut": 10,
+                    "eqSimplePeak": 0,
+                    "envelopeSpeed": 12,
+                    "eqSubFilters0": [
+                        {
+                            "type": "low-pass",
+                            "cutoffHz": 1000,
+                            "linearGain": 1
+                        }
+                    ],
+                    "effects": [
+                        "transition type",
+                        "vibrato",
+                        "granular",
+                        "distortion",
+                        "bitcrusher",
+                        "chorus",
+                        "reverb"
+                    ],
+                    "transition": "continue",
+                    "clicklessTransition": false,
+                    "vibrato": "delayed",
+                    "vibratoDepth": 0.3,
+                    "vibratoDelay": 18.5,
+                    "vibratoSpeed": 10,
+                    "vibratoType": 0,
+                    "granular": 6,
+                    "grainSize": 50,
+                    "grainAmounts": 6,
+                    "grainRange": 28,
+                    "distortion": 71,
+                    "aliases": false,
+                    "bitcrusherOctave": 6.5,
+                    "bitcrusherQuantization": 14,
+                    "panDelay": 0,
+                    "chorus": 57,
+                    "reverb": 100,
+                    "fadeInSeconds": 0,
+                    "fadeOutTicks": -1,
+                    "pulseWidth": 49,
+                    "decimalOffset": 0,
+                    "dynamism": 83,
+                    "spread": 58,
+                    "shape": 50,
+                    "envelopes": [
+                        {
+                            "target": "granular",
+                            "envelope": "fall",
+                            "inverse": false,
+                            "perEnvelopeSpeed": 7.5,
+                            "perEnvelopeLowerBound": 0.7,
+                            "perEnvelopeUpperBound": 1.4,
+                            "discrete": false
+                        },
+                        {
+                            "target": "pulseWidth",
+                            "envelope": "swell",
+                            "inverse": false,
+                            "perEnvelopeSpeed": 0.1,
+                            "perEnvelopeLowerBound": 0.1,
+                            "perEnvelopeUpperBound": 0.9,
+                            "discrete": false
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "Magic Wind",
+                "generalMidi": false,
+                "settings": {
+                    "type": "spectrum",
+                    "eqFilter": [
+                        {
+                            "type": "low-pass",
+                            "cutoffHz": 6727.17,
+                            "linearGain": 0.25
+                        },
+                        {
+                            "type": "high-pass",
+                            "cutoffHz": 353.55,
+                            "linearGain": 0.3536
+                        }
+                    ],
+                    "eqFilterType": false,
+                    "eqSimpleCut": 10,
+                    "eqSimplePeak": 0,
+                    "envelopeSpeed": 12,
+                    "eqSubFilters0": [
+                        {
+                            "type": "low-pass",
+                            "cutoffHz": 6727.17,
+                            "linearGain": 0.25
+                        },
+                        {
+                            "type": "high-pass",
+                            "cutoffHz": 353.55,
+                            "linearGain": 0.3536
+                        }
+                    ],
+                    "effects": [
+                        "granular",
+                        "chorus",
+                        "echo",
+                        "reverb"
+                    ],
+                    "granular": 4,
+                    "grainSize": 1,
+                    "grainAmounts": 10,
+                    "grainRange": 2,
+                    "panDelay": 0,
+                    "chorus": 100,
+                    "echoSustain": 14,
+                    "echoDelayBeats": 1,
+                    "reverb": 100,
+                    "fadeInSeconds": 0,
+                    "fadeOutTicks": 48,
+                    "spectrum": [
+                        100,
+                        29,
+                        43,
+                        0,
+                        0,
+                        29,
+                        0,
+                        71,
+                        14,
+                        14,
+                        43,
+                        71,
+                        0,
+                        43,
+                        57,
+                        0,
+                        57,
+                        0,
+                        100,
+                        43,
+                        0,
+                        100,
+                        14,
+                        29,
+                        14,
+                        14,
+                        14,
+                        57,
+                        0,
+                        29
+                    ],
+                    "unison": "rising",
+                    "envelopes": []
+                }
+            },
+            {
+                "name": "Forgotten Bell",
+                "generalMidi": false,
+                "settings": {
+                    "type": "FM",
+                    "eqFilter": [],
+                    "eqFilterType": false,
+                    "eqSimpleCut": 10,
+                    "eqSimplePeak": 0,
+                    "envelopeSpeed": 12,
+                    "eqSubFilters0": [],
+                    "effects": [
+                        "chord type",
+                        "note filter",
+                        "granular",
+                        "distortion",
+                        "bitcrusher",
+                        "chorus",
+                        "reverb",
+                        "ring mod"
+                    ],
+                    "chord": "strum",
+                    "fastTwoNoteArp": false,
+                    "arpeggioSpeed": 12,
+                    "monoChordTone": 1,
+                    "noteFilterType": true,
+                    "noteSimpleCut": 6,
+                    "noteSimplePeak": 2,
+                    "noteFilter": [],
+                    "granular": 4,
+                    "grainSize": 1,
+                    "grainAmounts": 10,
+                    "grainRange": 8,
+                    "ringMod": 100,
+                    "ringModHz": 73,
+                    "ringModWaveformIndex": 0,
+                    "ringModPulseWidth": 10,
+                    "ringModHzOffset": 50,
+                    "distortion": 14,
+                    "aliases": false,
+                    "bitcrusherOctave": 5,
+                    "bitcrusherQuantization": 14,
+                    "panDelay": 0,
+                    "chorus": 29,
+                    "reverb": 48,
+                    "fadeInSeconds": 0,
+                    "fadeOutTicks": 48,
+                    "algorithm": "1\u2190(2\u20023\u20024)",
+                    "feedbackType": "1\u27f2",
+                    "feedbackAmplitude": 0,
+                    "operators": [
+                        {
+                            "frequency": "~2\u00d7",
+                            "amplitude": 10,
+                            "waveform": "sine",
+                            "pulseWidth": 5
+                        },
+                        {
+                            "frequency": "7\u00d7",
+                            "amplitude": 6,
+                            "waveform": "sine",
+                            "pulseWidth": 5
+                        },
+                        {
+                            "frequency": "20\u00d7",
+                            "amplitude": 1,
+                            "waveform": "sine",
+                            "pulseWidth": 5
+                        },
+                        {
+                            "frequency": "1\u00d7",
+                            "amplitude": 0,
+                            "waveform": "sine",
+                            "pulseWidth": 5
+                        }
+                    ],
+                    "envelopes": [
+                        {
+                            "target": "noteFilterAllFreqs",
+                            "envelope": "twang",
+                            "inverse": false,
+                            "perEnvelopeSpeed": 2,
+                            "perEnvelopeLowerBound": 0,
+                            "perEnvelopeUpperBound": 1,
+                            "discrete": false
+                        },
+                        {
+                            "target": "operatorAmplitude",
+                            "envelope": "twang",
+                            "inverse": false,
+                            "perEnvelopeSpeed": 2,
+                            "perEnvelopeLowerBound": 0,
+                            "perEnvelopeUpperBound": 1,
+                            "discrete": false,
+                            "index": 1
+                        },
+                        {
+                            "target": "operatorAmplitude",
+                            "envelope": "twang",
+                            "inverse": false,
+                            "perEnvelopeSpeed": 32,
+                            "perEnvelopeLowerBound": 0,
+                            "perEnvelopeUpperBound": 1,
+                            "discrete": false,
+                            "index": 2
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "Shredder Guitar",
+                "generalMidi": false,
+                "settings": {
+                    "type": "Picked String",
+                    "eqFilter": [
+                        {
+                            "type": "low-pass",
+                            "cutoffHz": 8000,
+                            "linearGain": 0.7071
+                        },
+                        {
+                            "type": "high-pass",
+                            "cutoffHz": 176.78,
+                            "linearGain": 0.5
+                        }
+                    ],
+                    "eqFilterType": false,
+                    "eqSimpleCut": 10,
+                    "eqSimplePeak": 0,
+                    "envelopeSpeed": 12,
+                    "discreteEnvelope": false,
+                    "eqSubFilters0": [
+                        {
+                            "type": "low-pass",
+                            "cutoffHz": 8000,
+                            "linearGain": 0.7071
+                        },
+                        {
+                            "type": "high-pass",
+                            "cutoffHz": 176.78,
+                            "linearGain": 0.5
+                        }
+                    ],
+                    "eqSubFilters1": [],
+                    "effects": [
+                        "transition type",
+                        "vibrato",
+                        "note filter",
+                        "distortion",
+                        "chorus",
+                        "echo",
+                        "reverb"
+                    ],
+                    "transition": "normal",
+                    "clicklessTransition": false,
+                    "vibrato": "custom",
+                    "vibratoDepth": 0.32,
+                    "vibratoDelay": 19,
+                    "vibratoSpeed": 5,
+                    "vibratoType": 0,
+                    "noteFilterType": false,
+                    "noteSimpleCut": 10,
+                    "noteSimplePeak": 0,
+                    "noteFilter": [
+                        {
+                            "type": "low-pass",
+                            "cutoffHz": 5656.85,
+                            "linearGain": 0.5
+                        },
+                        {
+                            "type": "high-pass",
+                            "cutoffHz": 297.3,
+                            "linearGain": 1
+                        }
+                    ],
+                    "noteSubFilters0": [
+                        {
+                            "type": "low-pass",
+                            "cutoffHz": 5656.85,
+                            "linearGain": 0.5
+                        },
+                        {
+                            "type": "high-pass",
+                            "cutoffHz": 297.3,
+                            "linearGain": 1
+                        }
+                    ],
+                    "distortion": 100,
+                    "aliases": false,
+                    "panDelay": 0,
+                    "chorus": 29,
+                    "echoSustain": 57,
+                    "echoDelayBeats": 0.75,
+                    "reverb": 26,
+                    "fadeInSeconds": 0,
+                    "fadeOutTicks": -1,
+                    "harmonics": [
+                        86,
+                        100,
+                        100,
+                        86,
+                        86,
+                        86,
+                        86,
+                        71,
+                        71,
+                        71,
+                        71,
+                        71,
+                        71,
+                        71,
+                        71,
+                        71,
+                        71,
+                        57,
+                        57,
+                        57,
+                        57,
+                        57,
+                        57,
+                        57,
+                        57,
+                        57,
+                        57,
+                        57
+                    ],
+                    "unison": "none",
+                    "stringSustain": 50,
+                    "envelopes": [
+                        {
+                            "target": "noteFilterAllFreqs",
+                            "envelope": "note size"
+                        },
+                        {
+                            "target": "stringSustain",
+                            "envelope": "note size"
+                        },
+                        {
+                            "target": "noteVolume",
+                            "envelope": "note size"
+                        },
+                        {
+                            "target": "noteFilterAllFreqs",
+                            "envelope": "punch"
+                        }
+                    ]
+                }
+            }
+        ]
+    ],
     "Other Community Presets": [
         [
             {
@@ -93300,411 +94180,6 @@
                         }
                     ],
                     "isDrum": false
-                }
-            },
-            {
-                "name": "cave oo - HappyLemonLime",
-                "generalMidi": false,
-                "settings": {
-                    "type": "FM6op",
-                    "volume": 0,
-                    "eqFilter": [
-                        {
-                            "type": "low-pass",
-                            "cutoffHz": 11313.71,
-                            "linearGain": 1.4142
-                        }
-                    ],
-                    "eqFilterType": false,
-                    "eqSimpleCut": 10,
-                    "eqSimplePeak": 0,
-                    "envelopeSpeed": 12,
-                    "discreteEnvelope": false,
-                    "eqSubFilters0": [
-                        {
-                            "type": "low-pass",
-                            "cutoffHz": 11313.71,
-                            "linearGain": 1.4142
-                        }
-                    ],
-                    "effects": [
-                        "panning",
-                        "transition type",
-                        "chord type",
-                        "echo",
-                        "reverb"
-                    ],
-                    "transition": "interrupt",
-                    "clicklessTransition": false,
-                    "chord": "strum",
-                    "fastTwoNoteArp": false,
-                    "arpeggioSpeed": 12,
-                    "pan": 0,
-                    "panDelay": 10,
-                    "echoSustain": 57,
-                    "echoDelayBeats": 1.5,
-                    "reverb": 6,
-                    "fadeInSeconds": 0.0125,
-                    "fadeOutTicks": 24,
-                    "algorithm": "1\u21902\u21903\u21904\u21905\u21906",
-                    "feedbackType": "1\u27f2",
-                    "feedbackAmplitude": 0,
-                    "operators": [
-                        {
-                            "frequency": "1\u00d7",
-                            "amplitude": 15,
-                            "waveform": "sine",
-                            "pulseWidth": 5
-                        },
-                        {
-                            "frequency": "1\u00d7",
-                            "amplitude": 0,
-                            "waveform": "sine",
-                            "pulseWidth": 5
-                        },
-                        {
-                            "frequency": "1\u00d7",
-                            "amplitude": 0,
-                            "waveform": "sine",
-                            "pulseWidth": 5
-                        },
-                        {
-                            "frequency": "1\u00d7",
-                            "amplitude": 0,
-                            "waveform": "sine",
-                            "pulseWidth": 5
-                        },
-                        {
-                            "frequency": "1\u00d7",
-                            "amplitude": 0,
-                            "waveform": "sine",
-                            "pulseWidth": 5
-                        },
-                        {
-                            "frequency": "1\u00d7",
-                            "amplitude": 0,
-                            "waveform": "sine",
-                            "pulseWidth": 5
-                        }
-                    ],
-                    "envelopes": [
-                        {
-                            "target": "noteVolume",
-                            "envelope": "twang 3"
-                        }
-                    ],
-                    "isDrum": false
-                }
-            },
-            {
-                "name": "Melancholy Piano - HappyLemonLime",
-                "generalMidi": false,
-                "settings": {
-                    "type": "Picked String",
-                    "eqFilter": [
-                        {
-                            "type": "low-pass",
-                            "cutoffHz": 4756.83,
-                            "linearGain": 0.25
-                        }
-                    ],
-                    "eqFilterType": false,
-                    "eqSimpleCut": 10,
-                    "eqSimplePeak": 0,
-                    "envelopeSpeed": 12,
-                    "discreteEnvelope": false,
-                    "eqSubFilters0": [
-                        {
-                            "type": "low-pass",
-                            "cutoffHz": 4756.83,
-                            "linearGain": 0.25
-                        }
-                    ],
-                    "effects": [
-                        "transition type",
-                        "detune",
-                        "vibrato",
-                        "reverb"
-                    ],
-                    "transition": "normal",
-                    "clicklessTransition": false,
-                    "detuneCents": 20,
-                    "vibrato": "custom",
-                    "vibratoDepth": 0.04,
-                    "vibratoDelay": 0,
-                    "vibratoSpeed": 2,
-                    "vibratoType": 1,
-                    "reverb": 71,
-                    "fadeInSeconds": 0,
-                    "fadeOutTicks": 12,
-                    "harmonics": [
-                        86,
-                        100,
-                        86,
-                        71,
-                        71,
-                        71,
-                        71,
-                        71,
-                        71,
-                        57,
-                        57,
-                        57,
-                        57,
-                        57,
-                        57,
-                        43,
-                        43,
-                        43,
-                        43,
-                        43,
-                        43,
-                        29,
-                        29,
-                        29,
-                        29,
-                        43,
-                        43,
-                        29
-                    ],
-                    "unison": "custom",
-                    "unisonVoices": 1,
-                    "unisonSpread": 0,
-                    "unisonOffset": -0.1,
-                    "unisonExpression": 1.4,
-                    "unisonSign": 1,
-                    "stringSustain": 71,
-                    "envelopes": [
-                        {
-                            "target": "vibratoDepth",
-                            "envelope": "twang 1"
-                        },
-                        {
-                            "target": "noteVolume",
-                            "envelope": "linear 1"
-                        }
-                    ]
-                }
-            },
-            {
-                "name": "Saphire - HappyLemonLime",
-                "generalMidi": false,
-                "settings": {
-                    "type": "chip",
-                    "eqFilter": [],
-                    "eqFilterType": false,
-                    "eqSimpleCut": 10,
-                    "eqSimplePeak": 0,
-                    "envelopeSpeed": 12,
-                    "discreteEnvelope": false,
-                    "eqSubFilters0": [],
-                    "effects": [
-                        "transition type",
-                        "chord type",
-                        "bitcrusher",
-                        "echo"
-                    ],
-                    "transition": "normal",
-                    "clicklessTransition": false,
-                    "chord": "strum",
-                    "fastTwoNoteArp": false,
-                    "arpeggioSpeed": 12,
-                    "bitcrusherOctave": 5.5,
-                    "bitcrusherQuantization": 14,
-                    "panDelay": 10,
-                    "echoSustain": 29,
-                    "echoDelayBeats": 0.75,
-                    "fadeInSeconds": 0,
-                    "fadeOutTicks": -1,
-                    "wave": "alto sax",
-                    "unison": "none",
-                    "isUsingAdvancedLoopControls": false,
-                    "chipWaveLoopStart": 0,
-                    "chipWaveLoopEnd": 32,
-                    "chipWaveLoopMode": 0,
-                    "chipWavePlayBackwards": false,
-                    "chipWaveStartOffset": 0,
-                    "envelopes": []
-                }
-            },
-            {
-                "name": "Mushrooms - HappyLemonLime",
-                "generalMidi": false,
-                "settings": {
-                    "type": "chip",
-                    "eqFilter": [
-                        {
-                            "type": "low-pass",
-                            "cutoffHz": 3363.59,
-                            "linearGain": 0.7071
-                        }
-                    ],
-                    "eqFilterType": false,
-                    "eqSimpleCut": 10,
-                    "eqSimplePeak": 0,
-                    "envelopeSpeed": 12,
-                    "discreteEnvelope": false,
-                    "eqSubFilters0": [
-                        {
-                            "type": "low-pass",
-                            "cutoffHz": 3363.59,
-                            "linearGain": 0.7071
-                        }
-                    ],
-                    "eqSubFilters1": [],
-                    "effects": [
-                        "chord type",
-                        "vibrato",
-                        "echo",
-                        "reverb"
-                    ],
-                    "chord": "simultaneous",
-                    "fastTwoNoteArp": false,
-                    "arpeggioSpeed": 12,
-                    "vibrato": "delayed",
-                    "vibratoDepth": 0.3,
-                    "vibratoDelay": 18.5,
-                    "vibratoSpeed": 10,
-                    "vibratoType": 0,
-                    "panDelay": 10,
-                    "echoSustain": 57,
-                    "echoDelayBeats": 0.25,
-                    "reverb": 13,
-                    "fadeInSeconds": 0.0263,
-                    "fadeOutTicks": 12,
-                    "wave": "lemmbox HD triangle",
-                    "unison": "none",
-                    "isUsingAdvancedLoopControls": false,
-                    "chipWaveLoopStart": 0,
-                    "chipWaveLoopEnd": 1000,
-                    "chipWaveLoopMode": 0,
-                    "chipWavePlayBackwards": false,
-                    "chipWaveStartOffset": 0,
-                    "envelopes": [
-                        {
-                            "target": "noteVolume",
-                            "envelope": "punch"
-                        },
-                        {
-                            "target": "noteVolume",
-                            "envelope": "twang 1"
-                        }
-                    ]
-                }
-            },
-            {
-                "name": "Distant Chip Sax - HappyLemonLime",
-                "generalMidi": false,
-                "settings": {
-                    "type": "chip",
-                    "eqFilter": [
-                        {
-                            "type": "high-pass",
-                            "cutoffHz": 125,
-                            "linearGain": 2.8284
-                        }
-                    ],
-                    "eqFilterType": false,
-                    "eqSimpleCut": 10,
-                    "eqSimplePeak": 0,
-                    "envelopeSpeed": 12,
-                    "discreteEnvelope": false,
-                    "eqSubFilters0": [
-                        {
-                            "type": "high-pass",
-                            "cutoffHz": 125,
-                            "linearGain": 2.8284
-                        }
-                    ],
-                    "effects": [
-                        "transition type",
-                        "vibrato",
-                        "note filter",
-                        "distortion",
-                        "bitcrusher",
-                        "echo"
-                    ],
-                    "transition": "interrupt",
-                    "clicklessTransition": false,
-                    "vibrato": "custom",
-                    "vibratoDepth": 0.12,
-                    "vibratoDelay": 16,
-                    "vibratoSpeed": 8,
-                    "vibratoType": 0,
-                    "noteFilterType": false,
-                    "noteSimpleCut": 10,
-                    "noteSimplePeak": 0,
-                    "noteFilter": [],
-                    "noteSubFilters0": [],
-                    "distortion": 71,
-                    "aliases": false,
-                    "bitcrusherOctave": 4.5,
-                    "bitcrusherQuantization": 43,
-                    "panDelay": 10,
-                    "echoSustain": 43,
-                    "echoDelayBeats": 0.75,
-                    "fadeInSeconds": 0,
-                    "fadeOutTicks": -1,
-                    "wave": "alto sax",
-                    "unison": "none",
-                    "isUsingAdvancedLoopControls": false,
-                    "chipWaveLoopStart": 0,
-                    "chipWaveLoopEnd": 32,
-                    "chipWaveLoopMode": 0,
-                    "chipWavePlayBackwards": false,
-                    "chipWaveStartOffset": 0,
-                    "envelopes": []
-                }
-            },
-            {
-                "name": "Picked Sine Pad - HappyLemonLime",
-                "generalMidi": false,
-                "settings": {
-                    "type": "chip",
-                    "eqFilter": [
-                        {
-                            "type": "low-pass",
-                            "cutoffHz": 13454.34,
-                            "linearGain": 0.5
-                        }
-                    ],
-                    "eqFilterType": false,
-                    "eqSimpleCut": 10,
-                    "eqSimplePeak": 0,
-                    "envelopeSpeed": 12,
-                    "discreteEnvelope": false,
-                    "eqSubFilters0": [
-                        {
-                            "type": "low-pass",
-                            "cutoffHz": 13454.34,
-                            "linearGain": 0.5
-                        }
-                    ],
-                    "effects": [
-                        "transition type",
-                        "echo"
-                    ],
-                    "transition": "normal",
-                    "clicklessTransition": false,
-                    "panDelay": 10,
-                    "echoSustain": 43,
-                    "echoDelayBeats": 0.75,
-                    "fadeInSeconds": 0,
-                    "fadeOutTicks": -1,
-                    "wave": "sine",
-                    "unison": "none",
-                    "isUsingAdvancedLoopControls": false,
-                    "chipWaveLoopStart": 0,
-                    "chipWaveLoopEnd": 32,
-                    "chipWaveLoopMode": 0,
-                    "chipWavePlayBackwards": false,
-                    "chipWaveStartOffset": 0,
-                    "envelopes": [
-                        {
-                            "target": "noteVolume",
-                            "envelope": "decay 1"
-                        }
-                    ]
                 }
             },
             {
@@ -102318,6 +102793,95 @@
                 }
             },
             {
+                "name": "Melodic Knock - 3001ideaz",
+                "generalMidi": false,
+                "settings": {
+                    "type": "Picked String",
+                    "eqFilter": [
+                        {
+                            "type": "low-pass",
+                            "cutoffHz": 4000,
+                            "linearGain": 0.7071
+                        },
+                        {
+                            "type": "high-pass",
+                            "cutoffHz": 125,
+                            "linearGain": 2.8284
+                        },
+                        {
+                            "type": "peak",
+                            "cutoffHz": 1189.21,
+                            "linearGain": 1.4142
+                        }
+                    ],
+                    "eqFilterType": false,
+                    "eqSimpleCut": 10,
+                    "eqSimplePeak": 0,
+                    "envelopeSpeed": 12,
+                    "discreteEnvelope": false,
+                    "eqSubFilters0": [
+                        {
+                            "type": "low-pass",
+                            "cutoffHz": 4000,
+                            "linearGain": 0.7071
+                        },
+                        {
+                            "type": "high-pass",
+                            "cutoffHz": 125,
+                            "linearGain": 2.8284
+                        },
+                        {
+                            "type": "peak",
+                            "cutoffHz": 1189.21,
+                            "linearGain": 1.4142
+                        }
+                    ],
+                    "effects": [
+                        "echo",
+                        "reverb"
+                    ],
+                    "panDelay": 0,
+                    "echoSustain": 100,
+                    "echoDelayBeats": 0.75,
+                    "reverb": 6,
+                    "fadeInSeconds": 0,
+                    "fadeOutTicks": 12,
+                    "harmonics": [
+                        71,
+                        57,
+                        86,
+                        71,
+                        71,
+                        86,
+                        86,
+                        86,
+                        86,
+                        100,
+                        71,
+                        57,
+                        71,
+                        71,
+                        57,
+                        57,
+                        71,
+                        57,
+                        43,
+                        29,
+                        29,
+                        14,
+                        14,
+                        14,
+                        14,
+                        29,
+                        29,
+                        29
+                    ],
+                    "unison": "hecking gosh",
+                    "stringSustain": 0,
+                    "envelopes": []
+                }
+            },
+            {
                 "name": "chiptune style U! - Jacobar475",
                 "generalMidi": false,
                 "settings": {
@@ -102686,6 +103250,203 @@
                     ],
                     "unison": "honky tonk",
                     "stringSustain": 71,
+                    "envelopes": []
+                }
+            },
+            {
+                "name": "painful synth - Dingus",
+                "generalMidi": false,
+                "settings": {
+                    "type": "FM6op",
+                    "eqFilter": [],
+                    "eqFilterType": false,
+                    "eqSimpleCut": 10,
+                    "eqSimplePeak": 0,
+                    "envelopeSpeed": 12,
+                    "eqSubFilters0": [],
+                    "effects": [
+                        "note filter",
+                        "distortion",
+                        "chorus"
+                    ],
+                    "noteFilterType": false,
+                    "noteSimpleCut": 10,
+                    "noteSimplePeak": 0,
+                    "noteFilter": [
+                        {
+                            "type": "peak",
+                            "cutoffHz": 4756.83,
+                            "linearGain": 0.5
+                        },
+                        {
+                            "type": "peak",
+                            "cutoffHz": 1000,
+                            "linearGain": 0.1768
+                        },
+                        {
+                            "type": "peak",
+                            "cutoffHz": 353.55,
+                            "linearGain": 11.3137
+                        },
+                        {
+                            "type": "peak",
+                            "cutoffHz": 9513.66,
+                            "linearGain": 2
+                        },
+                        {
+                            "type": "peak",
+                            "cutoffHz": 2000,
+                            "linearGain": 11.3137
+                        }
+                    ],
+                    "noteSubFilters0": [
+                        {
+                            "type": "peak",
+                            "cutoffHz": 4756.83,
+                            "linearGain": 0.5
+                        },
+                        {
+                            "type": "peak",
+                            "cutoffHz": 1000,
+                            "linearGain": 0.1768
+                        },
+                        {
+                            "type": "peak",
+                            "cutoffHz": 353.55,
+                            "linearGain": 11.3137
+                        },
+                        {
+                            "type": "peak",
+                            "cutoffHz": 9513.66,
+                            "linearGain": 2
+                        },
+                        {
+                            "type": "peak",
+                            "cutoffHz": 2000,
+                            "linearGain": 11.3137
+                        }
+                    ],
+                    "distortion": 57,
+                    "aliases": false,
+                    "panDelay": 0,
+                    "chorus": 29,
+                    "fadeInSeconds": 0,
+                    "fadeOutTicks": -3,
+                    "algorithm": "(1\u20032)\u21904\u20033\u2190(5\u20036)",
+                    "feedbackType": "1\u27f2",
+                    "feedbackAmplitude": 9,
+                    "operators": [
+                        {
+                            "frequency": "0.5\u00d7",
+                            "amplitude": 15,
+                            "waveform": "sine",
+                            "pulseWidth": 5
+                        },
+                        {
+                            "frequency": "0.5\u00d7",
+                            "amplitude": 3,
+                            "waveform": "sine",
+                            "pulseWidth": 5
+                        },
+                        {
+                            "frequency": "1\u00d7",
+                            "amplitude": 7,
+                            "waveform": "sine",
+                            "pulseWidth": 5
+                        },
+                        {
+                            "frequency": "1\u00d7",
+                            "amplitude": 13,
+                            "waveform": "sine",
+                            "pulseWidth": 5
+                        },
+                        {
+                            "frequency": "1\u00d7",
+                            "amplitude": 9,
+                            "waveform": "sine",
+                            "pulseWidth": 5
+                        },
+                        {
+                            "frequency": "1\u00d7",
+                            "amplitude": 0,
+                            "waveform": "sine",
+                            "pulseWidth": 5
+                        }
+                    ],
+                    "envelopes": [
+                        {
+                            "target": "operatorFrequency",
+                            "envelope": "twang",
+                            "inverse": false,
+                            "perEnvelopeSpeed": 32,
+                            "perEnvelopeLowerBound": 0,
+                            "perEnvelopeUpperBound": 1,
+                            "discrete": false,
+                            "index": 3
+                        },
+                        {
+                            "target": "operatorAmplitude",
+                            "envelope": "note size",
+                            "inverse": false,
+                            "perEnvelopeSpeed": 1,
+                            "perEnvelopeLowerBound": 0,
+                            "perEnvelopeUpperBound": 1,
+                            "discrete": false,
+                            "index": 3
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "Escape Synth - SomethingOriginal",
+                "generalMidi": false,
+                "settings": {
+                    "type": "FM",
+                    "eqFilter": [
+                        {
+                            "type": "low-pass",
+                            "cutoffHz": 19027.31,
+                            "linearGain": 0.7071
+                        }
+                    ],
+                    "eqFilterType": true,
+                    "eqSimpleCut": 10,
+                    "eqSimplePeak": 0,
+                    "envelopeSpeed": 12,
+                    "eqSubFilters1": [],
+                    "effects": [],
+                    "panDelay": 10,
+                    "fadeInSeconds": 0,
+                    "fadeOutTicks": -1,
+                    "algorithm": "1\u20032\u20033\u20034",
+                    "feedbackType": "1\u27f2",
+                    "feedbackAmplitude": 0,
+                    "operators": [
+                        {
+                            "frequency": "1\u00d7",
+                            "amplitude": 15,
+                            "waveform": "quasi-sine",
+                            "pulseWidth": 5
+                        },
+                        {
+                            "frequency": "~1\u00d7",
+                            "amplitude": 8,
+                            "waveform": "sine",
+                            "pulseWidth": 5
+                        },
+                        {
+                            "frequency": "1\u00d7",
+                            "amplitude": 15,
+                            "waveform": "pulse width",
+                            "pulseWidth": 2
+                        },
+                        {
+                            "frequency": "3\u00d7",
+                            "amplitude": 5,
+                            "waveform": "ramp",
+                            "pulseWidth": 5
+                        }
+                    ],
                     "envelopes": []
                 }
             }
@@ -103875,7 +104636,7 @@
             }
         ]
     ],
-    "Community Novelty Presets": [
+    "Other Community Novelty Presets": [
         [
             {
                 "name": "neglected sawtooth - CoolTasDude",
@@ -104531,74 +105292,61 @@
                 "generalMidi": false,
                 "settings": {
                     "type": "FM",
-                    "volume": 0,
                     "eqFilter": [
                         {
-                            "type": "peak",
-                            "cutoffHz": 1189.21,
-                            "linearGain": 2.8284
+                            "type": "high-pass",
+                            "cutoffHz": 74.33,
+                            "linearGain": 0.0884
                         },
                         {
                             "type": "low-pass",
-                            "cutoffHz": 6727.17,
-                            "linearGain": 4
+                            "cutoffHz": 5656.85,
+                            "linearGain": 0.0884
                         }
                     ],
                     "eqFilterType": false,
                     "eqSimpleCut": 10,
                     "eqSimplePeak": 0,
                     "envelopeSpeed": 12,
+                    "discreteEnvelope": false,
                     "eqSubFilters0": [
                         {
-                            "type": "peak",
-                            "cutoffHz": 1189.21,
-                            "linearGain": 2.8284
+                            "type": "high-pass",
+                            "cutoffHz": 74.33,
+                            "linearGain": 0.0884
                         },
                         {
                             "type": "low-pass",
-                            "cutoffHz": 6727.17,
-                            "linearGain": 4
+                            "cutoffHz": 5656.85,
+                            "linearGain": 0.0884
                         }
                     ],
                     "effects": [
-                        "panning",
-                        "note filter",
-                        "reverb"
+                        "echo"
                     ],
-                    "noteFilterType": false,
-                    "noteSimpleCut": 10,
-                    "noteSimplePeak": 0,
-                    "noteFilter": [],
-                    "noteSubFilters0": [],
-                    "pan": 0,
-                    "panDelay": 10,
-                    "reverb": 0,
+                    "panDelay": 0,
+                    "echoSustain": 29,
+                    "echoDelayBeats": 1.5,
                     "fadeInSeconds": 0,
-                    "fadeOutTicks": -24,
-                    "algorithm": "(1\u20022)\u21903\u21904",
-                    "feedbackType": "2\u27f2\u20033\u27f2\u20034\u27f2",
+                    "fadeOutTicks": 96,
+                    "algorithm": "1\u20032\u20033\u20034",
+                    "feedbackType": "1\u27f2",
                     "feedbackAmplitude": 0,
                     "operators": [
                         {
-                            "frequency": "100\u00d7",
-                            "amplitude": 4,
-                            "waveform": "pulse width",
-                            "pulseWidth": 5
-                        },
-                        {
-                            "frequency": "0.12\u00d7",
-                            "amplitude": 12,
+                            "frequency": "1\u00d7",
+                            "amplitude": 15,
                             "waveform": "sine",
                             "pulseWidth": 5
                         },
                         {
                             "frequency": "2\u00d7",
-                            "amplitude": 11,
+                            "amplitude": 15,
                             "waveform": "sine",
                             "pulseWidth": 5
                         },
                         {
-                            "frequency": "13\u00d7",
+                            "frequency": "3\u00d7",
                             "amplitude": 6,
                             "waveform": "sine",
                             "pulseWidth": 5
@@ -104614,10 +105362,25 @@
                             "amplitude": 0,
                             "waveform": "sine",
                             "pulseWidth": 5
+                        },
+                        {
+                            "frequency": "1\u00d7",
+                            "amplitude": 0,
+                            "waveform": "sine",
+                            "pulseWidth": 5
                         }
                     ],
-                    "envelopes": [],
-                    "isDrum": false
+                    "envelopes": [
+                        {
+                            "target": "noteVolume",
+                            "envelope": "twang 1"
+                        },
+                        {
+                            "target": "operatorAmplitude",
+                            "envelope": "twang 2",
+                            "index": 0
+                        }
+                    ]
                 }
             },
             {
@@ -104757,61 +105520,139 @@
                 }
             },
             {
-                "name": "dis is an artifact - HappyLemonLime",
+                "name": "Discord Ping - HappyLemonLime",
                 "generalMidi": false,
                 "settings": {
-                    "type": "chip",
-                    "eqFilter": [],
+                    "type": "FM6op",
+                    "volume": 0,
+                    "eqFilter": [
+                        {
+                            "type": "low-pass",
+                            "cutoffHz": 4000,
+                            "linearGain": 0.1768
+                        },
+                        {
+                            "type": "peak",
+                            "cutoffHz": 1189.21,
+                            "linearGain": 0.5
+                        }
+                    ],
                     "eqFilterType": false,
                     "eqSimpleCut": 10,
                     "eqSimplePeak": 0,
                     "envelopeSpeed": 12,
-                    "eqSubFilters0": [],
+                    "discreteEnvelope": false,
+                    "eqSubFilters0": [
+                        {
+                            "type": "low-pass",
+                            "cutoffHz": 4000,
+                            "linearGain": 0.1768
+                        },
+                        {
+                            "type": "peak",
+                            "cutoffHz": 1189.21,
+                            "linearGain": 0.5
+                        }
+                    ],
                     "effects": [
-                        "transition type",
-                        "chord type",
-                        "pitch shift",
-                        "vibrato",
-                        "bitcrusher",
+                        "panning",
+                        "note filter",
                         "reverb"
                     ],
-                    "transition": "continue",
-                    "clicklessTransition": false,
-                    "chord": "strum",
-                    "fastTwoNoteArp": false,
-                    "arpeggioSpeed": 12,
-                    "monoChordTone": 1,
-                    "pitchShiftSemitones": 9,
-                    "vibrato": "delayed",
-                    "vibratoDepth": 0.3,
-                    "vibratoDelay": 18.5,
-                    "vibratoSpeed": 10,
-                    "vibratoType": 0,
-                    "bitcrusherOctave": 3,
-                    "bitcrusherQuantization": 29,
-                    "panDelay": 10,
-                    "reverb": 26,
+                    "noteFilterType": false,
+                    "noteSimpleCut": 10,
+                    "noteSimplePeak": 0,
+                    "noteFilter": [
+                        {
+                            "type": "low-pass",
+                            "cutoffHz": 9513.66,
+                            "linearGain": 2.8284
+                        }
+                    ],
+                    "noteSubFilters0": [
+                        {
+                            "type": "low-pass",
+                            "cutoffHz": 9513.66,
+                            "linearGain": 2.8284
+                        }
+                    ],
+                    "pan": 0,
+                    "panDelay": 0,
+                    "reverb": 3,
                     "fadeInSeconds": 0,
-                    "fadeOutTicks": -24,
-                    "wave": "alto sax",
-                    "unison": "none",
-                    "isUsingAdvancedLoopControls": false,
-                    "chipWaveLoopStart": 0,
-                    "chipWaveLoopEnd": 32,
-                    "chipWaveLoopMode": 0,
-                    "chipWavePlayBackwards": false,
-                    "chipWaveStartOffset": 0,
+                    "fadeOutTicks": 6,
+                    "algorithm": "1\u2190(2\u20023\u20024\u20025\u20026)",
+                    "feedbackType": "1\u21924\u20022\u21925 3\u21926",
+                    "feedbackAmplitude": 0,
+                    "operators": [
+                        {
+                            "frequency": "0.12\u00d7",
+                            "amplitude": 15,
+                            "waveform": "trapezoid",
+                            "pulseWidth": 5
+                        },
+                        {
+                            "frequency": "5\u00d7",
+                            "amplitude": 8,
+                            "waveform": "pulse width",
+                            "pulseWidth": 6
+                        },
+                        {
+                            "frequency": "0.75\u00d7",
+                            "amplitude": 9,
+                            "waveform": "pulse width",
+                            "pulseWidth": 6
+                        },
+                        {
+                            "frequency": "7\u00d7",
+                            "amplitude": 3,
+                            "waveform": "ramp",
+                            "pulseWidth": 5
+                        },
+                        {
+                            "frequency": "0.75\u00d7",
+                            "amplitude": 11,
+                            "waveform": "quasi-sine",
+                            "pulseWidth": 5
+                        },
+                        {
+                            "frequency": "~1\u00d7",
+                            "amplitude": 14,
+                            "waveform": "sine",
+                            "pulseWidth": 5
+                        }
+                    ],
                     "envelopes": [
                         {
-                            "target": "pitchShift",
-                            "envelope": "twang",
-                            "inverse": false,
-                            "perEnvelopeSpeed": 4,
-                            "perEnvelopeLowerBound": 0,
-                            "perEnvelopeUpperBound": 1,
-                            "discrete": false
+                            "target": "noteFilterAllFreqs",
+                            "envelope": "wibble 1"
+                        },
+                        {
+                            "target": "operatorAmplitude",
+                            "envelope": "wibble 3",
+                            "index": 1
+                        },
+                        {
+                            "target": "operatorAmplitude",
+                            "envelope": "linear-1",
+                            "index": 3
+                        },
+                        {
+                            "target": "operatorAmplitude",
+                            "envelope": "swell -1",
+                            "index": 4
+                        },
+                        {
+                            "target": "operatorAmplitude",
+                            "envelope": "swell 1",
+                            "index": 5
+                        },
+                        {
+                            "target": "feedbackAmplitude",
+                            "envelope": "twang 2"
                         }
-                    ]
+                    ],
+                    "isDrum": false
                 }
             },
             {
@@ -107440,6 +108281,533 @@
                             "discrete": false,
                             "waveform": 0,
                             "steps": 2
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "Oe Bass - CoolTasDude",
+                "generalMidi": false,
+                "settings": {
+                    "type": "custom chip",
+                    "eqFilter": [
+                        {
+                            "type": "low-pass",
+                            "cutoffHz": 6000,
+                            "linearGain": 0.5
+                        }
+                    ],
+                    "eqFilterType": true,
+                    "eqSimpleCut": 8,
+                    "eqSimplePeak": 1,
+                    "envelopeSpeed": 12,
+                    "eqSubFilters1": [],
+                    "effects": [
+                        "pitch shift",
+                        "chorus",
+                        "reverb"
+                    ],
+                    "pitchShiftSemitones": 24,
+                    "panDelay": 10,
+                    "chorus": 43,
+                    "reverb": 6,
+                    "fadeInSeconds": 0.0263,
+                    "fadeOutTicks": -3,
+                    "wave": "square",
+                    "unison": "custom",
+                    "unisonVoices": 3,
+                    "unisonSpread": 0.1,
+                    "unisonOffset": 0.1,
+                    "unisonExpression": 0.33,
+                    "unisonSign": 0.8,
+                    "customChipWave": {
+                        "0": 2,
+                        "1": -6,
+                        "2": -11,
+                        "3": -14,
+                        "4": -16,
+                        "5": -18,
+                        "6": -20,
+                        "7": -21,
+                        "8": -22,
+                        "9": -22,
+                        "10": -23,
+                        "11": -23,
+                        "12": -23,
+                        "13": -23,
+                        "14": -22,
+                        "15": -22,
+                        "16": -22,
+                        "17": -21,
+                        "18": -20,
+                        "19": -19,
+                        "20": -17,
+                        "21": -15,
+                        "22": -13,
+                        "23": -9,
+                        "24": -3,
+                        "25": -1,
+                        "26": 1,
+                        "27": 3,
+                        "28": 5,
+                        "29": 7,
+                        "30": 8,
+                        "31": 9,
+                        "32": 9,
+                        "33": 10,
+                        "34": 10,
+                        "35": 10,
+                        "36": 11,
+                        "37": 11,
+                        "38": 11,
+                        "39": 11,
+                        "40": 11,
+                        "41": 11,
+                        "42": 11,
+                        "43": 11,
+                        "44": 11,
+                        "45": 11,
+                        "46": 11,
+                        "47": 10,
+                        "48": 10,
+                        "49": 10,
+                        "50": 9,
+                        "51": 9,
+                        "52": 8,
+                        "53": 6,
+                        "54": 5,
+                        "55": 5,
+                        "56": 4,
+                        "57": 2,
+                        "58": -6,
+                        "59": -14,
+                        "60": -20,
+                        "61": -24,
+                        "62": -24,
+                        "63": -24
+                    },
+                    "customChipWaveIntegral": {
+                        "0": 0,
+                        "1": 0,
+                        "2": 0,
+                        "3": 0,
+                        "4": 0,
+                        "5": 0,
+                        "6": 0,
+                        "7": 0,
+                        "8": 0,
+                        "9": 0,
+                        "10": 0,
+                        "11": 0,
+                        "12": 0,
+                        "13": 0,
+                        "14": 0,
+                        "15": 0,
+                        "16": 0,
+                        "17": 0,
+                        "18": 0,
+                        "19": 0,
+                        "20": 0,
+                        "21": 0,
+                        "22": 0,
+                        "23": 0,
+                        "24": 0,
+                        "25": 0,
+                        "26": 0,
+                        "27": 0,
+                        "28": 0,
+                        "29": 0,
+                        "30": 0,
+                        "31": 0,
+                        "32": 0,
+                        "33": 0,
+                        "34": 0,
+                        "35": 0,
+                        "36": 0,
+                        "37": 0,
+                        "38": 0,
+                        "39": 0,
+                        "40": 0,
+                        "41": 0,
+                        "42": 0,
+                        "43": 0,
+                        "44": 0,
+                        "45": 0,
+                        "46": 0,
+                        "47": 0,
+                        "48": 0,
+                        "49": 0,
+                        "50": 0,
+                        "51": 0,
+                        "52": 0,
+                        "53": 0,
+                        "54": 0,
+                        "55": 0,
+                        "56": 0,
+                        "57": 0,
+                        "58": 0,
+                        "59": 0,
+                        "60": 0,
+                        "61": 0,
+                        "62": 0,
+                        "63": 0,
+                        "64": 0
+                    },
+                    "envelopes": [
+                        {
+                            "target": "pitchShift",
+                            "envelope": "fall",
+                            "inverse": false,
+                            "perEnvelopeSpeed": 64,
+                            "perEnvelopeLowerBound": 0,
+                            "perEnvelopeUpperBound": 2,
+                            "discrete": false
+                        },
+                        {
+                            "target": "pitchShift",
+                            "envelope": "linear",
+                            "inverse": false,
+                            "perEnvelopeSpeed": 32,
+                            "perEnvelopeLowerBound": 2,
+                            "perEnvelopeUpperBound": 2,
+                            "discrete": false
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "budget guitar - rit",
+                "generalMidi": false,
+                "settings": {
+                    "type": "FM",
+                    "eqFilter": [
+                        {
+                            "type": "high-pass",
+                            "cutoffHz": 210.22,
+                            "linearGain": 0.5
+                        },
+                        {
+                            "type": "peak",
+                            "cutoffHz": 2828.43,
+                            "linearGain": 0.7071
+                        },
+                        {
+                            "type": "low-pass",
+                            "cutoffHz": 5656.85,
+                            "linearGain": 2
+                        }
+                    ],
+                    "eqFilterType": false,
+                    "eqSimpleCut": 10,
+                    "eqSimplePeak": 0,
+                    "envelopeSpeed": 12,
+                    "eqSubFilters0": [
+                        {
+                            "type": "high-pass",
+                            "cutoffHz": 210.22,
+                            "linearGain": 0.5
+                        },
+                        {
+                            "type": "peak",
+                            "cutoffHz": 2828.43,
+                            "linearGain": 0.7071
+                        },
+                        {
+                            "type": "low-pass",
+                            "cutoffHz": 5656.85,
+                            "linearGain": 2
+                        }
+                    ],
+                    "effects": [
+                        "transition type",
+                        "note filter",
+                        "chorus",
+                        "echo",
+                        "reverb"
+                    ],
+                    "transition": "interrupt",
+                    "clicklessTransition": false,
+                    "noteFilterType": false,
+                    "noteSimpleCut": 10,
+                    "noteSimplePeak": 0,
+                    "noteFilter": [
+                        {
+                            "type": "low-pass",
+                            "cutoffHz": 4756.83,
+                            "linearGain": 1.4142
+                        }
+                    ],
+                    "noteSubFilters0": [
+                        {
+                            "type": "low-pass",
+                            "cutoffHz": 4756.83,
+                            "linearGain": 1.4142
+                        }
+                    ],
+                    "panDelay": 10,
+                    "chorus": 43,
+                    "echoSustain": 29,
+                    "echoDelayBeats": 0.5,
+                    "reverb": 0,
+                    "fadeInSeconds": 0,
+                    "fadeOutTicks": 12,
+                    "algorithm": "1\u20032\u2190(3\u20024)",
+                    "feedbackType": "1\u27f2",
+                    "feedbackAmplitude": 0,
+                    "operators": [
+                        {
+                            "frequency": "1\u00d7",
+                            "amplitude": 15,
+                            "waveform": "sawtooth",
+                            "pulseWidth": 5
+                        },
+                        {
+                            "frequency": "1\u00d7",
+                            "amplitude": 13,
+                            "waveform": "triangle",
+                            "pulseWidth": 5
+                        },
+                        {
+                            "frequency": "1\u00d7",
+                            "amplitude": 7,
+                            "waveform": "triangle",
+                            "pulseWidth": 5
+                        },
+                        {
+                            "frequency": "1\u00d7",
+                            "amplitude": 8,
+                            "waveform": "triangle",
+                            "pulseWidth": 5
+                        },
+                        {
+                            "frequency": "1\u00d7",
+                            "amplitude": 0,
+                            "waveform": "sine",
+                            "pulseWidth": 5
+                        },
+                        {
+                            "frequency": "1\u00d7",
+                            "amplitude": 0,
+                            "waveform": "sine",
+                            "pulseWidth": 5
+                        }
+                    ],
+                    "envelopes": [
+                        {
+                            "target": "noteFilterAllFreqs",
+                            "envelope": "note size",
+                            "inverse": false,
+                            "perEnvelopeSpeed": 1,
+                            "perEnvelopeLowerBound": 0,
+                            "perEnvelopeUpperBound": 1,
+                            "discrete": false
+                        },
+                        {
+                            "target": "noteFilterAllFreqs",
+                            "envelope": "twang",
+                            "inverse": false,
+                            "perEnvelopeSpeed": 2,
+                            "perEnvelopeLowerBound": 0,
+                            "perEnvelopeUpperBound": 1,
+                            "discrete": false
+                        }
+                    ]
+                }
+            },
+            {
+                "name": "Hacking Square - Dono915",
+                "generalMidi": false,
+                "settings": {
+                    "type": "custom chip",
+                    "eqFilter": [
+                        {
+                            "type": "high-pass",
+                            "cutoffHz": 62.5,
+                            "linearGain": 2.8284
+                        }
+                    ],
+                    "eqFilterType": false,
+                    "eqSimpleCut": 10,
+                    "eqSimplePeak": 0,
+                    "envelopeSpeed": 12,
+                    "discreteEnvelope": false,
+                    "eqSubFilters0": [
+                        {
+                            "type": "high-pass",
+                            "cutoffHz": 62.5,
+                            "linearGain": 2.8284
+                        }
+                    ],
+                    "effects": [
+                        "transition type",
+                        "note filter"
+                    ],
+                    "transition": "normal",
+                    "clicklessTransition": false,
+                    "noteFilterType": false,
+                    "noteSimpleCut": 10,
+                    "noteSimplePeak": 0,
+                    "noteFilter": [
+                        {
+                            "type": "high-pass",
+                            "cutoffHz": 176.78,
+                            "linearGain": 2.8284
+                        }
+                    ],
+                    "noteSubFilters0": [
+                        {
+                            "type": "high-pass",
+                            "cutoffHz": 176.78,
+                            "linearGain": 2.8284
+                        }
+                    ],
+                    "panDelay": 0,
+                    "fadeInSeconds": 0,
+                    "fadeOutTicks": -1,
+                    "wave": "square",
+                    "unison": "none",
+                    "customChipWave": {
+                        "0": 9,
+                        "1": 8,
+                        "2": -22,
+                        "3": -23,
+                        "4": 3,
+                        "5": 1,
+                        "6": -1,
+                        "7": -2,
+                        "8": -2,
+                        "9": 1,
+                        "10": 3,
+                        "11": -12,
+                        "12": -12,
+                        "13": -10,
+                        "14": 9,
+                        "15": 10,
+                        "16": 10,
+                        "17": 9,
+                        "18": 9,
+                        "19": 8,
+                        "20": 7,
+                        "21": 6,
+                        "22": 4,
+                        "23": -8,
+                        "24": -7,
+                        "25": 2,
+                        "26": 1,
+                        "27": 2,
+                        "28": 2,
+                        "29": 3,
+                        "30": 3,
+                        "31": 4,
+                        "32": -11,
+                        "33": -11,
+                        "34": -12,
+                        "35": -13,
+                        "36": 6,
+                        "37": 6,
+                        "38": 6,
+                        "39": 7,
+                        "40": 7,
+                        "41": 7,
+                        "42": 6,
+                        "43": 6,
+                        "44": 5,
+                        "45": 5,
+                        "46": 4,
+                        "47": 4,
+                        "48": -16,
+                        "49": 4,
+                        "50": 4,
+                        "51": 4,
+                        "52": 4,
+                        "53": 4,
+                        "54": 4,
+                        "55": 4,
+                        "56": 5,
+                        "57": 5,
+                        "58": 5,
+                        "59": 6,
+                        "60": 6,
+                        "61": 6,
+                        "62": 7,
+                        "63": 10
+                    },
+                    "customChipWaveIntegral": {
+                        "0": 0,
+                        "1": 0,
+                        "2": 0,
+                        "3": 0,
+                        "4": 0,
+                        "5": 0,
+                        "6": 0,
+                        "7": 0,
+                        "8": 0,
+                        "9": 0,
+                        "10": 0,
+                        "11": 0,
+                        "12": 0,
+                        "13": 0,
+                        "14": 0,
+                        "15": 0,
+                        "16": 0,
+                        "17": 0,
+                        "18": 0,
+                        "19": 0,
+                        "20": 0,
+                        "21": 0,
+                        "22": 0,
+                        "23": 0,
+                        "24": 0,
+                        "25": 0,
+                        "26": 0,
+                        "27": 0,
+                        "28": 0,
+                        "29": 0,
+                        "30": 0,
+                        "31": 0,
+                        "32": 0,
+                        "33": 0,
+                        "34": 0,
+                        "35": 0,
+                        "36": 0,
+                        "37": 0,
+                        "38": 0,
+                        "39": 0,
+                        "40": 0,
+                        "41": 0,
+                        "42": 0,
+                        "43": 0,
+                        "44": 0,
+                        "45": 0,
+                        "46": 0,
+                        "47": 0,
+                        "48": 0,
+                        "49": 0,
+                        "50": 0,
+                        "51": 0,
+                        "52": 0,
+                        "53": 0,
+                        "54": 0,
+                        "55": 0,
+                        "56": 0,
+                        "57": 0,
+                        "58": 0,
+                        "59": 0,
+                        "60": 0,
+                        "61": 0,
+                        "62": 0,
+                        "63": 0,
+                        "64": 0
+                    },
+                    "envelopes": [
+                        {
+                            "target": "noteFilterFreq",
+                            "envelope": "twang 1",
+                            "index": 0
+                        },
+                        {
+                            "target": "noteVolume",
+                            "envelope": "punch"
                         }
                     ]
                 }
