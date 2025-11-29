@@ -24,6 +24,8 @@ function makeSynthProxy(audioNode: AudioWorkletNode): SynthRPCProxy {
             else p.resolve(data.result);
         }
         resolvers.delete(data.id);
+        // reuse message IDs when possible
+        if (resolvers.size === 0) idCounter = 0;
     };
     return new Proxy<ProxyObject>({
         audioNode,
@@ -38,7 +40,7 @@ function makeSynthProxy(audioNode: AudioWorkletNode): SynthRPCProxy {
                 return p.promise;
             };
         },
-        set(target, p) {
+        set(_, p) {
             throw new TypeError(`Cannot set property of ProxiedSynth ${str(p)} which is read-only`);
         }
     }) as SynthRPCProxy;
