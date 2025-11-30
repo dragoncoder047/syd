@@ -18,7 +18,7 @@ export class Shimmer implements AudioProcessorFactory {
         }
     ];
     outputDims: Dimensions = ["M", "N"];
-    make(synth: WorkletSynth, sizeVars: { M: number, N: number }): AudioProcessor {
+    make(_: WorkletSynth, sizeVars: { M: number, N: number }): AudioProcessor {
         const oldValue = new Matrix(sizeVars.M, sizeVars.N);
         const output = new Matrix(sizeVars.M, sizeVars.N);
         return inputs => {
@@ -87,23 +87,10 @@ export class Integrator implements AudioProcessorFactory {
 
     make(synth: WorkletSynth, sizeVars: { M: number, N: number }): AudioProcessor {
         const m_accumulator = new Matrix(sizeVars.M, sizeVars.N), m_signs = scalarMatrix(1).smear(sizeVars.M, sizeVars.N), m_prevReset = new Matrix(sizeVars.M, sizeVars.N);
+        const argArray = new Array(7).fill(0);
         return inputs => {
-            const m_diff = inputs[0]!,
-                m_reset = inputs[1]!,
-                m_resetTo = inputs[2]!,
-                m_mode = inputs[3]!,
-                m_low = inputs[4]!,
-                m_high = inputs[5]!,
-                m_sampleMode = inputs[6]!;
-            return m_accumulator.applyUnary((i, row, col) => {
-                const diff = m_diff.get(row, col),
-                    reset = m_reset.get(row, col),
-                    resetTo = m_resetTo.get(row, col),
-                    mode = m_mode.get(row, col) as IntegratorMode,
-                    low = m_low.get(row, col),
-                    high = m_high.get(row, col),
-                    sampleMode = m_sampleMode.get(row, col) as SampleMode,
-                    sign = m_signs.get(row, col),
+            return m_accumulator.applyMulti((i, [diff, reset, resetTo, mode, low, high, sampleMode], row, col) => {
+                const sign = m_signs.get(row, col),
                     prevReset = m_prevReset.get(row, col),
                     bound = abs(high - low);
                 // do the integration
@@ -136,7 +123,7 @@ export class Integrator implements AudioProcessorFactory {
                 }
                 m_prevReset.put(row, col, reset);
                 return i;
-            });
+            }, inputs, argArray);
         }
     }
 }

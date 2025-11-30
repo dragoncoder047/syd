@@ -5,6 +5,7 @@ export interface SequencerEvent {
     isMod: boolean;
     target: string | number;
     value: number;
+    time: number;
 }
 
 export enum SequencerEventType {
@@ -29,8 +30,9 @@ export class Sequencer {
         this.paused = false;
     }
     stop() {
-        this.pause();
+        const events = this.pause();
         this.time = 0;
+        return events;
     }
     pause(): SequencerEvent[] {
         this.paused = true;

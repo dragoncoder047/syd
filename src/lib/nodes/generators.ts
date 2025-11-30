@@ -30,6 +30,8 @@ export class WavetableOscillator implements AudioProcessorFactory {
     ];
     outputDims: Dimensions = [1, 1];
     make(synth: WorkletSynth): AudioProcessor {
+        // TODO: rewrite this so that phase is sample number not 0-1 fuzzy loop index
+        // that way, precision will not be lost and later I can add advanced loop controls and stuff
         var phase = 0, prev: number;
         const value = scalarMatrix(0);
         return inputs => {
@@ -44,10 +46,10 @@ export class WavetableOscillator implements AudioProcessorFactory {
                 const loopsPerSample = loopsPerSecond * synth.dt;
                 phase = fract(phase + loopsPerSample);
                 const fIndex = fract(phase + phaseMod) * wave.i.length;
+                const iIndex = fIndex | 0;
                 if (aliasing) {
-                    sample = wave.s[fIndex | 0]!;
+                    sample = wave.s[iIndex]!;
                 } else {
-                    const iIndex = fIndex | 0;
                     const alpha = fIndex - iIndex;
                     var next = wave.i[iIndex]!;
                     next += (wave.i[iIndex + 1]! - next) * alpha;

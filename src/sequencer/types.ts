@@ -5,7 +5,7 @@ export interface Song {
     /** string if modulated, number if constant */
     tempo: string | number;
     tuning?: SongTuning;
-    instruments: Instrument[];
+    instruments: Record<string, Instrument>;
     timeline: TimelineEntry[];
     patterns: Pattern[];
     noteShapes: NoteShape[];
@@ -20,7 +20,6 @@ export interface Metadata {
     authorURL?: string;
     comment?: string;
     license?: string;
-    instrumentNames?: string[];
     rendering?: RenderingPreferences;
 }
 
@@ -41,10 +40,9 @@ export type TimelineEntry = [delta: number, startPatterns: number[]];
 
 /**
  * * a ref can be told apart from a note by the type of the element at index 1 (2-tuple = note, number = ref)
- * * a mod channel is a string name
  */
 export type Pattern = [
-    instruments: number | number[] | string,
+    instruments: string | string[],
     notes: Note[]
 ];
 

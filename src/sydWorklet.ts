@@ -2,7 +2,7 @@ import { WorkletSynth } from "./runtime/synthImpl";
 import { Message, MessageReply } from "./runtime/synthProxy";
 
 registerProcessor("syd", class extends AudioWorkletProcessor {
-    synth: WorkletSynth = new WorkletSynth(1 / sampleRate);
+    synth: WorkletSynth = new WorkletSynth(1 / sampleRate, this.port);
     constructor() {
         super();
         this.port.onmessage = e => this.handleMessage(e.data as Message);
@@ -11,10 +11,10 @@ registerProcessor("syd", class extends AudioWorkletProcessor {
     async handleMessage(m: Message) {
         try {
             console.log("[audio worklet thread] received message", m);
-            const result = await (this.synth as any)[m.method](...m.args);
-            this.port.postMessage({ id: m.id, result, failed: false } as MessageReply);
+            const result = await (this.synth as any)[m.m](...m.a);
+            this.port.postMessage({ i: m.n, r: result, e: false, t: false } as MessageReply);
         } catch (e) {
-            this.port.postMessage({ id: m.id, result: e as Error, failed: true } as MessageReply);
+            this.port.postMessage({ i: m.n, r: e as Error, e: true, t: false } as MessageReply);
         }
     }
     process(inputs: Float32Array[][], outputs: Float32Array[][]) {

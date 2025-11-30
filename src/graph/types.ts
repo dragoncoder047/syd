@@ -1,21 +1,7 @@
-import { AutomatedValueMethod } from "../runtime/automation";
-
-export type Instrument = PitchedInstrument | ModInstrument;
-
-export interface PitchedInstrument {
+export interface Instrument {
     isMod: false;
     voice: NodeGraph;
     fx: NodeGraph;
-}
-
-export interface ModInstrument {
-    isMod: true;
-    name: string;
-    value: number,
-    mode: AutomatedValueMethod
-    min: number;
-    max: number;
-    step?: number;
 }
 
 export interface NodeGraph {

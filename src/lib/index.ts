@@ -7,7 +7,7 @@ import { Opcode } from "../runtime/program";
 import { Bitcrusher, DelayLine, Filter } from "./nodes/effects";
 import { WavetableOscillator } from "./nodes/generators";
 import { Clock, Integrator, Shimmer } from "./nodes/logic";
-import { MathNode } from "./nodes/math";
+import { MathNode, MixAllNode } from "./nodes/math";
 
 export const NODES: AudioProcessorFactory[] = [
     new WavetableOscillator,
@@ -17,15 +17,15 @@ export const NODES: AudioProcessorFactory[] = [
     new Shimmer,
     new Integrator,
     new Clock,
+    new MixAllNode,
     ...Object.entries(OPERATORS).map(([op, func]) => new MathNode(op, func)),
 ];
 
 export const PASSTHROUGH_FX: CompiledGraph = {
-    code: [[Opcode.PUSH_INPUT_SAMPLES]],
+    code: [[Opcode.CALL_NODE, 0]],
     registers: [],
     constantTab: [],
-    nodes: [],
-    mods: []
+    nodes: [["mixall", {}]],
 };
 
 export class KRateHelper {

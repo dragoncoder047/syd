@@ -18,10 +18,8 @@ export {
     SpecialNodeKind,
     type GraphNode,
     type Instrument,
-    type ModInstrument,
     type NodeGraph,
     type NodeInput,
-    type PitchedInstrument,
     type SpecialNode
 } from "./graph/types";
 export { NODES } from "./lib";

@@ -1,8 +1,9 @@
 import { CompiledGraph } from "../compiler/compile";
 import { AudioProcessorFactory } from "../compiler/nodeDef";
 import { NODES, PASSTHROUGH_FX } from "../lib";
-import { Channels } from "./channels";
+import { ChannelMode, Channels } from "./channels";
 import { Instrument } from "./instrument";
+import { MessageReply } from "./synthProxy";
 import { Tone } from "./tone";
 import { lengthToBasePitch, samplesToIntegral } from "./waveProcess";
 
@@ -18,6 +19,8 @@ export interface Wave {
 export class WorkletSynth {
     /** instruments */
     i: Instrument[] = [];
+    /** name to index map */
+    in: Record<string, number> = {};
     /** post effects and stuff */
     p: Tone = null as any;
     /** note ID to instrument map */
@@ -30,18 +33,26 @@ export class WorkletSynth {
     v: number = 0.8;
     /** channels for passing data between instruments or the postFX */
     c = new Channels;
-    constructor(public dt: number) {
+    cw = new Set<string>();
+    constructor(public dt: number, public s: Readonly<MessagePort>) {
         this.clearPostFX();
     }
     clearAll() {
         this.clearInstruments();
         this.clearPostFX();
+        this.clearWatchedChannels();
+        this.c.clear();
     }
-    clearInstrument(index: number) {
-        delete this.i[index];
+    clearInstrument(name: string) {
+        const i = this.in[name] ?? -1;
+        if (i >= 0) {
+            this.i.splice(i, 1);
+            delete this.in[name];
+        }
     }
     clearInstruments() {
         this.i = [];
+        this.in = {};
     }
     clearPostFX() {
         this.p = new Tone(PASSTHROUGH_FX, this.dt, this, 0, 1);
@@ -53,8 +64,11 @@ export class WorkletSynth {
             b: basePitch ?? lengthToBasePitch(samples.length, this.dt),
         }
     }
-    setInstrument(instrumentNumber: number, voiceDef: CompiledGraph) {
-        this.i[instrumentNumber] = new Instrument(this.dt, this, voiceDef);
+    setInstrument(name: string, voiceDef: CompiledGraph) {
+        this.in[name] = this.i.push(new Instrument(name, this.dt, this, voiceDef)) - 1;
+    }
+    setupChannel(name: string, mode: ChannelMode) {
+        this.c.setup(name, mode);
     }
     setPostFX(fxDef: CompiledGraph): void {
         this.p = new Tone(fxDef, this.dt, this, 1, 1);
@@ -65,9 +79,9 @@ export class WorkletSynth {
     private _ifn(noteID: number) {
         return this.i[this.n2i[noteID]!];
     }
-    noteOn(id: number, instrument: number, pitch: number, expression: number) {
+    noteOn(id: number, instrument: string, pitch: number, expression: number) {
         this._ifn(id)?.noteOff(id);
-        this.i[this.n2i[id] = instrument]?.noteOn(id, pitch, expression);
+        this.i[this.n2i[id] = this.in[instrument]!]?.noteOn(id, pitch, expression);
     }
     noteOff(id: number) {
         this._ifn(id)?.noteOff(id);
@@ -79,6 +93,15 @@ export class WorkletSynth {
     expressionBend(id: number, expression: number, time: number) {
         this._ifn(id)?.expressionBend(id, expression, time);
     }
+    clearWatchedChannels() {
+        this.cw.clear();
+    }
+    watchChannel(ch: string) {
+        this.cw.add(ch);
+    }
+    unwatchChannel(ch: string) {
+        this.cw.delete(ch);
+    }
     /** HOT CODE */
     /** only private to prevent types from picking it up, it must be called */
     private process(left: Float32Array, right: Float32Array) {
@@ -88,15 +111,18 @@ export class WorkletSynth {
             left[i] = l!;
             right[i] = r!;
         }
-
+        if (this.cw.size > 0)
+            this.s.postMessage({
+                t: true,
+                dt: this.dt * len,
+                w: [...this.cw].map(n => [n, this.c.get(n)])
+            } as MessageReply);
     }
     private nextSample(isStartOfBlock: boolean, blockProgress: number) {
-        var leftSample = 0, rightSample = 0, i = 0;
         const instruments = this.i, channels = this.c;
-        for (i = 0; i < instruments.length; i++) {
-            const [l, r] = this.i[i]!.nextSample(isStartOfBlock, blockProgress, channels);
-            leftSample += l!;
-            rightSample += r!;
+        channels.update();
+        for (var i = 0; i < instruments.length; i++) {
+            this.i[i]!.processSample(isStartOfBlock, blockProgress, channels);
         }
         return this.p.processSample(true, this.v, channels, isStartOfBlock, blockProgress);
     }

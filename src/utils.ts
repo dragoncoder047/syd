@@ -28,7 +28,7 @@ export function isinstance<C>(obj: any, cls: abstract new (...args: any[]) => C)
 
 const idMap = new WeakMap<Object, number>();
 var idCounter = 0;
-export const id = (obj: any): number => {
+export const globalID = (obj: any): number => {
     if (!idMap.has(obj)) idMap.set(obj, idCounter++);
     return idMap.get(obj)!
 }

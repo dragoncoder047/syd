@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 import { AudioProcessorFactory, compile, ErrorReason, NodeGraph, NodeInput, NodeInputLocation, SpecialNodeKind } from "../src";
-import { Matrix } from "../src/matrix";
+import { Matrix, scalarMatrix } from "../src/matrix";
 import { Opcode } from "../src/runtime/program";
 
 test("compiles", () => {
@@ -44,7 +44,7 @@ test("compiles", () => {
                 [Opcode.CALL_NODE, 0, 2],
                 [Opcode.TAP_REGISTER, 0],
             ],
-            registers: [Matrix.scalar(0)],
+            registers: [scalarMatrix(0)],
             constantTab: [],
             nodes: [
                 ["a", { M: 2, N: 3, P: 1, Q: 1 }],
@@ -194,7 +194,7 @@ test("compile with matrix builder with inputs", () => {
                 [Opcode.GET_REGISTER, 0],
                 [Opcode.SET_MATRIX_EL, 1, 1],
             ],
-            registers: [Matrix.scalar(0)],
+            registers: [scalarMatrix(0)],
             constantTab: [Matrix.of2DList([[1, 0, 3], [4, 0, 6]])],
             nodes: [
                 ["a", {}]

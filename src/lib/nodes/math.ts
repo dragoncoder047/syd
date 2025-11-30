@@ -1,4 +1,5 @@
-import { AudioProcessor, AudioProcessorFactory, Dimensions } from "../../compiler/nodeDef";
+import { AudioProcessor, AudioProcessorFactory, Dimensions, NodeInputDef } from "../../compiler/nodeDef";
+import { Matrix } from "../../matrix";
 import { WorkletSynth } from "../../runtime/synthImpl";
 
 export class MathNode implements AudioProcessorFactory {
@@ -21,5 +22,21 @@ export class MathNode implements AudioProcessorFactory {
     }
     make(synth: WorkletSynth): AudioProcessor {
         return inputs => inputs[0]!.applyBinary(this.opFunc, inputs[1]!);
+    }
+}
+
+export class MixAllNode implements AudioProcessorFactory {
+    name = "mixall";
+    inputs = [];
+    outputDims: Dimensions = [2, 1];
+    make(synth: WorkletSynth): AudioProcessor {
+        const sum = new Matrix(2, 1);
+        return _ => {
+            sum.fill(0);
+            for (var i = 0; i < synth.i.length; i++) {
+                sum.applyBinary((x, y) => x + y, synth.c.get(synth.i[i]!.ocn));
+            }
+            return sum;
+        }
     }
 }

@@ -1,19 +1,25 @@
 import { CompiledGraph } from "../compiler/compile";
 import { Matrix } from "../matrix";
-import { Channels } from "./channels";
+import { ChannelMode, Channels } from "./channels";
 import { WorkletSynth } from "./synthImpl";
 import { Tone } from "./tone";
 
 export class Instrument {
+    /** live notes */
     ln: Tone[] = [];
+    /** live note IDs */
     lni: number[] = [];
+    /** dead notes */
     dn: [Tone, number][] = [];
+    /** tmp sample */
     x = new Matrix(2, 1);
     constructor(
+        public ocn: string,
         public dt: number,
         public p: WorkletSynth,
         public v: CompiledGraph,
     ) {
+        p.c.setup(ocn, ChannelMode.STICKY);
     }
     noteOn(id: number, pitch: number, expression: number) {
         this.noteOff(id);
@@ -36,7 +42,7 @@ export class Instrument {
         this.ln[id]?.expression.goto(expression, this.dt, time);
     }
     /** HOT CODE */
-    nextSample(isStartOfBlock: boolean, blockProgress: number, channels: Channels) {
+    processSample(isStartOfBlock: boolean, blockProgress: number, channels: Channels) {
         var i: number;
         const liveNotes = this.ln, deadNotes = this.dn, liveNoteCount = liveNotes.length;
         const curGain = gainForChord(liveNoteCount);
@@ -58,7 +64,7 @@ export class Instrument {
                 i--;
             }
         }
-        return outData;
+        channels.put(this.ocn, out);
     }
 }
 

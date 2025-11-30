@@ -1,7 +1,7 @@
 import { expect, test } from "bun:test";
 import { AudioProcessorFactory, compile, ErrorReason, NodeGraph, NodeInputLocation } from "../src";
 import { getFragmentInputs, GraphFragment, NodeFragmentEdge, unifyGraphFragments } from "../src/graph/fragment";
-import { Matrix } from "../src/matrix";
+import { scalarMatrix } from "../src/matrix";
 import { Opcode } from "../src/runtime/program";
 
 test("unify fragments", () => {
@@ -61,7 +61,7 @@ test("compining graph with un-unified input returns an error but uses the defaul
                 [Opcode.CALL_NODE, 0, 1],
             ],
             registers: [],
-            constantTab: [Matrix.scalar(123)],
+            constantTab: [scalarMatrix(123)],
             nodes: [
                 ["b", {}]
             ]
