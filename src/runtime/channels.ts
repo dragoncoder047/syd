@@ -5,7 +5,7 @@ export enum ChannelMode {
     STICKY,
 }
 
-class Channel {
+export class Channel {
     constructor(public v: Matrix,
         public m: ChannelMode = ChannelMode.ZEROED) { }
     update() {

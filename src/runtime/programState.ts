@@ -12,7 +12,7 @@ export class ProgramState {
         public r: Matrix[],
         public n: AudioProcessor[],
         public c: Matrix[]) { }
-    run(pitch: number, expression: number, gate: number, channels: Channels, isStartOfBlock: boolean, blockProgress: number, alive: boolean): boolean {
+    run(pitch: number, expression: number, gate: number, channels: Channels, isStartOfBlock: boolean, blockProgress: number, alive: boolean, wavenames: Record<string, number>): boolean {
         const stack = this.s;
         const argv = this.a;
         const prog = this.p;
@@ -70,8 +70,11 @@ export class ProgramState {
                     push(channels.get(i1 as string));
                     break;
                 case Opcode.MAYBE_STORE_TO_CHANNEL:
-                    var a = pop()!, b = pop()!;
+                    var a = pop()!, b = peek()!;
                     if (a.toScalar() > 0) channels.put(i1 as string, b);
+                    break;
+                case Opcode.PUSH_WAVE_NUMBER:
+                    pushScalar(wavenames[i1 as string]!);
                     break;
                 default:
                     throw new Error(`unimplemented opcode ${Opcode[op]} snuck in...`);

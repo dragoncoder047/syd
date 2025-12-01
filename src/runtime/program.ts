@@ -14,6 +14,7 @@ export enum Opcode {
     CALL_NODE,
     GET_CHANNEL,
     MAYBE_STORE_TO_CHANNEL,
+    PUSH_WAVE_NUMBER,
 }
 
 export type Command = [Opcode, a?: number | string, b?: number];

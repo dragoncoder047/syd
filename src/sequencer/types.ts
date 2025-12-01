@@ -1,4 +1,5 @@
 import { Instrument, NodeGraph } from "../graph/types";
+import { ChannelMode } from "../runtime/channels";
 
 export interface Song {
     meta: Metadata;
@@ -10,6 +11,12 @@ export interface Song {
     patterns: Pattern[];
     noteShapes: NoteShape[];
     postFX: NodeGraph;
+    channels: Record<string, {
+        mode: ChannelMode,
+        rows: number,
+        cols: number,
+        data: Float32Array
+    }>;
 }
 
 // MARK: SONG DATA

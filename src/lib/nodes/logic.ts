@@ -1,7 +1,7 @@
 import { AudioProcessor, AudioProcessorFactory, Dimensions } from "../../compiler/nodeDef";
 import { abs } from "../../math";
 import { Matrix, scalarMatrix } from "../../matrix";
-import { WorkletSynth } from "../../runtime/synthImpl";
+import { Synth } from "../../runtime/synth";
 
 export class Shimmer implements AudioProcessorFactory {
     name = "shimmer";
@@ -18,7 +18,7 @@ export class Shimmer implements AudioProcessorFactory {
         }
     ];
     outputDims: Dimensions = ["M", "N"];
-    make(_: WorkletSynth, sizeVars: { M: number, N: number }): AudioProcessor {
+    make(_: Synth, sizeVars: { M: number, N: number }): AudioProcessor {
         const oldValue = new Matrix(sizeVars.M, sizeVars.N);
         const output = new Matrix(sizeVars.M, sizeVars.N);
         return inputs => {
@@ -85,7 +85,7 @@ export class Integrator implements AudioProcessorFactory {
     ];
     outputDims: Dimensions = ["M", "N"];
 
-    make(synth: WorkletSynth, sizeVars: { M: number, N: number }): AudioProcessor {
+    make(synth: Synth, sizeVars: { M: number, N: number }): AudioProcessor {
         const m_accumulator = new Matrix(sizeVars.M, sizeVars.N), m_signs = scalarMatrix(1).smear(sizeVars.M, sizeVars.N), m_prevReset = new Matrix(sizeVars.M, sizeVars.N);
         const argArray = new Array(7).fill(0);
         return inputs => {
@@ -143,7 +143,7 @@ export class Clock implements AudioProcessorFactory {
         },
     ];
     outputDims: Dimensions = ["M", "N"];
-    make(synth: WorkletSynth, sizeVars: { M: number, N: number }): AudioProcessor {
+    make(synth: Synth, sizeVars: { M: number, N: number }): AudioProcessor {
         const m_accumulator = scalarMatrix(Infinity).smear(sizeVars.M, sizeVars.N), temp = new Matrix(sizeVars.M, sizeVars.N);
         return inputs => {
             const m_period = inputs[0]!;

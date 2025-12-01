@@ -1,6 +1,6 @@
 import { AudioProcessor, AudioProcessorFactory, Dimensions, NodeInputDef } from "../../compiler/nodeDef";
 import { Matrix } from "../../matrix";
-import { WorkletSynth } from "../../runtime/synthImpl";
+import { Synth } from "../../runtime/synth";
 
 export class MathNode implements AudioProcessorFactory {
     name: string;
@@ -20,7 +20,7 @@ export class MathNode implements AudioProcessorFactory {
     constructor(operator: string, public opFunc: (a: number, b: number) => number) {
         this.name = "op" + operator;
     }
-    make(synth: WorkletSynth): AudioProcessor {
+    make(synth: Synth): AudioProcessor {
         return inputs => inputs[0]!.applyBinary(this.opFunc, inputs[1]!);
     }
 }
@@ -29,7 +29,7 @@ export class MixAllNode implements AudioProcessorFactory {
     name = "mixall";
     inputs = [];
     outputDims: Dimensions = [2, 1];
-    make(synth: WorkletSynth): AudioProcessor {
+    make(synth: Synth): AudioProcessor {
         const sum = new Matrix(2, 1);
         return _ => {
             sum.fill(0);

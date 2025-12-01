@@ -7,16 +7,22 @@ import { MessageReply } from "./synthProxy";
 import { Tone } from "./tone";
 import { lengthToBasePitch, samplesToIntegral } from "./waveProcess";
 
-export interface Wave {
-    /** normal wavetable */
-    s: Float32Array,
+export class Wave {
     /** integral wavetable */
-    i: Float32Array,
-    /** base pitch in Hz */
-    b: number;
+    i: Float32Array
+    constructor(
+        /** normal wavetable */
+        public s: Float32Array,
+        /** sample rate of this wave */
+        public r: number,
+        /** base pitch in Hz */
+        public b: number,
+    ) {
+        this.i = samplesToIntegral(s);
+    }
 }
 
-export class WorkletSynth {
+export class Synth {
     /** instruments */
     i: Instrument[] = [];
     /** name to index map */
@@ -27,6 +33,8 @@ export class WorkletSynth {
     n2i: Record<number, number> = {};
     /** waves list */
     w: Wave[] = [];
+    /** wave name to index map */
+    wn: Record<string, number> = {};
     /** nodes types definitions */
     nt: AudioProcessorFactory[] = NODES;
     /** master volume */
@@ -37,11 +45,12 @@ export class WorkletSynth {
     constructor(public dt: number, public s: Readonly<MessagePort>) {
         this.clearPostFX();
     }
-    clearAll() {
+    nukeAll() {
         this.clearInstruments();
         this.clearPostFX();
         this.clearWatchedChannels();
         this.c.clear();
+        this.clearWaves();
     }
     clearInstrument(name: string) {
         const i = this.in[name] ?? -1;
@@ -57,12 +66,19 @@ export class WorkletSynth {
     clearPostFX() {
         this.p = new Tone(PASSTHROUGH_FX, this.dt, this, 0, 1);
     }
-    setWave(number: number, samples: Float32Array, basePitch?: number) {
-        this.w[number] = {
-            s: samples,
-            i: samplesToIntegral(samples),
-            b: basePitch ?? lengthToBasePitch(samples.length, this.dt),
+    setWave(name: string, samples: Float32Array, rate: number, basePitch?: number) {
+        const wave: Wave = new Wave(samples, rate, basePitch ?? lengthToBasePitch(samples.length, this.dt));
+        const existIndex = this.wn[name];
+        if (existIndex !== undefined) {
+            this.w[existIndex] = wave;
         }
+        else {
+            this.wn[name] = this.w.push(wave) - 1;
+        }
+    }
+    clearWaves() {
+        this.w = [];
+        this.wn = {};
     }
     setInstrument(name: string, voiceDef: CompiledGraph) {
         this.in[name] = this.i.push(new Instrument(name, this.dt, this, voiceDef)) - 1;

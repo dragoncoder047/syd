@@ -14,7 +14,8 @@ export interface CompiledGraph {
 export enum ErrorReason {
     DIM_MISMATCH,
     UNBOUND,
-    NOT_CONNECTED
+    UNUSED_FRAG_INPUT,
+    WRONG_NO_OF_ARGS,
 }
 interface MisMatchError {
     node: number
@@ -42,12 +43,16 @@ export function compile(graph: NodeGraph, defs: AudioProcessorFactory[]): [Compi
             .map((nodeNo, regNo) => [nodeNo, regNo]));
     const constantTab: Matrix[] = [];
     const recurse = (nodeNo: number) => {
+        const [nodeName, args] = graph.nodes[nodeNo]!;
+        if (isArray(nodeName) && nodeName[0] === SpecialNodeKind.USE_WAVETABLE) {
+            program.push([Opcode.PUSH_WAVE_NUMBER, nodeName[0]]);
+            return;
+        }
         if (seenInCompilation.has(nodeNo)) {
             program.push([Opcode.GET_REGISTER, nodeIndexToRegisterIndex[nodeNo]]);
             return;
         }
         seenInCompilation.add(nodeNo);
-        const [nodeName, args] = graph.nodes[nodeNo]!;
         var myConstant: Matrix;
         if (isArray(nodeName) && nodeName[0] === SpecialNodeKind.BUILD_MATRIX) {
             const [_, rows, cols] = nodeName;
@@ -67,7 +72,7 @@ export function compile(graph: NodeGraph, defs: AudioProcessorFactory[]): [Compi
                             node: nodeNo,
                             index: argNo,
                             dim: 0,
-                            code: ErrorReason.NOT_CONNECTED
+                            code: ErrorReason.UNUSED_FRAG_INPUT
                         });
                         argConstantValue = map[nodeName as any]?.inputs[argNo]?.default ?? 0;
                         argIsConstant = true;
@@ -194,6 +199,10 @@ function resolveDimensions(graph: NodeGraph, map: Record<string, AudioProcessorF
             inputs = map[nodeName]!.inputs.map(({ dims }, i) => [args[i]!, dims]);
         } else {
             switch (nodeName[0]) {
+                case SpecialNodeKind.USE_WAVETABLE:
+                    inputs = [];
+                    output = SCALAR_DIMS;
+                    break;
                 case SpecialNodeKind.MARK_ALIVE:
                     inputs = [[args[0]!, output = SCALAR_DIMS]];
                     break;
@@ -203,6 +212,18 @@ function resolveDimensions(graph: NodeGraph, map: Record<string, AudioProcessorF
                     break;
                 case SpecialNodeKind.SAVE_TO_CHANNEL:
                     inputs = [[args[0]!, output = SCALAR_DIMS], [args[1]!, [2, 1]]];
+            }
+        }
+        if (args.length !== inputs.length) {
+            errors.push({
+                node: nodeNo,
+                index: 0,
+                dim: 0,
+                code: ErrorReason.WRONG_NO_OF_ARGS,
+            });
+            if (args.length > inputs.length) args.length = inputs.length;
+            else while (args.length < inputs.length) {
+                args.push([NodeInputLocation.CONSTANT, 0]);
             }
         }
         exposed.push([inputs, output]);

@@ -3,8 +3,6 @@ export const TAU = 2 * PI;
 export const min = Math.min;
 export const max = Math.max;
 export const sqrt = Math.sqrt;
-export const trunc = (x: number) => { var i = x | 0; return i - +(x < 0 && i != x); };
-export const fract = (x: number) => x - trunc(x);
 export const clamp = (x: number, y: number, z: number) => max(min(x, z), y);
 export const sin = Math.sin;
 export const cos = Math.cos;

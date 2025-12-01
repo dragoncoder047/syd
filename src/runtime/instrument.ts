@@ -1,7 +1,7 @@
 import { CompiledGraph } from "../compiler/compile";
 import { Matrix } from "../matrix";
 import { ChannelMode, Channels } from "./channels";
-import { WorkletSynth } from "./synthImpl";
+import { Synth } from "./synth";
 import { Tone } from "./tone";
 
 export class Instrument {
@@ -16,7 +16,7 @@ export class Instrument {
     constructor(
         public ocn: string,
         public dt: number,
-        public p: WorkletSynth,
+        public p: Synth,
         public v: CompiledGraph,
     ) {
         p.c.setup(ocn, ChannelMode.STICKY);

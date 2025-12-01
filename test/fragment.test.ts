@@ -71,7 +71,7 @@ test("compining graph with un-unified input returns an error but uses the defaul
                 node: 0,
                 index: 0,
                 dim: 0,
-                code: ErrorReason.NOT_CONNECTED
+                code: ErrorReason.UNUSED_FRAG_INPUT
             }
         ]
     ])

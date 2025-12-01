@@ -14,7 +14,7 @@ export type GraphFragment = Omit<NodeGraph, "out"> & {
 
 export function getFragmentInputs(fragment: GraphFragment): string[] {
     const out: string[] = [];
-    for (var [_name, inputs] of fragment.nodes) {
+    for (var [_, inputs] of fragment.nodes) {
         for (var input of inputs) {
             if (isArray(input) && input[0] == NodeInputLocation.FRAG_INPUT) {
                 out.push(input[1] as string);

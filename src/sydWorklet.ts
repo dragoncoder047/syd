@@ -1,8 +1,8 @@
-import { WorkletSynth } from "./runtime/synthImpl";
+import { Synth } from "./runtime/synth";
 import { Message, MessageReply } from "./runtime/synthProxy";
 
 registerProcessor("syd", class extends AudioWorkletProcessor {
-    synth: WorkletSynth = new WorkletSynth(1 / sampleRate, this.port);
+    synth: Synth = new Synth(1 / sampleRate, this.port);
     constructor() {
         super();
         this.port.onmessage = e => this.handleMessage(e.data as Message);
@@ -17,7 +17,7 @@ registerProcessor("syd", class extends AudioWorkletProcessor {
             this.port.postMessage({ i: m.n, r: e as Error, e: true, t: false } as MessageReply);
         }
     }
-    process(inputs: Float32Array[][], outputs: Float32Array[][]) {
+    process(_: Float32Array[][], outputs: Float32Array[][]) {
         if (outputs.length > 0)
             (this.synth as any)?.process(outputs[0]![0]!, outputs[0]![1]!);
         return true;

@@ -4,7 +4,7 @@ import { Matrix } from "../matrix";
 import { AutomatedValue, AutomatedValueMethod } from "./automation";
 import { Channels } from "./channels";
 import { ProgramState } from "./programState";
-import { WorkletSynth } from "./synthImpl";
+import { Synth } from "./synth";
 
 export class Tone {
     pitch: AutomatedValue;
@@ -15,7 +15,7 @@ export class Tone {
     constructor(
         state: CompiledGraph,
         public dt: number,
-        public synth: WorkletSynth,
+        public synth: Synth,
         pitch: number,
         expression: number) {
         this.pitch = new AutomatedValue(pitch, AutomatedValueMethod.EXPONENTIAL);
@@ -39,7 +39,8 @@ export class Tone {
             channels,
             isStartOfBlock,
             blockProgress,
-            this.alive);
+            this.alive,
+            this.synth.wn);
         sample[0]! *= gain;
         sample[1]! *= gain;
         return sample;

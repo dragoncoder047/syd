@@ -15,6 +15,7 @@ export type GraphNode = [
 ];
 
 export type SpecialNode =
+    | [SpecialNodeKind.USE_WAVETABLE, name: string]
     | [SpecialNodeKind.MARK_ALIVE]
     | [SpecialNodeKind.BUILD_MATRIX, rows: number, cols: number]
     | [SpecialNodeKind.SAVE_TO_CHANNEL, channel: string];
@@ -24,6 +25,7 @@ export enum SpecialNodeKind {
     MARK_ALIVE,
     BUILD_MATRIX,
     SAVE_TO_CHANNEL,
+    USE_WAVETABLE,
 }
 
 export type NodeInput =

@@ -1,6 +1,6 @@
 import { Matrix } from "../matrix";
 import { str } from "../utils";
-import { WorkletSynth } from "./synthImpl";
+import { Synth } from "./synth";
 
 export function newSynth(context: AudioContext): SynthRPCProxy {
     try {
@@ -62,19 +62,19 @@ function makeSynthProxy(audioNode: AudioWorkletNode): SynthRPCProxy {
 }
 
 type SynthMethod = {
-    [K in keyof WorkletSynth]: WorkletSynth[K] extends Function ? K : never;
-}[keyof WorkletSynth];
+    [K in keyof Synth]: Synth[K] extends Function ? K : never;
+}[keyof Synth];
 
 type PromiseFunction<T extends (...args: any) => any> = (...args: Parameters<T>) => Promise<ReturnType<T>>;
 
 export type Message<T extends SynthMethod = SynthMethod> = {
     m: T;
     n: number;
-    a: Parameters<WorkletSynth[T]>;
+    a: Parameters<Synth[T]>;
 };
 export type MessageReply<T extends SynthMethod = SynthMethod> = {
     i: number;
-    r: ReturnType<WorkletSynth[T]>;
+    r: ReturnType<Synth[T]>;
     e: false;
     t: false;
 } | {
@@ -93,5 +93,5 @@ type ProxyObject = {
     onTick(cb: (dt: number, watchedChannels: Record<string, Matrix>) => void): { cancel(): void };
 }
 export type SynthRPCProxy = ProxyObject & {
-    [K in SynthMethod]: PromiseFunction<WorkletSynth[K]>
+    [K in SynthMethod]: PromiseFunction<Synth[K]>
 }

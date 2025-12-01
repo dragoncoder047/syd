@@ -2,7 +2,7 @@ import { KRateHelper } from "..";
 import { AudioProcessor, AudioProcessorFactory, Dimensions, SCALAR_DIMS } from "../../compiler/nodeDef";
 import { TAU, cos as cosine, lerp, sin, sqrt, tan } from "../../math";
 import { Matrix } from "../../matrix";
-import { WorkletSynth } from "../../runtime/synthImpl";
+import { Synth } from "../../runtime/synth";
 
 enum FilterType {
     LOWPASS = 0,
@@ -35,7 +35,7 @@ export class Filter implements AudioProcessorFactory {
         }
     ];
     outputDims: Dimensions = ["N", 1];
-    make(synth: WorkletSynth, sizeVars: { N: number }): AudioProcessor {
+    make(synth: Synth, sizeVars: { N: number }): AudioProcessor {
         const N = sizeVars.N;
         const x2 = new Matrix(N, 1), x1 = new Matrix(N,), y2 = new Matrix(N, 1), y1 = new Matrix(N, 1);
         const coefficients = new KRateHelper(3, 2),
@@ -127,7 +127,7 @@ export class Bitcrusher implements AudioProcessorFactory {
         }
     ];
     outputDims: Dimensions = ["M", "N"];
-    make(synth: WorkletSynth, sizeVars: { M: number, N: number }): AudioProcessor {
+    make(synth: Synth, sizeVars: { M: number, N: number }): AudioProcessor {
         var phase = 1, last = new Matrix(sizeVars.M, sizeVars.N);
         return inputs => {
             phase += inputs[1]!.toScalar() * synth.dt;
@@ -155,7 +155,7 @@ export class DelayLine implements AudioProcessorFactory {
         }
     ];
     outputDims: Dimensions = ["C", "T"];
-    make(synth: WorkletSynth, sizeVars: { C: number, T: number }): AudioProcessor {
+    make(synth: Synth, sizeVars: { C: number, T: number }): AudioProcessor {
         const C = sizeVars.C, T = sizeVars.T;
         // buffer: each column is a delay line for the channel
         var buffer = new Matrix(1 << 14, C);
