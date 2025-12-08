@@ -21,7 +21,7 @@ export interface Song {
     }>;
 }
 
-export type EventSequence<T> = [dt: number, eventsData: T[]];
+export type EventSequence<T> = [dt: number, eventsData: T[]][];
 
 // MARK: SONG DATA
 

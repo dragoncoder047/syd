@@ -51,6 +51,7 @@
         ]
     },
     "dependencies": {
+        "@flatten-js/interval-tree": "^2.0.3",
         "jsoncrush": "^1.1.8",
         "microdiff": "^1.5.0",
         "travels": "^0.9.0"

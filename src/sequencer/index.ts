@@ -3,9 +3,9 @@ import { EventSequence, NoteShape, Pattern } from "./types";
 export interface SequencerEvent {
     kind: SequencerEventType;
     isMod: boolean;
-    target: string | number;
+    targetInstrument: string | number;
     value: number;
-    time: number;
+    duration: number;
 }
 
 export enum SequencerEventType {
@@ -16,8 +16,7 @@ export enum SequencerEventType {
 }
 
 export class Sequencer {
-    time = 0; // position in beats
-    pauseTime: number | null = 0;
+    beatPos = 0; // position in beats
     paused = true;
     constructor(
         public patterns: Pattern[],
@@ -25,22 +24,23 @@ export class Sequencer {
         public timeline: EventSequence<number>,
         public tempo: number) {
     }
+    private _pt: number | null = 0;
     play() {
         this.paused = false;
-        if (this.pauseTime !== null) {
-            this.time = this.pauseTime;
-            this.pauseTime = null;
+        if (this._pt !== null) {
+            this.beatPos = this._pt;
+            this._pt = null;
         }
     }
     stop() {
         const events = this.pause();
-        this.time = 0;
-        this.pauseTime = null;
+        this.beatPos = 0;
+        this._pt = null;
         return events;
     }
     pause() {
         if (!this.paused) {
-            this.pauseTime = this.time;
+            this._pt = this.beatPos;
         }
         this.paused = true;
         return this.seek(0);
@@ -48,7 +48,7 @@ export class Sequencer {
     /** dt is in SECONDS */
     advance(dt: number): SequencerEvent[] {
         if (this.paused) return [];
-        return this.seek(this.time + dt * 60 / this.tempo);
+        return this.seek(this.beatPos + dt * this.tempo / 60);
     }
     /** time is in BEATS */
     seek(time: number): SequencerEvent[] {
