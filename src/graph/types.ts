@@ -1,5 +1,4 @@
 export interface Instrument {
-    isMod: false;
     voice: NodeGraph;
     fx: NodeGraph;
 }
@@ -14,6 +13,7 @@ export type GraphNode = [
     inputs: NodeInput[],
 ];
 
+// TODO: abstract these away into macro-nodes with a build() method rather than hardcoding the behavior
 export type SpecialNode =
     | [SpecialNodeKind.USE_WAVETABLE, name: string]
     | [SpecialNodeKind.MARK_ALIVE]
@@ -28,6 +28,7 @@ export enum SpecialNodeKind {
     USE_WAVETABLE,
 }
 
+// TODO: abstract these away with special node types that have a toCompiled() method or something?
 export type NodeInput =
     | number
     | [NodeInputLocation.CONSTANT, number]

@@ -1,13 +1,15 @@
 import { Instrument, NodeGraph } from "../graph/types";
 import { ChannelMode } from "../runtime/channels";
 
+// TODO: make this use more records instead of arrays where possible
+
 export interface Song {
     meta: Metadata;
     /** string if modulated, number if constant */
     tempo: string | number;
     tuning?: SongTuning;
-    instruments: Record<string, Instrument>;
-    timeline: TimelineEntry[];
+    instruments: Record<InstrumentName, Instrument>;
+    timeline: EventSequence<number>;
     patterns: Pattern[];
     noteShapes: NoteShape[];
     postFX: NodeGraph;
@@ -15,9 +17,11 @@ export interface Song {
         mode: ChannelMode,
         rows: number,
         cols: number,
-        data: Float32Array
+        data: number[]
     }>;
 }
+
+export type EventSequence<T> = [dt: number, eventsData: T[]];
 
 // MARK: SONG DATA
 
@@ -43,21 +47,21 @@ export interface RenderingPreferences {
     channelColors?: string[];
 }
 
-export type TimelineEntry = [delta: number, startPatterns: number[]];
-
 /**
  * * a ref can be told apart from a note by the type of the element at index 1 (2-tuple = note, number = ref)
  */
 export type Pattern = [
-    instruments: string | string[],
-    notes: Note[]
+    instruments: InstrumentName | InstrumentName[],
+    notes: EventSequence<Note>
 ];
 
 export type Note = [
-    dt: number,
     pitch: number,
-    shape: NoteShape,
+    shape: number, // index into global note shape table
+    instruments?: number[], // if not specified, all of them
 ];
+
+export type InstrumentName = number | string;
 
 export type NoteShape = NotePin[];
 

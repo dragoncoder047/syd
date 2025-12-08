@@ -42,8 +42,18 @@ export class Synth {
     /** channels for passing data between instruments or the postFX */
     c = new Channels;
     cw = new Set<string>();
+    r = true;
     constructor(public dt: number, public s: Readonly<MessagePort>) {
         this.clearPostFX();
+    }
+    suspend() {
+        this.r = false;
+    }
+    resume() {
+        this.r = true;
+    }
+    isRunning() {
+        return this.r;
     }
     nukeAll() {
         this.clearInstruments();
@@ -121,6 +131,11 @@ export class Synth {
     /** HOT CODE */
     /** only private to prevent types from picking it up, it must be called */
     private process(left: Float32Array, right: Float32Array) {
+        if (!this.r) {
+            left.fill(0);
+            right.fill(0);
+            return;
+        }
         const len = left.length;
         for (var i = 0; i < len; i++) {
             const [l, r] = this.nextSample(i === 0, i / len);

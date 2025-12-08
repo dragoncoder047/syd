@@ -49,5 +49,10 @@
             "bun",
             "esbuild"
         ]
+    },
+    "dependencies": {
+        "jsoncrush": "^1.1.8",
+        "microdiff": "^1.5.0",
+        "travels": "^0.9.0"
     }
 }

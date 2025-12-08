@@ -1,4 +1,4 @@
-import { NoteShape, Pattern, TimelineEntry } from "./types";
+import { EventSequence, NoteShape, Pattern } from "./types";
 
 export interface SequencerEvent {
     kind: SequencerEventType;
@@ -16,35 +16,47 @@ export enum SequencerEventType {
 }
 
 export class Sequencer {
-    time = 0;
+    time = 0; // position in beats
+    pauseTime: number | null = 0;
     paused = true;
     constructor(
         public patterns: Pattern[],
         public noteShapes: NoteShape[],
-        public timeline: TimelineEntry[],
-        public tempoMod: string) {
-        // TODO: extract tempo mod channel and convert to absolute integral of beats vs. time
-        // TODO: convert all notes to 
+        public timeline: EventSequence<number>,
+        public tempo: number) {
     }
     play() {
         this.paused = false;
+        if (this.pauseTime !== null) {
+            this.time = this.pauseTime;
+            this.pauseTime = null;
+        }
     }
     stop() {
         const events = this.pause();
         this.time = 0;
+        this.pauseTime = null;
         return events;
     }
-    pause(): SequencerEvent[] {
+    pause() {
+        if (!this.paused) {
+            this.pauseTime = this.time;
+        }
         this.paused = true;
-        // TODO: clear active note array and return NOTE_OFF for all of them
+        return this.seek(0);
     }
+    /** dt is in SECONDS */
     advance(dt: number): SequencerEvent[] {
         if (this.paused) return [];
-        return this.seek(this.time + dt, true);
+        return this.seek(this.time + dt * 60 / this.tempo);
     }
-    seek(time: number, close: boolean): SequencerEvent[] {
+    /** time is in BEATS */
+    seek(time: number): SequencerEvent[] {
         // Make NOTE_OFF for notes that are no longer under the playhead
         // Make NOTE_ON for notes that are newly appeared under the playhead
         // Then process the BEND events
+    }
+    getAtPlayhead(): unknown {
+
     }
 }
