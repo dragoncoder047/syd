@@ -1,5 +1,5 @@
 import { NodeGraph, NodeInput, NodeInputLocation as NodeInputLocation, SpecialNodeKind } from "../graph/types";
-import { Matrix, scalarMatrix } from "../matrix";
+import { Matrix, scalarMatrix } from "../math/matrix";
 import { Opcode, Program } from "../runtime/program";
 import { isArray, isNumber, isString } from "../utils";
 import { AudioProcessorFactory, Dimensions, SCALAR_DIMS } from "./nodeDef";

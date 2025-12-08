@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 import { AudioProcessorFactory, compile, ErrorReason, NodeGraph, NodeInput, NodeInputLocation, SpecialNodeKind } from "../src";
-import { Matrix, scalarMatrix } from "../src/matrix";
+import { Matrix, scalarMatrix } from "../src/math/matrix";
 import { Opcode } from "../src/runtime/program";
 
 test("compiles", () => {

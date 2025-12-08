@@ -1,6 +1,6 @@
 import { AudioProcessor, AudioProcessorFactory, Dimensions } from "../../compiler/nodeDef";
-import { abs } from "../../math";
-import { Matrix, scalarMatrix } from "../../matrix";
+import { abs } from "../../math/math";
+import { Matrix, scalarMatrix } from "../../math/matrix";
 import { Synth } from "../../runtime/synth";
 
 export class Shimmer implements AudioProcessorFactory {

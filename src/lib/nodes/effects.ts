@@ -1,7 +1,7 @@
 import { KRateHelper } from "..";
 import { AudioProcessor, AudioProcessorFactory, Dimensions, SCALAR_DIMS } from "../../compiler/nodeDef";
-import { TAU, cos as cosine, lerp, sin, sqrt, tan } from "../../math";
-import { Matrix } from "../../matrix";
+import { TAU, cos, lerp, sin, sqrt, tan } from "../../math/math";
+import { Matrix } from "../../math/matrix";
 import { Synth } from "../../runtime/synth";
 
 enum FilterType {
@@ -60,7 +60,7 @@ export class Filter implements AudioProcessorFactory {
                 const resonance = inputs[2]!.toScalar();
                 const kind = inputs[3]!.toScalar() as FilterType;
                 const cornerRadiansPerSample = TAU * cutoff * synth.dt;
-                const cos = cosine(cornerRadiansPerSample);
+                const c = cos(cornerRadiansPerSample);
                 switch (kind) {
                     case FilterType.LOWPASS:
                     case FilterType.HIGHPASS:
@@ -68,9 +68,9 @@ export class Filter implements AudioProcessorFactory {
                         alpha = sin(cornerRadiansPerSample) / 2 / resonance;
                         a0 = 1 + alpha;
                         sign = kind === FilterType.HIGHPASS ? -1 : 1;
-                        a1 = -2 * cos / a0;
+                        a1 = -2 * c / a0;
                         a2 = (1 - alpha) / a0;
-                        b2 = b0 = (1 - cos * sign) / 2 / a0;
+                        b2 = b0 = (1 - c * sign) / 2 / a0;
                         b1 = sign * 2 * b0;
                         break;
                     case FilterType.PEAK:
@@ -80,7 +80,7 @@ export class Filter implements AudioProcessorFactory {
                         alpha = tan(bandwidth / 2);
                         a0 = 1 + alpha / sqrtGain;
                         b0 = (1 + alpha * sqrtGain) / a0;
-                        b1 = a1 = -2 * cos / a0;
+                        b1 = a1 = -2 * c / a0;
                         b2 = (1 - alpha * sqrtGain) / a0;
                         a2 = (1.0 - alpha / sqrtGain) / a0;
                         break;

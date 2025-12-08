@@ -1,8 +1,8 @@
 import { CompiledGraph } from "../compiler/compile";
 import { AudioProcessorFactory } from "../compiler/nodeDef";
 import { OPERATORS } from "../compiler/operator";
-import { lerp } from "../math";
-import { Matrix } from "../matrix";
+import { lerp } from "../math/math";
+import { Matrix } from "../math/matrix";
 import { Opcode } from "../runtime/program";
 import { Bitcrusher, DelayLine, Filter } from "./nodes/effects";
 import { WavetableOscillator } from "./nodes/generators";

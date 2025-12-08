@@ -1,5 +1,5 @@
 import { AudioProcessor, AudioProcessorFactory, Dimensions } from "../../compiler/nodeDef";
-import { scalarMatrix } from "../../matrix";
+import { scalarMatrix } from "../../math/matrix";
 import { Synth } from "../../runtime/synth";
 
 

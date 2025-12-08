@@ -1,5 +1,5 @@
 import { AudioProcessor, AudioProcessorFactory, Dimensions, NodeInputDef } from "../../compiler/nodeDef";
-import { Matrix } from "../../matrix";
+import { Matrix } from "../../math/matrix";
 import { Synth } from "../../runtime/synth";
 
 export class MathNode implements AudioProcessorFactory {

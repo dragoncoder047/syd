@@ -42,3 +42,5 @@ lol I have no idea what I'm doing
     * then at end just for each internal node used multiple times, find all of the paths, go to one end and sort them by the opposing coordinate of the endpoints, and then distribute them around the center of the gap
   * add a "rubber wire" force-directed floppy simulation mode
   * possibly also do organic "bundle" routing: <http://aeholroyd.org/papers/bundle-full.pdf>
+  * granularizationatleinginator
+

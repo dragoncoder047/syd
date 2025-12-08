@@ -1,4 +1,4 @@
-import { Matrix } from "../matrix";
+import { Matrix } from "../math/matrix";
 import { Synth } from "../runtime/synth";
 
 export type Dimensions = [string | number, string | number];

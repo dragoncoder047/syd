@@ -1,4 +1,4 @@
-import { Matrix, scalarMatrix } from "../matrix";
+import { Matrix, scalarMatrix } from "../math/matrix";
 
 export enum ChannelMode {
     ZEROED,

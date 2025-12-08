@@ -1,5 +1,5 @@
 import { AudioProcessor } from "../compiler/nodeDef";
-import { Matrix } from "../matrix";
+import { Matrix } from "../math/matrix";
 import { Channels } from "./channels";
 import { Opcode, Program } from "./program";
 

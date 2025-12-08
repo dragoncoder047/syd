@@ -1,7 +1,7 @@
 import { expect, test } from "bun:test";
 import { AudioProcessorFactory, compile, ErrorReason, NodeGraph, NodeInputLocation } from "../src";
 import { getFragmentInputs, GraphFragment, NodeFragmentEdge, unifyGraphFragments } from "../src/graph/fragment";
-import { scalarMatrix } from "../src/matrix";
+import { scalarMatrix } from "../src/math/matrix";
 import { Opcode } from "../src/runtime/program";
 
 test("unify fragments", () => {

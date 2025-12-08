@@ -1,6 +1,6 @@
 import { CompiledGraph } from "../compiler/compile";
 import { AudioProcessor } from "../compiler/nodeDef";
-import { Matrix } from "../matrix";
+import { Matrix } from "../math/matrix";
 import { AutomatedValue, AutomatedValueMethod } from "./automation";
 import { Channels } from "./channels";
 import { ProgramState } from "./programState";

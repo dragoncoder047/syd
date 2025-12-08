@@ -1,4 +1,4 @@
-import { Dimensions } from "./compiler/nodeDef";
+import { Dimensions } from "../compiler/nodeDef";
 import { max } from "./math";
 
 export class Matrix {

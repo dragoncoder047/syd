@@ -1,5 +1,5 @@
 import { CompiledGraph } from "../compiler/compile";
-import { Matrix } from "../matrix";
+import { Matrix } from "../math/matrix";
 import { ChannelMode, Channels } from "./channels";
 import { Synth } from "./synth";
 import { Tone } from "./tone";
