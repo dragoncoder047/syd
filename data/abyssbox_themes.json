@@ -1,5 +1,6 @@
-{
-    "AbyssBox Classic": {
+[
+    {
+        "name": "AbyssBox Classic",
         "values": {
             "page-margin": "#1e0915",
             "editor-background": "#1e0915",
@@ -418,7 +419,8 @@
             }
         }
     },
-    "AbyssBox Competitive": {
+    {
+        "name": "AbyssBox Competitive",
         "values": {
             "page-margin": "#000000",
             "editor-background": "#000000",
@@ -803,7 +805,8 @@
             }
         }
     },
-    "AbyssBox Light": {
+    {
+        "name": "AbyssBox Light",
         "values": {
             "page-margin": "#e0adbc",
             "editor-background": "#e0adbc",
@@ -1224,7 +1227,8 @@
             }
         }
     },
-    "AbyssBox 0.8": {
+    {
+        "name": "AbyssBox 0.8",
         "values": {
             "page-margin": "#1e0915",
             "editor-background": "#1e0915",
@@ -1344,7 +1348,8 @@
         "overrides": {},
         "resources": {}
     },
-    "AbyssBox Piano": {
+    {
+        "name": "AbyssBox Piano",
         "values": {
             "page-margin": "#450320",
             "editor-background": "#450320",
@@ -1772,7 +1777,8 @@
             }
         }
     },
-    "Frutiger Aero": {
+    {
+        "name": "Frutiger Aero",
         "values": {
             "page-margin": "#fff",
             "editor-background": "#2e538c",
@@ -2056,7 +2062,8 @@
             }
         }
     },
-    "Frutiger Aero Night": {
+    {
+        "name": "Frutiger Aero Night",
         "values": {
             "page-margin": "#fff",
             "editor-background": "#290f37",
@@ -2340,7 +2347,8 @@
             }
         }
     },
-    "Skeuomorphic": {
+    {
+        "name": "Skeuomorphic",
         "values": {
             "page-margin": "#020202",
             "editor-background": "#1e1e1e",
@@ -2600,7 +2608,8 @@
             }
         }
     },
-    "woodland": {
+    {
+        "name": "woodland",
         "values": {
             "page-margin": "#1d1b16",
             "editor-background": "#1d1b16",
@@ -2847,7 +2856,8 @@
         },
         "resources": {}
     },
-    "Glyde": {
+    {
+        "name": "Glyde",
         "values": {
             "page-margin": "#000000",
             "song-player-margin": "#000",
@@ -3012,7 +3022,8 @@
             }
         }
     },
-    "starry studio": {
+    {
+        "name": "starry studio",
         "values": {
             "page-margin": "black",
             "editor-background": "rgba(0, 0, 0, 0.65)",
@@ -3141,7 +3152,8 @@
             }
         }
     },
-    "AWeebyssBox": {
+    {
+        "name": "AWeebyssBox",
         "values": {
             "page-margin": "#1e0915",
             "editor-background": "#1e0915",
@@ -3310,7 +3322,8 @@
             }
         }
     },
-    "Half-Life": {
+    {
+        "name": "Half-Life",
         "values": {
             "page-margin": "#0c1012",
             "editor-background": "#0c1012",
@@ -3456,7 +3469,8 @@
             }
         }
     },
-    "Half-Life: Source": {
+    {
+        "name": "Half-Life: Source",
         "values": {
             "page-margin": "#0c1012",
             "editor-background": "#0c1012",
@@ -3606,7 +3620,8 @@
             }
         }
     },
-    "Scratch": {
+    {
+        "name": "Scratch",
         "values": {
             "page-margin": "#4d97ff40",
             "editor-background": "#f6e5fa",
@@ -3854,7 +3869,8 @@
             }
         }
     },
-    "Scratch Addons": {
+    {
+        "name": "Scratch Addons",
         "values": {
             "page-margin": "#111111",
             "editor-background": "#f6e5fa",
@@ -4079,7 +4095,8 @@
             }
         }
     },
-    "Doom 1993": {
+    {
+        "name": "Doom 1993",
         "values": {
             "page-margin": "#470000",
             "editor-background": "#470000",
@@ -4220,7 +4237,8 @@
             }
         }
     },
-    "Undertale": {
+    {
+        "name": "Undertale",
         "values": {
             "page-margin": "#000",
             "editor-background": "#000",
@@ -4434,7 +4452,8 @@
             }
         }
     },
-    "Yume Nikki": {
+    {
+        "name": "Yume Nikki",
         "values": {
             "page-margin": "#000000",
             "editor-background": "#000000",
@@ -4811,7 +4830,8 @@
             }
         }
     },
-    "Windows Xp": {
+    {
+        "name": "Windows Xp",
         "values": {
             "page-margin": "#edead9",
             "editor-background": "#faf9f2",
@@ -5400,7 +5420,8 @@
             }
         }
     },
-    "corporate dark": {
+    {
+        "name": "corporate dark",
         "values": {
             "page-margin": "#1f1f1f",
             "editor-background": "#1f1f1f",
@@ -5534,7 +5555,8 @@
         },
         "resources": {}
     },
-    "corporate light": {
+    {
+        "name": "corporate light",
         "values": {
             "page-margin": "white",
             "editor-background": "white",
@@ -5668,7 +5690,8 @@
         },
         "resources": {}
     },
-    "Terminal 2.0 (AB)": {
+    {
+        "name": "Terminal 2.0 (AB)",
         "values": {
             "page-margin": "black",
             "editor-background": "black",
@@ -5818,7 +5841,8 @@
             }
         }
     },
-    "Slushie": {
+    {
+        "name": "Slushie",
         "values": {
             "page-margin": "#040814",
             "editor-background": "#040814",
@@ -5942,7 +5966,8 @@
         "overrides": {},
         "resources": {}
     },
-    "Slushie Pixel": {
+    {
+        "name": "Slushie Pixel",
         "values": {
             "page-margin": "#040814",
             "editor-background": "#040814",
@@ -6369,7 +6394,8 @@
             }
         }
     },
-    "2012 Video Tutorial": {
+    {
+        "name": "2012 Video Tutorial",
         "values": {
             "page-margin": "black",
             "editor-background": "black",
@@ -6509,7 +6535,8 @@
             }
         }
     },
-    "I am on fire": {
+    {
+        "name": "I am on fire",
         "values": {
             "page-margin": "black",
             "editor-background": "black",
@@ -6644,7 +6671,8 @@
             }
         }
     },
-    "BeepBox Pixel": {
+    {
+        "name": "BeepBox Pixel",
         "values": {
             "page-margin": "black",
             "editor-background": "black",
@@ -7068,7 +7096,8 @@
             }
         }
     },
-    "dark classic": {
+    {
+        "name": "dark classic",
         "values": {
             "page-margin": "black",
             "editor-background": "black",
@@ -7192,7 +7221,8 @@
         "overrides": {},
         "resources": {}
     },
-    "dark competition": {
+    {
+        "name": "dark competition",
         "values": {
             "page-margin": "black",
             "editor-background": "black",
@@ -7315,7 +7345,8 @@
         "overrides": {},
         "resources": {}
     },
-    "light classic": {
+    {
+        "name": "light classic",
         "values": {
             "page-margin": "#685d88",
             "editor-background": "white",
@@ -7444,7 +7475,8 @@
         },
         "resources": {}
     },
-    "jummbox classic": {
+    {
+        "name": "jummbox classic",
         "values": {
             "page-margin": "#040410",
             "editor-background": "#040410",
@@ -7563,7 +7595,8 @@
         "overrides": {},
         "resources": {}
     },
-    "forest": {
+    {
+        "name": "forest",
         "values": {
             "page-margin": "#010c03",
             "editor-background": "#010c03",
@@ -7682,7 +7715,8 @@
         "overrides": {},
         "resources": {}
     },
-    "forest 2": {
+    {
+        "name": "forest 2",
         "values": {
             "page-margin": "#132f16",
             "editor-background": "#002b03",
@@ -8034,7 +8068,8 @@
             }
         }
     },
-    "canyon": {
+    {
+        "name": "canyon",
         "values": {
             "page-margin": "#0a0000",
             "editor-background": "#0a0000",
@@ -8153,7 +8188,8 @@
         "overrides": {},
         "resources": {}
     },
-    "canyon 2": {
+    {
+        "name": "canyon 2",
         "values": {
             "page-margin": "#0a0000",
             "song-player-margin": "var(--page-margin)",
@@ -8507,7 +8543,8 @@
             }
         }
     },
-    "midnight": {
+    {
+        "name": "midnight",
         "values": {
             "page-margin": "#000",
             "editor-background": "#000",
@@ -8626,7 +8663,8 @@
         "overrides": {},
         "resources": {}
     },
-    "gold light": {
+    {
+        "name": "gold light",
         "values": {
             "page-margin": "#cab1d3",
             "editor-background": "#f4f4f4",
@@ -8751,7 +8789,8 @@
         },
         "resources": {}
     },
-    "amoled dark": {
+    {
+        "name": "amoled dark",
         "values": {
             "page-margin": "#000",
             "editor-background": "#020406",
@@ -8870,7 +8909,8 @@
         "overrides": {},
         "resources": {}
     },
-    "beachcombing": {
+    {
+        "name": "beachcombing",
         "values": {
             "page-margin": "#010121",
             "editor-background": "#020222",
@@ -8994,7 +9034,8 @@
         "overrides": {},
         "resources": {}
     },
-    "roe": {
+    {
+        "name": "roe",
         "values": {
             "page-margin": "#050000",
             "editor-background": "#050000",
@@ -9118,7 +9159,8 @@
         "overrides": {},
         "resources": {}
     },
-    "moonlight": {
+    {
+        "name": "moonlight",
         "values": {
             "page-margin": "#020514",
             "editor-background": "#020514",
@@ -9242,7 +9284,8 @@
         "overrides": {},
         "resources": {}
     },
-    "autumn": {
+    {
+        "name": "autumn",
         "values": {
             "page-margin": "#060304",
             "editor-background": "#060304",
@@ -9366,7 +9409,8 @@
         "overrides": {},
         "resources": {}
     },
-    "fruit": {
+    {
+        "name": "fruit",
         "values": {
             "page-margin": "#040507",
             "editor-background": "#040507",
@@ -9490,7 +9534,8 @@
         "overrides": {},
         "resources": {}
     },
-    "sunset": {
+    {
+        "name": "sunset",
         "values": {
             "page-margin": "#040300",
             "editor-background": "#040300",
@@ -9614,7 +9659,8 @@
         "overrides": {},
         "resources": {}
     },
-    "toxic": {
+    {
+        "name": "toxic",
         "values": {
             "page-margin": "#010003",
             "editor-background": "#010003",
@@ -9738,7 +9784,8 @@
         "overrides": {},
         "resources": {}
     },
-    "violet verdant": {
+    {
+        "name": "violet verdant",
         "values": {
             "page-margin": "#0e031a",
             "editor-background": "#0e031a",
@@ -9857,7 +9904,8 @@
         "overrides": {},
         "resources": {}
     },
-    "portal": {
+    {
+        "name": "portal",
         "values": {
             "page-margin": "#04081a",
             "editor-background": "#04081a",
@@ -9981,7 +10029,8 @@
         "overrides": {},
         "resources": {}
     },
-    "fusion": {
+    {
+        "name": "fusion",
         "values": {
             "page-margin": "#0c0306",
             "editor-background": "#0c0306",
@@ -10105,7 +10154,8 @@
         "overrides": {},
         "resources": {}
     },
-    "inverse": {
+    {
+        "name": "inverse",
         "values": {
             "page-margin": "#c4c8e3",
             "editor-background": "#c4c8e3",
@@ -10229,7 +10279,8 @@
         "overrides": {},
         "resources": {}
     },
-    "nebula": {
+    {
+        "name": "nebula",
         "values": {
             "page-margin": "#11001c",
             "editor-background": "#150e1f",
@@ -10348,7 +10399,8 @@
         "overrides": {},
         "resources": {}
     },
-    "Nebula 2": {
+    {
+        "name": "Nebula 2",
         "values": {
             "page-margin": "#040410",
             "editor-background": "#11001c",
@@ -10698,7 +10750,8 @@
             }
         }
     },
-    "roe light": {
+    {
+        "name": "roe light",
         "values": {
             "page-margin": "#fff5f5",
             "editor-background": "#fff5f5",
@@ -10824,7 +10877,8 @@
         },
         "resources": {}
     },
-    "jummbox light": {
+    {
+        "name": "jummbox light",
         "values": {
             "page-margin": "#fefdff",
             "editor-background": "#fefdff",
@@ -10944,7 +10998,8 @@
         },
         "resources": {}
     },
-    "energized": {
+    {
+        "name": "energized",
         "values": {
             "page-margin": "#000a08",
             "editor-background": "#000a08",
@@ -11066,7 +11121,8 @@
         "overrides": {},
         "resources": {}
     },
-    "neapolitan": {
+    {
+        "name": "neapolitan",
         "values": {
             "page-margin": "#120807",
             "editor-background": "#120807",
@@ -11190,7 +11246,8 @@
         "overrides": {},
         "resources": {}
     },
-    "mono": {
+    {
+        "name": "mono",
         "values": {
             "page-margin": "#000",
             "editor-background": "#000",
@@ -11307,7 +11364,8 @@
         "overrides": {},
         "resources": {}
     },
-    "blutonium": {
+    {
+        "name": "blutonium",
         "values": {
             "page-margin": "#02070D",
             "editor-background": "#02070D",
@@ -11429,7 +11487,8 @@
         "overrides": {},
         "resources": {}
     },
-    "Ghost House": {
+    {
+        "name": "Ghost House",
         "values": {
             "page-margin": "#120918",
             "editor-background": "#120918",
@@ -11555,7 +11614,8 @@
         "overrides": {},
         "resources": {}
     },
-    "Ghost House 2": {
+    {
+        "name": "Ghost House 2",
         "values": {
             "page-margin": "#120918",
             "editor-background": "#1c1a2f",
@@ -11909,7 +11969,8 @@
             }
         }
     },
-    "ultrabox dark": {
+    {
+        "name": "ultrabox dark",
         "values": {
             "page-margin": "black",
             "editor-background": "black",
@@ -12026,7 +12087,8 @@
         "overrides": {},
         "resources": {}
     },
-    "modbox classic": {
+    {
+        "name": "modbox classic",
         "values": {
             "page-margin": "black",
             "editor-background": "black",
@@ -12158,7 +12220,8 @@
         "overrides": {},
         "resources": {}
     },
-    "modbox 2": {
+    {
+        "name": "modbox 2",
         "values": {
             "page-margin": "black",
             "editor-background": "black",
@@ -12292,7 +12355,8 @@
         "overrides": {},
         "resources": {}
     },
-    "modbox artic": {
+    {
+        "name": "modbox artic",
         "values": {
             "page-margin": "black",
             "editor-background": "black",
@@ -12425,7 +12489,8 @@
         "overrides": {},
         "resources": {}
     },
-    "modbox ocean": {
+    {
+        "name": "modbox ocean",
         "values": {
             "page-margin": "black",
             "editor-background": "black",
@@ -12558,7 +12623,8 @@
         "overrides": {},
         "resources": {}
     },
-    "modbox windows": {
+    {
+        "name": "modbox windows",
         "values": {
             "page-margin": "black",
             "editor-background": "black",
@@ -12691,7 +12757,8 @@
         "overrides": {},
         "resources": {}
     },
-    "modbox grassland": {
+    {
+        "name": "modbox grassland",
         "values": {
             "page-margin": "black",
             "editor-background": "black",
@@ -12824,7 +12891,8 @@
         "overrides": {},
         "resources": {}
     },
-    "modbox dessert": {
+    {
+        "name": "modbox dessert",
         "values": {
             "page-margin": "black",
             "editor-background": "black",
@@ -12957,7 +13025,8 @@
         "overrides": {},
         "resources": {}
     },
-    "modbox kahoot": {
+    {
+        "name": "modbox kahoot",
         "values": {
             "page-margin": "black",
             "editor-background": "black",
@@ -13090,7 +13159,8 @@
         "overrides": {},
         "resources": {}
     },
-    "modbox egg": {
+    {
+        "name": "modbox egg",
         "values": {
             "page-margin": "black",
             "editor-background": "black",
@@ -13223,7 +13293,8 @@
         "overrides": {},
         "resources": {}
     },
-    "modbox pony": {
+    {
+        "name": "modbox pony",
         "values": {
             "page-margin": "black",
             "editor-background": "black",
@@ -13356,7 +13427,8 @@
         "overrides": {},
         "resources": {}
     },
-    "modbox woodkid": {
+    {
+        "name": "modbox woodkid",
         "values": {
             "page-margin": "black",
             "editor-background": "black",
@@ -13498,7 +13570,8 @@
         "overrides": {},
         "resources": {}
     },
-    "modbox midnight": {
+    {
+        "name": "modbox midnight",
         "values": {
             "page-margin": "black",
             "editor-background": "black",
@@ -13639,7 +13712,8 @@
         "overrides": {},
         "resources": {}
     },
-    "modbox snedbox": {
+    {
+        "name": "modbox snedbox",
         "values": {
             "page-margin": "black",
             "editor-background": "black",
@@ -13771,7 +13845,8 @@
         "overrides": {},
         "resources": {}
     },
-    "modbox unnamed": {
+    {
+        "name": "modbox unnamed",
         "values": {
             "page-margin": "black",
             "editor-background": "black",
@@ -13913,7 +13988,8 @@
         "overrides": {},
         "resources": {}
     },
-    "modbox halloween": {
+    {
+        "name": "modbox halloween",
         "values": {
             "page-margin": "black",
             "editor-background": "black",
@@ -14055,7 +14131,8 @@
         "overrides": {},
         "resources": {}
     },
-    "modbox frozen": {
+    {
+        "name": "modbox frozen",
         "values": {
             "page-margin": "black",
             "editor-background": "black",
@@ -14197,7 +14274,8 @@
         "overrides": {},
         "resources": {}
     },
-    "modbox cinnamon": {
+    {
+        "name": "modbox cinnamon",
         "values": {
             "page-margin": "black",
             "editor-background": "black",
@@ -14339,7 +14417,8 @@
         "overrides": {},
         "resources": {}
     },
-    "modbox float": {
+    {
+        "name": "modbox float",
         "values": {
             "page-margin": "black",
             "editor-background": "black",
@@ -14481,7 +14560,8 @@
         "overrides": {},
         "resources": {}
     },
-    "modbox rainbow": {
+    {
+        "name": "modbox rainbow",
         "values": {
             "page-margin": "black",
             "editor-background": "black",
@@ -14623,7 +14703,8 @@
         "overrides": {},
         "resources": {}
     },
-    "modbox bitbeam": {
+    {
+        "name": "modbox bitbeam",
         "values": {
             "page-margin": "black",
             "editor-background": "black",
@@ -14765,7 +14846,8 @@
         "overrides": {},
         "resources": {}
     },
-    "modbox gameboy": {
+    {
+        "name": "modbox gameboy",
         "values": {
             "page-margin": "black",
             "editor-background": "black",
@@ -14907,7 +14989,8 @@
         "overrides": {},
         "resources": {}
     },
-    "modbox piano": {
+    {
+        "name": "modbox piano",
         "values": {
             "page-margin": "black",
             "editor-background": "black",
@@ -15049,7 +15132,8 @@
         "overrides": {},
         "resources": {}
     },
-    "nepbox snedbox": {
+    {
+        "name": "nepbox snedbox",
         "values": {
             "page-margin": "#000",
             "editor-background": "#060606",
@@ -15200,7 +15284,8 @@
         "overrides": {},
         "resources": {}
     },
-    "nepbox piano": {
+    {
+        "name": "nepbox piano",
         "values": {
             "page-margin": "#000",
             "editor-background": "#060606",
@@ -15344,7 +15429,8 @@
         "overrides": {},
         "resources": {}
     },
-    "nepbox laffey": {
+    {
+        "name": "nepbox laffey",
         "values": {
             "page-margin": "#000",
             "editor-background": "#060606",
@@ -15472,7 +15558,8 @@
         "overrides": {},
         "resources": {}
     },
-    "zefbox": {
+    {
+        "name": "zefbox",
         "values": {
             "page-margin": "black",
             "editor-background": "black",
@@ -15595,7 +15682,8 @@
         "overrides": {},
         "resources": {}
     },
-    "sandbox classic": {
+    {
+        "name": "sandbox classic",
         "values": {
             "page-margin": "black",
             "editor-background": "black",
@@ -15720,7 +15808,8 @@
         "overrides": {},
         "resources": {}
     },
-    "harrybox": {
+    {
+        "name": "harrybox",
         "values": {
             "page-margin": "black",
             "editor-background": "black",
@@ -15846,7 +15935,8 @@
         },
         "resources": {}
     },
-    "brucebox": {
+    {
+        "name": "brucebox",
         "values": {
             "page-margin": "#4667CE",
             "editor-background": "#4667CE",
@@ -15976,7 +16066,8 @@
         },
         "resources": {}
     },
-    "shitbox 1.0": {
+    {
+        "name": "shitbox 1.0",
         "values": {
             "page-margin": "#252525",
             "editor-background": "#252525",
@@ -16123,7 +16214,8 @@
         },
         "resources": {}
     },
-    "shitbox 2.0": {
+    {
+        "name": "shitbox 2.0",
         "values": {
             "page-margin": "maroon",
             "editor-background": "black",
@@ -16248,7 +16340,8 @@
         "overrides": {},
         "resources": {}
     },
-    "shitbox 3.0": {
+    {
+        "name": "shitbox 3.0",
         "values": {
             "page-margin": "#252525",
             "editor-background": "#252525",
@@ -16388,7 +16481,8 @@
         },
         "resources": {}
     },
-    "shitbox ModBox 2.0": {
+    {
+        "name": "shitbox ModBox 2.0",
         "values": {
             "page-margin": "#252525",
             "editor-background": "#252525",
@@ -16535,7 +16629,8 @@
         },
         "resources": {}
     },
-    "shitbox Realm": {
+    {
+        "name": "shitbox Realm",
         "values": {
             "page-margin": "#252525",
             "editor-background": "#252525",
@@ -16692,7 +16787,8 @@
         },
         "resources": {}
     },
-    "shitbox4": {
+    {
+        "name": "shitbox4",
         "values": {
             "page-margin": "#252525",
             "editor-background": "#252525",
@@ -16830,7 +16926,8 @@
         },
         "resources": {}
     },
-    "nerdbox": {
+    {
+        "name": "nerdbox",
         "values": {
             "page-margin": "black",
             "editor-background": "black",
@@ -16955,7 +17052,8 @@
         "overrides": {},
         "resources": {}
     },
-    "nepbox": {
+    {
+        "name": "nepbox",
         "values": {
             "page-margin": "#000",
             "editor-background": "#060606",
@@ -17073,7 +17171,8 @@
         "overrides": {},
         "resources": {}
     },
-    "cardboardbox classic": {
+    {
+        "name": "cardboardbox classic",
         "values": {
             "page-margin": "#0f0700",
             "editor-background": "#0f0700",
@@ -17193,7 +17292,8 @@
         "overrides": {},
         "resources": {}
     },
-    "blubox classic": {
+    {
+        "name": "blubox classic",
         "values": {
             "page-margin": "#040410",
             "editor-background": "#040410",
@@ -17309,7 +17409,8 @@
         "overrides": {},
         "resources": {}
     },
-    "dogebox classic": {
+    {
+        "name": "dogebox classic",
         "values": {
             "page-margin": "#0d0063",
             "editor-background": "#0D0063",
@@ -17434,7 +17535,8 @@
         "overrides": {},
         "resources": {}
     },
-    "dogebox dark": {
+    {
+        "name": "dogebox dark",
         "values": {
             "page-margin": "#000",
             "editor-background": "#000",
@@ -17459,7 +17561,8 @@
         "overrides": {},
         "resources": {}
     },
-    "todbox classic": {
+    {
+        "name": "todbox classic",
         "values": {
             "page-margin": "black",
             "editor-background": "black",
@@ -17583,7 +17686,8 @@
         "overrides": {},
         "resources": {}
     },
-    "todbox dark mode": {
+    {
+        "name": "todbox dark mode",
         "values": {
             "page-margin": "black",
             "editor-background": "black",
@@ -17711,7 +17815,8 @@
         },
         "resources": {}
     },
-    "mainbox 1.0": {
+    {
+        "name": "mainbox 1.0",
         "values": {
             "page-margin": "black",
             "editor-background": "black",
@@ -17836,7 +17941,8 @@
         "overrides": {},
         "resources": {}
     },
-    "fogbox": {
+    {
+        "name": "fogbox",
         "values": {
             "page-margin": "#252525",
             "editor-background": "#252525",
@@ -17960,7 +18066,8 @@
         "overrides": {},
         "resources": {}
     },
-    "foxbox": {
+    {
+        "name": "foxbox",
         "values": {
             "page-margin": "#ADD8E6",
             "editor-background": "black",
@@ -18084,7 +18191,8 @@
         "overrides": {},
         "resources": {}
     },
-    "lemmbox dark": {
+    {
+        "name": "lemmbox dark",
         "values": {
             "page-margin": "#020009",
             "editor-background": "#020009",
@@ -18209,7 +18317,8 @@
         "overrides": {},
         "resources": {}
     },
-    "slarmoosbox": {
+    {
+        "name": "slarmoosbox",
         "values": {
             "page-margin": "#14051a",
             "editor-background": "#14051a",
@@ -18325,7 +18434,8 @@
         "overrides": {},
         "resources": {}
     },
-    "wackybox": {
+    {
+        "name": "wackybox",
         "values": {
             "page-margin": "black",
             "editor-background": "black",
@@ -18507,7 +18617,8 @@
             }
         }
     },
-    "microbox": {
+    {
+        "name": "microbox",
         "values": {
             "page-margin": "#000000",
             "editor-background": "#000000",
@@ -18622,7 +18733,8 @@
         "overrides": {},
         "resources": {}
     },
-    "paandorasbox": {
+    {
+        "name": "paandorasbox",
         "values": {
             "page-margin": "#200000",
             "editor-background": "#200000",
@@ -18744,7 +18856,8 @@
         "overrides": {},
         "resources": {}
     },
-    "midbox": {
+    {
+        "name": "midbox",
         "values": {
             "page-margin": "#010a1e",
             "editor-background": "#010a1e",
@@ -18863,7 +18976,8 @@
         "overrides": {},
         "resources": {}
     },
-    "dogebox2": {
+    {
+        "name": "dogebox2",
         "values": {
             "page-margin": "#000015",
             "editor-background": "#000015",
@@ -18986,7 +19100,8 @@
         "overrides": {},
         "resources": {}
     },
-    "birdbox dark": {
+    {
+        "name": "birdbox dark",
         "values": {
             "page-margin": "#000",
             "editor-background": "#000",
@@ -19013,7 +19128,8 @@
         },
         "resources": {}
     },
-    "birdbox light": {
+    {
+        "name": "birdbox light",
         "values": {
             "page-margin": "#685d88",
             "editor-background": "white",
@@ -19143,7 +19259,8 @@
         },
         "resources": {}
     },
-    "azur lane": {
+    {
+        "name": "azur lane",
         "values": {
             "page-margin": "#19337e",
             "editor-background": "#000333cf",
@@ -19299,7 +19416,8 @@
             }
         }
     },
-    "WeebBox": {
+    {
+        "name": "WeebBox",
         "values": {
             "page-margin": "#040410",
             "editor-background": "#040410",
@@ -19428,7 +19546,8 @@
             }
         }
     },
-    "BoxBeep Dark": {
+    {
+        "name": "BoxBeep Dark",
         "values": {
             "page-margin": "#97a277",
             "editor-background": "black",
@@ -19520,7 +19639,8 @@
         },
         "resources": {}
     },
-    "BoxBeep light": {
+    {
+        "name": "BoxBeep light",
         "values": {
             "page-margin": "white",
             "editor-background": "white",
@@ -19611,7 +19731,8 @@
         },
         "resources": {}
     },
-    "Protanopia": {
+    {
+        "name": "Protanopia",
         "values": {
             "page-margin": "#000000",
             "editor-background": "#000000",
@@ -19733,7 +19854,8 @@
         "overrides": {},
         "resources": {}
     },
-    "Tritanopia": {
+    {
+        "name": "Tritanopia",
         "values": {
             "page-margin": "#000000",
             "editor-background": "#000000",
@@ -19855,7 +19977,8 @@
         "overrides": {},
         "resources": {}
     },
-    "Deuteranopia": {
+    {
+        "name": "Deuteranopia",
         "values": {
             "page-margin": "#000",
             "editor-background": "#060606",
@@ -19973,7 +20096,8 @@
         "overrides": {},
         "resources": {}
     },
-    "custom": {
+    {
+        "name": "custom",
         "values": {
             "page-margin": "#040410",
             "editor-background": "#040410",
@@ -20088,4 +20212,4 @@
         "overrides": {},
         "resources": {}
     }
-}
+]

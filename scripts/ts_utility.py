@@ -77,14 +77,6 @@ def get_prop_of_class(cls: dict, prop: str) -> Any:
                 and n["name"]["escapedText"] == prop)
 
 
-def to_name_map(array):
-    out = {}
-    for item in array:
-        name = item.pop("name")
-        out[name] = item
-    return out
-
-
 def to_literal(ast, *, try_eval=False, shallow=False, classes={}) -> Any:
     """basically eval for a TS syntax tree (lol)"""
     if not isinstance(ast, dict):
@@ -156,11 +148,8 @@ def to_literal(ast, *, try_eval=False, shallow=False, classes={}) -> Any:
                               try_eval=True, classes=classes)
             arguments = [to_literal(a, try_eval=True, classes=classes)
                          for a in ast["arguments"]]
-            # Hack special case for toNameMap which is used like everywhere
-            if expr == "toNameMap":
-                expr = to_name_map
             # Hack for wavetables (handled elsewhere)
-            if expr in ("centerWave", "centerAndNormalizeWave",
+            if expr in ("toNameMap", "centerWave", "centerAndNormalizeWave",
                         "rawChipToIntegrated"):
                 expr = identity
             if not callable(expr):

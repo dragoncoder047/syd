@@ -62,7 +62,7 @@ def presets():
     presets_file = get_beepmod_file("jukebox/editor/EditorConfig.ts")
     ast = ts_utility.parse_ts(presets_file, "EditorConfig.ts")
 
-    categories = {}
+    categories = []
 
     EditorConfig = ts_utility.first_of_kind(ast, "ClassDeclaration")
 
@@ -80,7 +80,10 @@ def presets():
         if obj["kind"] == "TypeAssertionExpression":
             obj = obj["expression"]
         obj = obj["arguments"]
-        categories[name] = [ts_utility.to_literal(a) for a in obj]
+        categories.append({
+            "name": name,
+            "presets": [ts_utility.to_literal(a) for a in obj],
+        })
 
     return categories
 
@@ -101,7 +104,7 @@ def themes():
 
     # now, themes is a dict[str, str]
 
-    parsed_themes = {}
+    parsed_themes = []
     for theme in themes:
         css = themes[theme]
         parsed = tinycss2.parse_stylesheet(css, True, True)
@@ -172,11 +175,12 @@ def themes():
                     print(f"[{theme}] {chunk.message}")
                 case str() as a:
                     raise NameError(a)
-        parsed_themes[theme] = {
+        parsed_themes.append({
+            "name": theme,
             "values": cssvars,
             "overrides": overrides,
             "resources": resources
-        }
+        })
 
     return parsed_themes
 
@@ -222,15 +226,15 @@ def config():
         for i in range(int(voices)):
             # Copied formula from line 12640 of jukebox synth.ts and
             # special handling of voice 0 from line 12632
-            offsets.append(
-                pow(2,
-                    (unison["offset"] + unison["spread"]
-                     - ((2 * i * unison["spread"] / divisor) if i > 0 else 0))
-                    / 12))
-        unisons_by_name[unison["name"]] = {
-            "expression": unison["expression"],
-            "voiceDetunes": offsets
-        }
+            offsets.append({
+                "freq": pow(2,
+                            (unison["offset"] + unison["spread"]
+                             - ((2 * i * unison["spread"] / divisor)
+                                if i > 0 else 0)) / 12),
+                "expr": unison["expression"] * (unison["sign"]
+                                                if i > 0 else 1)
+            })
+        unisons_by_name[unison["name"]] = offsets
     data["unisons"] = unisons_by_name
 
     classes = {
