@@ -29,7 +29,7 @@ export class ProgramState {
 
         var sp = 0, i: number;
         for (var pc = 0; pc < prog.length; pc++) {
-            const [op, i1, i2] = prog[pc]!;
+            const inst = prog[pc]!, op = inst[0], i1 = inst[1], i2 = inst[2];
             switch (op) {
                 case Opcode.PUSH_CONSTANT:
                     push(constants[i1 as number]!);

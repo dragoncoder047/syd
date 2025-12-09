@@ -138,9 +138,9 @@ export class Synth {
         }
         const len = left.length;
         for (var i = 0; i < len; i++) {
-            const [l, r] = this.nextSample(i === 0, i / len);
-            left[i] = l!;
-            right[i] = r!;
+            const s = this.nextSample(i === 0, i / len);
+            left[i] = s[0]!;
+            right[i] = s[1]!;
         }
         if (this.cw.size > 0)
             this.s.postMessage({

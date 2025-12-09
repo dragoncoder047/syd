@@ -49,16 +49,16 @@ export class Instrument {
         const out = this.x.fill(0), outData = out.data;
         for (i = 0; i < liveNoteCount; i++) {
             const note = liveNotes[i]!;
-            const [l, r] = note.processSample(true, curGain, channels, isStartOfBlock, blockProgress);
-            outData[0]! += l!;
-            outData[1]! += r!;
+            const s = note.processSample(true, curGain, channels, isStartOfBlock, blockProgress);
+            outData[0]! += s[0]!;
+            outData[1]! += s[1]!;
         }
         for (i = 0; i < deadNotes.length; i++) {
-            const [note, gain] = deadNotes[i]!;
+            const noteAndGain = deadNotes[i]!, note = noteAndGain[0], gain = noteAndGain[1];
             note.alive = false;
-            const [l, r] = note.processSample(false, gain, channels, isStartOfBlock, blockProgress);
-            outData[0]! += l!;
-            outData[1]! += r!;
+            const s = note.processSample(false, gain, channels, isStartOfBlock, blockProgress);
+            outData[0]! += s[0]!;
+            outData[1]! += s[1]!;
             if (!note.alive) {
                 deadNotes[i] = deadNotes.pop()!;
                 i--;
