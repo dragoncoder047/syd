@@ -11,7 +11,7 @@ type InstrumentName = string;
 type ChannelName = string;
 
 export interface Song {
-    meta: SongMetadata;
+    metadata: SongMetadata;
     instruments: InstrumentData[];
     channels: ChannelData[];
     conductor: ChannelName;
