@@ -1,0 +1,319 @@
+{
+    "meta": {
+        "title": "Starlight Mechanica",
+        "author": "GPT5 mini",
+        "authorURL": "https://duck.ai",
+        "license": "CC0",
+        "rendering": {
+            "baseTheme": "dark-contrast",
+            "instrumentColors": {
+                "lead": "#FFD166",
+                "pad": "#06D6A0",
+                "kick": "#EF476F"
+            },
+            "patternColors": {
+                "intro": "#118AB2",
+                "verse": "#073B4C",
+                "fill": "#8ECAE6"
+            },
+            "playerLayout": "compact-2row"
+        }
+    },
+    "instruments": [
+        {
+            "name": "lead"
+        },
+        {
+            "name": "pad"
+        },
+        {
+            "name": "kick"
+        }
+    ],
+    "channels": [
+        {
+            "name": "melody",
+            "sticky": false,
+            "size": [
+                2,
+                1
+            ],
+            "value": []
+        },
+        {
+            "name": "rhythm",
+            "sticky": false,
+            "size": [
+                2,
+                1
+            ],
+            "value": []
+        },
+        {
+            "name": "conductor",
+            "sticky": true,
+            "size": [
+                1,
+                1
+            ],
+            "value": []
+        }
+    ],
+    "conductor": "conductor",
+    "timeline": [
+        {
+            "delta": 0,
+            "events": [
+                "intro"
+            ]
+        },
+        {
+            "delta": 16,
+            "events": [
+                "verse"
+            ]
+        },
+        {
+            "delta": 32,
+            "events": [
+                "fill"
+            ]
+        },
+        {
+            "delta": 40,
+            "events": [
+                "verse"
+            ]
+        }
+    ],
+    "patterns": [
+        {
+            "name": "intro",
+            "instruments": [
+                "pad",
+                "kick"
+            ],
+            "beatDiv": [
+                4,
+                4
+            ],
+            "data": [
+                {
+                    "delta": 0,
+                    "events": [
+                        {
+                            "pitch": 48,
+                            "shape": 1
+                        },
+                        {
+                            "pitch": 36,
+                            "shape": 2
+                        }
+                    ]
+                },
+                {
+                    "delta": 8,
+                    "events": [
+                        {
+                            "pitch": 50,
+                            "shape": 1
+                        }
+                    ]
+                },
+                {
+                    "delta": 8,
+                    "events": [
+                        {
+                            "pitch": 52,
+                            "shape": 1
+                        },
+                        {
+                            "pitch": 36,
+                            "shape": 2
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "verse",
+            "instruments": [
+                "lead",
+                "pad",
+                "kick"
+            ],
+            "beatDiv": [
+                8,
+                4
+            ],
+            "data": [
+                {
+                    "delta": 0,
+                    "events": [
+                        {
+                            "pitch": 60,
+                            "shape": 0
+                        },
+                        {
+                            "pitch": 48,
+                            "shape": 1
+                        }
+                    ]
+                },
+                {
+                    "delta": 4,
+                    "events": [
+                        {
+                            "pitch": 62,
+                            "shape": 0
+                        }
+                    ]
+                },
+                {
+                    "delta": 4,
+                    "events": [
+                        {
+                            "pitch": 64,
+                            "shape": 0
+                        },
+                        {
+                            "pitch": 36,
+                            "shape": 2
+                        }
+                    ]
+                },
+                {
+                    "delta": 8,
+                    "events": [
+                        {
+                            "pitch": 67,
+                            "shape": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "fill",
+            "instruments": [
+                "lead",
+                "kick"
+            ],
+            "data": [
+                {
+                    "delta": 0,
+                    "events": [
+                        {
+                            "pitch": 72,
+                            "shape": 3
+                        },
+                        {
+                            "pitch": 36,
+                            "shape": 2
+                        }
+                    ]
+                },
+                {
+                    "delta": 2,
+                    "events": [
+                        {
+                            "pitch": 71,
+                            "shape": 3
+                        }
+                    ]
+                },
+                {
+                    "delta": 2,
+                    "events": [
+                        {
+                            "pitch": 69,
+                            "shape": 3
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "noteShapes": [
+        [
+            {
+                "delta": 0,
+                "events": [
+                    {
+                        "pitchBend": 0,
+                        "expression": 0.8
+                    }
+                ]
+            },
+            {
+                "delta": 4,
+                "events": [
+                    {
+                        "pitchBend": 2,
+                        "expression": 0.9
+                    }
+                ]
+            },
+            {
+                "delta": 8,
+                "events": [
+                    {
+                        "pitchBend": 0,
+                        "expression": 0.6
+                    }
+                ]
+            }
+        ],
+        [
+            {
+                "delta": 0,
+                "events": [
+                    {
+                        "pitchBend": 0,
+                        "expression": 0.6
+                    }
+                ]
+            },
+            {
+                "delta": 12,
+                "events": [
+                    {
+                        "pitchBend": -1,
+                        "expression": 0.6
+                    }
+                ]
+            }
+        ],
+        [
+            {
+                "delta": 0,
+                "events": [
+                    {
+                        "pitchBend": 0,
+                        "expression": 1.0
+                    }
+                ]
+            }
+        ],
+        [
+            {
+                "delta": 0,
+                "events": [
+                    {
+                        "pitchBend": 3,
+                        "expression": 0.9
+                    }
+                ]
+            },
+            {
+                "delta": 1,
+                "events": [
+                    {
+                        "pitchBend": -3,
+                        "expression": 0.7
+                    }
+                ]
+            }
+        ]
+    ]
+}

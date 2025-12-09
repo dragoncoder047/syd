@@ -47,9 +47,6 @@ export interface RenderingPreferences {
     channelColors?: string[];
 }
 
-/**
- * * a ref can be told apart from a note by the type of the element at index 1 (2-tuple = note, number = ref)
- */
 export type Pattern = [
     instruments: InstrumentName | InstrumentName[],
     notes: EventSequence<Note>
