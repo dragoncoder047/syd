@@ -33,30 +33,24 @@
     "channels": [
         {
             "name": "melody",
-            "sticky": false,
             "size": [
                 2,
                 1
-            ],
-            "value": []
+            ]
         },
         {
             "name": "rhythm",
-            "sticky": false,
             "size": [
                 2,
                 1
-            ],
-            "value": []
+            ]
         },
         {
             "name": "conductor",
-            "sticky": true,
             "size": [
                 1,
                 1
-            ],
-            "value": []
+            ]
         }
     ],
     "conductor": "conductor",

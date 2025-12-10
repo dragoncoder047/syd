@@ -52,9 +52,7 @@ export interface InstrumentData extends Named<InstrumentName> {
 }
 
 export interface ChannelData extends Named<ChannelName> {
-    sticky: boolean;
     size: [rows: number, cols: number],
-    value: number[] 
 }
 
 export interface PatternData extends Named<PatternName> {
