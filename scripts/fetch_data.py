@@ -199,7 +199,7 @@ def config():
     rawChipWaves = ts_utility.get_prop_of_class(Config, "rawChipWaves")
     rawChipWaves_dictarray = ts_utility.to_literal(
         rawChipWaves["arguments"][0])
-    waves_by_name = {}
+    waves_by_name = []
     for wave in rawChipWaves_dictarray:
         operation = wave["samples"]["expression"]["escapedText"]
         name = wave["name"]
@@ -212,7 +212,10 @@ def config():
         avg = (sum(map(abs, samples)) / len(samples)
                if "Normalize" in operation else 1)
         samples = [sample / avg * expression for sample in samples]
-        waves_by_name[name] = samples
+        waves_by_name.append({
+            "name": name,
+            "samples": samples
+        })
     data["chipWaves"] = waves_by_name
 
     unisons = ts_utility.get_prop_of_class(Config, "unisons")
