@@ -218,7 +218,7 @@ def config():
     unisons = ts_utility.get_prop_of_class(Config, "unisons")
     unisons_dictarray = ts_utility.to_literal(
         unisons["arguments"][0])
-    unisons_by_name = {}
+    unisons_by_name = []
     for unison in unisons_dictarray:
         offsets = []
         voices = unison["voices"]
@@ -234,7 +234,10 @@ def config():
                 "expr": unison["expression"] * (unison["sign"]
                                                 if i > 0 else 1)
             })
-        unisons_by_name[unison["name"]] = offsets
+        unisons_by_name.append({
+            "name": unison["name"],
+            "voices": offsets
+        })
     data["unisons"] = unisons_by_name
 
     classes = {
