@@ -41,8 +41,8 @@ export class BuildMatrix extends AudioProcessorFactory {
             for (var j = 0; j < cols; j++) {
                 const index = j + i * cols;
                 const val = compiler.value(subnodes[index]!);
-                if (val !== null && val.isScalar) {
-                    myMat.put(i, j, val.data[0]!);
+                if (val !== null) {
+                    myMat.put(i, j, val.toScalar());
                 } else {
                     compiler.compile(subnodes[index]!, index, myNodeNo, computedDefaults[index]!);
                     program.push([Opcode.SET_MATRIX_EL, i, j]);

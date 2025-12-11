@@ -237,3 +237,93 @@ test("compile matrix builder reports wrong number of arguments", () => {
         ]
     ])
 });
+test("compile matrix builder input with smash input", () => {
+    const fragment1: NodeGraph = {
+        out: 0,
+        nodes: [
+            [["matrix", 2, 2], [[1], [1], [1], 1]],
+            ["a", []]
+        ]
+    };
+    const nodes: AudioProcessorFactory[] = [
+        new BuildMatrix,
+        new class extends AudioProcessorFactory {
+            name = "a"
+            getInputs = () => []
+            value = () => null
+            getOutputDims = () => [2, 2] as Dimensions
+            make = null as any
+        }
+    ];
+    expect(compile(fragment1, nodes)).toEqual([
+        {
+            code: [
+                [Opcode.PUSH_CONSTANT, 0],
+                [Opcode.CALL_NODE, 0, 0],
+                [Opcode.SET_MATRIX_EL, 1, 1],
+            ],
+            registers: [],
+            constantTab: [Matrix.of2DList([[1, 1], [1, 0]])],
+            nodes: [
+                ["a", {}]
+            ]
+        },
+        [
+            {
+                node: 0,
+                index: 3,
+                dim: 0,
+                code: ErrorReason.DIM_MISMATCH
+            },
+            {
+                node: 0,
+                index: 3,
+                dim: 1,
+                code: ErrorReason.DIM_MISMATCH
+            }
+        ]
+    ])
+});
+test("compile matrix builder input with input from another matrix", () => {
+    // Later on, when the matrix builder node is able to compute that it's
+    // filled with entirely constants, then it will 
+    const fragment1: NodeGraph = {
+        out: 0,
+        nodes: [
+            [["matrix", 2, 2], [[1], [1], [1], 1]],
+            [["matrix", 2, 2], [[2], [2], [2], [2]]]
+        ]
+    };
+    const nodes: AudioProcessorFactory[] = [
+        new BuildMatrix,
+    ];
+    expect(compile(fragment1, nodes)).toEqual([
+        {
+            code: [
+                [Opcode.PUSH_CONSTANT, 0],
+                [Opcode.PUSH_CONSTANT, 1],
+                [Opcode.SET_MATRIX_EL, 1, 1],
+            ],
+            registers: [],
+            constantTab: [
+                Matrix.of2DList([[1, 1], [1, 0]]),
+                Matrix.of2DList([[2, 2], [2, 2]]),
+            ],
+            nodes: []
+        },
+        [
+            {
+                node: 0,
+                index: 3,
+                dim: 0,
+                code: ErrorReason.DIM_MISMATCH
+            },
+            {
+                node: 0,
+                index: 3,
+                dim: 1,
+                code: ErrorReason.DIM_MISMATCH
+            }
+        ]
+    ])
+});
