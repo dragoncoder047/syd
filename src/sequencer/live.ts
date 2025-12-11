@@ -1,30 +1,24 @@
-import IntervalTree, { Interval } from "@flatten-js/interval-tree";
-import { eventsToAbsolute } from "./hydrate";
-import { EventSequence, InstrumentName, Note, NotePin } from "./types";
+import IntervalTree from "@flatten-js/interval-tree";
+import { NotePin } from "./types";
 
-export class LivePattern {
-    notes = new IntervalTree<LiveNote>();
-    constructor(
-        public instrument: InstrumentName[],
-        public start: number,
-        notes: EventSequence<Note>
-    ) {
-        for (var [stamp, event] of eventsToAbsolute(notes)) {
-            const note = new LiveNote(stamp, event);
-            this.notes.insert(note.span(), note);
-        }
-    }
-    public span() {
-        return new Interval(this.start, this.start + this.getLength());
+export class EditableSong {
+    sequence = new IntervalTree<string>();
+    patterns: Record<string, EditablePattern> = {};
+    addPattern(pattern: EditablePattern, time: number) {
+        this.sequence
     }
 }
 
-export class LiveNote {
+export class EditablePattern {
+    notes = new IntervalTree<EditableNote>();
+    instruments: string[] = [];
+}
+
+export class EditableNote {
     pins = new IntervalTree<NotePin>();
-    pitch: number;
     constructor(
         public startPos: number,
-        data: Note) {
+        public pitch: number) {
 
     }
 }

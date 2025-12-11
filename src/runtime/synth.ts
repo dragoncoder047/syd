@@ -1,7 +1,7 @@
 import { CompiledGraph } from "../compiler/compile";
 import { AudioProcessorFactory } from "../compiler/nodeDef";
 import { NODES, PASSTHROUGH_FX } from "../lib";
-import { ChannelMode, Channels } from "./channels";
+import { Channels } from "./channels";
 import { Instrument } from "./instrument";
 import { MessageReply } from "./synthProxy";
 import { Tone } from "./tone";
@@ -93,8 +93,8 @@ export class Synth {
     setInstrument(name: string, voiceDef: CompiledGraph) {
         this.in[name] = this.i.push(new Instrument(name, this.dt, this, voiceDef)) - 1;
     }
-    setupChannel(name: string, mode: ChannelMode) {
-        this.c.setup(name, mode);
+    setupChannel(name: string, sticky: boolean) {
+        this.c.setup(name, sticky);
     }
     setPostFX(fxDef: CompiledGraph): void {
         this.p = new Tone(fxDef, this.dt, this, 1, 1);

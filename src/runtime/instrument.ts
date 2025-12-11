@@ -1,6 +1,6 @@
 import { CompiledGraph } from "../compiler/compile";
 import { Matrix } from "../math/matrix";
-import { ChannelMode, Channels } from "./channels";
+import { Channels } from "./channels";
 import { Synth } from "./synth";
 import { Tone } from "./tone";
 
@@ -19,7 +19,7 @@ export class Instrument {
         public p: Synth,
         public v: CompiledGraph,
     ) {
-        p.c.setup(ocn, ChannelMode.STICKY);
+        p.c.setup(ocn, true);
     }
     noteOn(id: number, pitch: number, expression: number) {
         this.noteOff(id);

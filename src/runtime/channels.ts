@@ -1,15 +1,10 @@
 import { Matrix, scalarMatrix } from "../math/matrix";
 
-export enum ChannelMode {
-    ZEROED,
-    STICKY,
-}
-
 export class Channel {
     constructor(public v: Matrix,
-        public m: ChannelMode = ChannelMode.ZEROED) { }
+        public s: boolean = false) { }
     update() {
-        if (this.m === ChannelMode.ZEROED) {
+        if (!this.s) {
             this.v.fill(0);
         }
     }
@@ -18,11 +13,11 @@ export class Channel {
 export class Channels {
     n = new Map<string, number>();
     c: Channel[] = [];
-    setup(name: string, mode: ChannelMode) {
+    setup(name: string, sticky: boolean) {
         if (!this.n.has(name)) {
-            this.n.set(name, this.c.push(new Channel(scalarMatrix(0), mode)) - 1);
+            this.n.set(name, this.c.push(new Channel(scalarMatrix(0), sticky)) - 1);
         } else {
-            this.c[this.n.get(name)!]!.m = mode;
+            this.c[this.n.get(name)!]!.s = sticky;
         }
     }
     put(name: string, value: Matrix) {

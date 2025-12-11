@@ -1,4 +1,3 @@
-
 export type EventSequence<T> = {
     delta: number,
     events: T[]
@@ -52,7 +51,7 @@ export interface InstrumentData extends Named<InstrumentName> {
 }
 
 export interface ChannelData extends Named<ChannelName> {
-    size: [rows: number, cols: number],
+    size: [rows: number, cols: number]
 }
 
 export interface PatternData extends Named<PatternName> {
