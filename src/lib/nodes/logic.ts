@@ -1,11 +1,11 @@
-import { AudioProcessor, AudioProcessorFactory, Dimensions } from "../../compiler/nodeDef";
+import { AudioProcessor, Dimensions, AudioProcessorFactory } from "../../compiler/nodeDef";
 import { abs } from "../../math/math";
 import { Matrix, scalarMatrix } from "../../math/matrix";
 import { Synth } from "../../runtime/synth";
 
-export class Shimmer implements AudioProcessorFactory {
+export class Shimmer extends AudioProcessorFactory {
     name = "shimmer";
-    inputs = [
+    getInputs = () => [
         {
             name: "value",
             dims: ["M", "N"] as Dimensions,
@@ -17,7 +17,7 @@ export class Shimmer implements AudioProcessorFactory {
             dims: ["M", "N"] as Dimensions
         }
     ];
-    outputDims: Dimensions = ["M", "N"];
+    getOutputDims = () => ["M", "N"] as Dimensions;
     make(_: Synth, sizeVars: { M: number, N: number }): AudioProcessor {
         const oldValue = new Matrix(sizeVars.M, sizeVars.N);
         const output = new Matrix(sizeVars.M, sizeVars.N);
@@ -44,9 +44,9 @@ export enum SampleMode {
     TIME_DEPENDENT = 1
 }
 
-export class Integrator implements AudioProcessorFactory {
+export class Integrator extends AudioProcessorFactory {
     name = "integrate";
-    inputs = [
+    getInputs = () => [
         {
             name: "derivative",
             dims: ["M", "N"] as Dimensions,
@@ -83,7 +83,7 @@ export class Integrator implements AudioProcessorFactory {
             default: SampleMode.TIME_DEPENDENT
         }
     ];
-    outputDims: Dimensions = ["M", "N"];
+    getOutputDims = () => ["M", "N"] as Dimensions;
 
     make(synth: Synth, sizeVars: { M: number, N: number }): AudioProcessor {
         const m_accumulator = new Matrix(sizeVars.M, sizeVars.N), m_signs = scalarMatrix(1).smear(sizeVars.M, sizeVars.N), m_prevReset = new Matrix(sizeVars.M, sizeVars.N);
@@ -128,9 +128,9 @@ export class Integrator implements AudioProcessorFactory {
     }
 }
 
-export class Clock implements AudioProcessorFactory {
+export class Clock extends AudioProcessorFactory {
     name = "clock";
-    inputs = [
+    getInputs = () => [
         {
             name: "period",
             dims: ["M", "N"] as Dimensions,
@@ -142,7 +142,7 @@ export class Clock implements AudioProcessorFactory {
             default: 1,
         },
     ];
-    outputDims: Dimensions = ["M", "N"];
+    getOutputDims = () => ["M", "N"] as Dimensions;
     make(synth: Synth, sizeVars: { M: number, N: number }): AudioProcessor {
         const m_accumulator = scalarMatrix(Infinity).smear(sizeVars.M, sizeVars.N), temp = new Matrix(sizeVars.M, sizeVars.N);
         return inputs => {

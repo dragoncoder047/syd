@@ -10,9 +10,9 @@ enum FilterType {
     PEAK = 2
 }
 
-export class Filter implements AudioProcessorFactory {
+export class Filter extends AudioProcessorFactory {
     name = "filter";
-    inputs = [
+    getInputs = () => [
         {
             name: "sample",
             dims: ["N", 1] as Dimensions,
@@ -34,7 +34,7 @@ export class Filter implements AudioProcessorFactory {
             default: FilterType.LOWPASS,
         }
     ];
-    outputDims: Dimensions = ["N", 1];
+    getOutputDims = () => ["N", 1] as Dimensions;
     make(synth: Synth, sizeVars: { N: number }): AudioProcessor {
         const N = sizeVars.N;
         const x2 = new Matrix(N, 1), x1 = new Matrix(N,), y2 = new Matrix(N, 1), y1 = new Matrix(N, 1);
@@ -112,9 +112,9 @@ export class Filter implements AudioProcessorFactory {
     }
 }
 
-export class Bitcrusher implements AudioProcessorFactory {
+export class Bitcrusher extends AudioProcessorFactory {
     name = "bitcrusher";
-    inputs = [
+    getInputs = () => [
         {
             name: "sample",
             dims: ["M", "N"] as Dimensions,
@@ -126,7 +126,7 @@ export class Bitcrusher implements AudioProcessorFactory {
             default: 8000,
         }
     ];
-    outputDims: Dimensions = ["M", "N"];
+    getOutputDims = () => ["M", "N"] as Dimensions;
     make(synth: Synth, sizeVars: { M: number, N: number }): AudioProcessor {
         var phase = 1, last = new Matrix(sizeVars.M, sizeVars.N);
         return inputs => {
@@ -140,9 +140,9 @@ export class Bitcrusher implements AudioProcessorFactory {
     }
 }
 
-export class DelayLine implements AudioProcessorFactory {
+export class DelayLine extends AudioProcessorFactory {
     name = "delay";
-    inputs = [
+    getInputs = () => [
         {
             name: "sample",
             dims: ["C", 1] as Dimensions,
@@ -154,7 +154,7 @@ export class DelayLine implements AudioProcessorFactory {
             default: 1
         }
     ];
-    outputDims: Dimensions = ["C", "T"];
+    getOutputDims = () => ["C", "T"] as Dimensions;
     make(synth: Synth, sizeVars: { C: number, T: number }): AudioProcessor {
         const C = sizeVars.C, T = sizeVars.T;
         // buffer: each column is a delay line for the channel

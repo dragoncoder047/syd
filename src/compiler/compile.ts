@@ -1,8 +1,8 @@
-import { NodeGraph, NodeInput, NodeInputLocation as NodeInputLocation, SpecialNodeKind } from "../graph/types";
+import { GraphNode, NodeGraph, NodeInput } from "../graph/types";
 import { Matrix, scalarMatrix } from "../math/matrix";
 import { Opcode, Program } from "../runtime/program";
 import { isArray, isNumber, isString } from "../utils";
-import { AudioProcessorFactory, Dimensions, SCALAR_DIMS } from "./nodeDef";
+import { AudioProcessorFactory, CompilerCtx, Dimensions, NodeArgs, SCALAR_DIMS } from "./nodeDef";
 
 export interface CompiledGraph {
     code: Program;
@@ -24,134 +24,104 @@ interface MisMatchError {
     code: ErrorReason;
 }
 
+type ImplMap = Record<string, AudioProcessorFactory>;
+type NodeInfoTab = [name: string, eager: boolean, args: NodeArgs][];
 type VarMap = Record<number, Record<string, number>>;
 type SmearMap = Record<number, Record<number, [number | null, number | null]>>;
 
 export function compile(graph: NodeGraph, defs: AudioProcessorFactory[]): [CompiledGraph, MisMatchError[]] {
     const map = toImplMap(defs);
     const [outputUsed, seenTwice] = findDuplicates(graph);
+    const nodeInfoTab = infoTab(map, graph.nodes);
+    const outDimsList = getOutDimsList(map, nodeInfoTab);
     // step two: resolve matrix dimensions
-    const [nodeToDimsMap, needsSmeared, errors] = resolveDimensions(graph, map);
+    const [nodeToDimsMap, needsSmeared, defaultsTab, errors] = resolveDimensions(graph.nodes, map, outDimsList, nodeInfoTab);
     // step three: compile stack machine
     const program: Program = [];
     const seenInCompilation = new Set<number>();
-    const flatNodes = graph.nodes
-        // TODO: account for "number" named nodes that function as constants
-        .flatMap(([n], i) => isString(n) ? [i] : []);
     const nodeIndexToRegisterIndex: Record<number, number> =
         Object.fromEntries([...seenTwice]
             .map((nodeNo, regNo) => [nodeNo, regNo]));
     const constantTab: Matrix[] = [];
-    const recurse = (nodeNo: number) => {
-        const [nodeName, args] = graph.nodes[nodeNo]!;
-        if (isArray(nodeName) && nodeName[0] === SpecialNodeKind.USE_WAVETABLE) {
-            program.push([Opcode.PUSH_WAVE_NUMBER, nodeName[0]]);
+    const compile = (nodeNo: NodeInput, argNo: number, parentNode: number, default_: number) => {
+        if (isString(nodeNo) || isArray(nodeNo)) {
+            if (isString(nodeNo)) errors.push({
+                node: parentNode,
+                index: argNo,
+                dim: 0,
+                code: ErrorReason.UNUSED_FRAG_INPUT
+            });
+            const smear = needsSmeared[parentNode]?.[argNo];
+            const mat = scalarMatrix(default_);
+            if (smear) {
+                mat.smear(smear[0]!, smear[1]!);
+            }
+            context.pushConstant(mat, false);
             return;
         }
-        if (seenInCompilation.has(nodeNo)) {
+        const [nodeName, eager, params] = nodeInfoTab[nodeNo]!;
+        const args = graph.nodes[nodeNo]![1];
+        if (!eager && seenInCompilation.has(nodeNo)) {
             program.push([Opcode.GET_REGISTER, nodeIndexToRegisterIndex[nodeNo]]);
             return;
         }
         seenInCompilation.add(nodeNo);
-        var myConstant: Matrix;
-        if (isArray(nodeName) && nodeName[0] === SpecialNodeKind.BUILD_MATRIX) {
-            const [_, rows, cols] = nodeName;
-            myConstant = new Matrix(rows, cols);
-            program.push([Opcode.PUSH_CONSTANT, constantTab.push(myConstant) - 1]);
-        }
-        for (var argNo = 0; argNo < args.length; argNo++) {
-            var arg = args[argNo]!;
-            var argIsConstant = false;
-            var argConstantValue: number = 0;
-            if (isNumber(arg)) {
-                recurse(arg);
-            } else {
-                switch (arg[0]) {
-                    case NodeInputLocation.FRAG_INPUT:
-                        errors.push({
-                            node: nodeNo,
-                            index: argNo,
-                            dim: 0,
-                            code: ErrorReason.UNUSED_FRAG_INPUT
-                        });
-                        argConstantValue = map[nodeName as any]?.inputs[argNo]?.default ?? 0;
-                        argIsConstant = true;
-                        break;
-                    case NodeInputLocation.CONSTANT:
-                        argConstantValue = arg[1] as number;
-                        argIsConstant = true;
-                        break;
-                    case NodeInputLocation.PITCH_VAL:
-                        program.push([Opcode.PUSH_PITCH]);
-                        break;
-                    case NodeInputLocation.GATE_VAL:
-                        program.push([Opcode.PUSH_GATE]);
-                        break;
-                    case NodeInputLocation.EXPRESSION_VAL:
-                        program.push([Opcode.PUSH_EXPRESSION]);
-                        break;
-                    case NodeInputLocation.CHANNEL:
-                        program.push([Opcode.GET_CHANNEL, arg[0]]);
-                }
-            }
-            const smear = needsSmeared[nodeNo]?.[argNo];
-            if (smear) {
-                program.push([Opcode.SMEAR_MATRIX, smear[0]!, smear[1]!]);
-            }
-            if (isArray(nodeName) && nodeName[0] === SpecialNodeKind.BUILD_MATRIX) {
-                const cols = nodeName[2];
-                const curRow = (argNo / cols) | 0;
-                const curCol = argNo - curRow * cols;
-                if (argIsConstant) {
-                    argIsConstant = false;
-                    myConstant!.put(curRow, curCol, argConstantValue);
-                } else {
-                    program.push([Opcode.SET_MATRIX_EL, curRow, curCol]);
-                }
-            }
-            if (argIsConstant) {
-                program.push([Opcode.PUSH_CONSTANT, constantTab.push(scalarMatrix(argConstantValue)) - 1]);
-            }
-
-        }
-        if (!isArray(nodeName)) {
-            if (isNumber(nodeName)) {
-                program.push([Opcode.PUSH_CONSTANT, constantTab.push(scalarMatrix(nodeName)) - 1])
-            }
-            else {
-                program.push([Opcode.CALL_NODE, flatNodes.indexOf(nodeNo), args.length]);
-            }
-        } else {
-            switch (nodeName[0]) {
-                case SpecialNodeKind.MARK_ALIVE:
-                    program.push([Opcode.MARK_LIVE_STATE]);
-                    break;
-                case SpecialNodeKind.SAVE_TO_CHANNEL:
-                    program.push([Opcode.MAYBE_STORE_TO_CHANNEL, nodeName[1]]);
-            }
+        const defaults = defaultsTab[nodeNo]!;
+        map[nodeName]!.compile(nodeNo, params, args, defaults, program, context);
+        const smear = needsSmeared[parentNode]?.[argNo];
+        if (smear) {
+            program.push([Opcode.SMEAR_MATRIX, smear[0]!, smear[1]!]);
         }
         if (seenTwice.has(nodeNo)) {
             program.push([Opcode.TAP_REGISTER, nodeIndexToRegisterIndex[nodeNo]]);
         }
     }
-    recurse(graph.out);
+    const context: CompilerCtx = {
+        compile,
+        value(index) {
+            if (isString(index)) return scalarMatrix(0);
+            if (isArray(index)) return scalarMatrix(index[0]);
+            const [name, _, args] = nodeInfoTab[index]!;
+            return map[name]!.value(args, context);
+        },
+        pushConstant(value, forceNew) {
+            const existIndex = forceNew ? -1 : constantTab.findIndex(v => v.equals(value));
+            program.push([Opcode.PUSH_CONSTANT, existIndex >= 0 ? existIndex : (constantTab.push(value) - 1)]);
+        },
+    };
+    compile(graph.out, 0, -1, 0);
     for (var i = 0; i < graph.nodes.length; i++) {
         if (!outputUsed.has(i)) {
-            recurse(i);
+            compile(i, 0, -1, 0);
             program.push([Opcode.DROP_TOP]);
         }
     }
+    // Renumber CALL_NODE used nodes them to be consecutive
+    const usedNodes: (number | undefined)[] = new Array(nodeInfoTab.length).fill(0).map((_, i) => i);
+    for (var i = 0; i < nodeInfoTab.length; i++) {
+        const curNodeNo = usedNodes[i]!;
+        if (!program.some(([op, arg1]) => op === Opcode.CALL_NODE && arg1 === curNodeNo)) {
+            usedNodes[i] = undefined;
+        }
+    }
+    const runtimeNodeIndexes = usedNodes.filter(x => x !== undefined);
+    program.forEach(command => {
+        if (command[0] === Opcode.CALL_NODE) {
+            command[1] = runtimeNodeIndexes.indexOf(command[1] as number);
+        }
+    });
     const registers: Matrix[] = [];
     const nodes: CompiledGraph["nodes"] = [];
-    for (var index of flatNodes) {
-        const name = graph.nodes[index]![0] as string;
-        const dimsMap = nodeToDimsMap[index] ?? {};
+    for (var i = 0; i < nodeInfoTab.length; i++) {
+        if (!usedNodes.includes(i)) continue;
+        const [name] = nodeInfoTab[i]!;
+        const dimsMap = nodeToDimsMap[i] ?? {};
         nodes.push([name, dimsMap]);
-        if (seenTwice.has(index)) {
-            const [dRows, dCols] = map[name]!.outputDims;
+        if (seenTwice.has(i)) {
+            const [dRows, dCols] = outDimsList[i]!;
             const rows = isNumber(dRows) ? dRows : dimsMap[dRows]!;
             const cols = isNumber(dCols) ? dCols : dimsMap[dCols]!;
-            registers[nodeIndexToRegisterIndex[index]!] = new Matrix(rows, cols);
+            registers[nodeIndexToRegisterIndex[i]!] = new Matrix(rows, cols);
         }
     }
     return [{
@@ -182,38 +152,21 @@ function findDuplicates(graph: NodeGraph): [once: Set<number>, twice: Set<number
     return [seenOnce, duplicated];
 }
 
-function resolveDimensions(graph: NodeGraph, map: Record<string, AudioProcessorFactory>): [VarMap, SmearMap, MisMatchError[]] {
-    const numNodes = graph.nodes.length;
+function resolveDimensions(graph: GraphNode[], map: ImplMap, outDimsList: Dimensions[], argLists: NodeInfoTab): [VarMap, SmearMap, number[][], MisMatchError[]] {
+    const numNodes = graph.length;
     const errors: MisMatchError[] = [];
     var nodeNo: number;
-    type OutPort = [NodeInput, Dimensions];
+    type OutPort = [NodeInput, Dimensions, number];
     const exposed: [
         in_: OutPort[],
         out: Dimensions,
     ][] = [];
+    const defaultsLists: number[][] = [];
     for (nodeNo = 0; nodeNo < numNodes; nodeNo++) {
-        const [nodeName, args] = graph.nodes[nodeNo]!;
-        var inputs: OutPort[], output: Dimensions;
-        if (!isArray(nodeName)) {
-            output = map[nodeName]!.outputDims;
-            inputs = map[nodeName]!.inputs.map(({ dims }, i) => [args[i]!, dims]);
-        } else {
-            switch (nodeName[0]) {
-                case SpecialNodeKind.USE_WAVETABLE:
-                    inputs = [];
-                    output = SCALAR_DIMS;
-                    break;
-                case SpecialNodeKind.MARK_ALIVE:
-                    inputs = [[args[0]!, output = SCALAR_DIMS]];
-                    break;
-                case SpecialNodeKind.BUILD_MATRIX:
-                    inputs = args.map(a => [a, SCALAR_DIMS]);
-                    output = [nodeName[1], nodeName[2]];
-                    break;
-                case SpecialNodeKind.SAVE_TO_CHANNEL:
-                    inputs = [[args[0]!, output = SCALAR_DIMS], [args[1]!, [2, 1]]];
-            }
-        }
+        const args = graph[nodeNo]![1];
+        const [name, _, params] = argLists[nodeNo]!;
+        const inputs: OutPort[] = map[name]!.getInputs(params).map(({ dims, default: d }, i) => [args[i]!, dims, d]);
+        const output = outDimsList[nodeNo]!;
         if (args.length !== inputs.length) {
             errors.push({
                 node: nodeNo,
@@ -223,10 +176,11 @@ function resolveDimensions(graph: NodeGraph, map: Record<string, AudioProcessorF
             });
             if (args.length > inputs.length) args.length = inputs.length;
             else while (args.length < inputs.length) {
-                args.push([NodeInputLocation.CONSTANT, 0]);
+                args.push([0]);
             }
         }
         exposed.push([inputs, output]);
+        defaultsLists.push(inputs.map(d => d[2]));
     }
     // Build a set of everythings that must be equal
     type Var = [node: number | null, val: Dimensions[number]];
@@ -241,14 +195,7 @@ function resolveDimensions(graph: NodeGraph, map: Record<string, AudioProcessorF
                 fromDims = exposed[source]![1];
             } else {
                 fromName = null;
-                fromDims = [{
-                    [NodeInputLocation.CONSTANT]: 1,
-                    [NodeInputLocation.EXPRESSION_VAL]: 1,
-                    [NodeInputLocation.FRAG_INPUT]: 1,
-                    [NodeInputLocation.GATE_VAL]: 1,
-                    [NodeInputLocation.CHANNEL]: 2,
-                    [NodeInputLocation.PITCH_VAL]: 1,
-                }[source[0]], 1];
+                fromDims = SCALAR_DIMS;
             }
             equalities.push(
                 [[fromName, fromDims[0]], [nodeNo, localVar[0]], i, 0],
@@ -306,10 +253,30 @@ function resolveDimensions(graph: NodeGraph, map: Record<string, AudioProcessorF
             errors.push({ node: n2!, index: p2, dim: rc2, code: ErrorReason.UNBOUND });
         }
     }
-    return [varNameMap, toBeSmeared, errors];
+    return [varNameMap, toBeSmeared, defaultsLists, errors];
 }
 
-function toImplMap(defs: AudioProcessorFactory[]): Record<string, AudioProcessorFactory> {
+function toImplMap(defs: AudioProcessorFactory[]): ImplMap {
     return Object.fromEntries(defs.map(n => [n.name, n]));
 }
 
+function infoTab(defs: ImplMap, graph: GraphNode[]): NodeInfoTab {
+    const out: NodeInfoTab = [];
+    for (var [nodeName] of graph) {
+        if (isArray(nodeName)) {
+            const name = nodeName[0]
+            out.push([name, defs[name]!.eager, nodeName.slice(1) as NodeArgs]);
+        } else {
+            out.push([nodeName, defs[nodeName]!.eager, []]);
+        }
+    }
+    return out;
+}
+
+function getOutDimsList(defs: ImplMap, headers: NodeInfoTab): Dimensions[] {
+    const out = [];
+    for (var [name, _, args] of headers) {
+        out.push(defs[name]!.getOutputDims(args));
+    }
+    return out;
+}

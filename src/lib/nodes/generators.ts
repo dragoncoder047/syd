@@ -1,11 +1,11 @@
-import { AudioProcessor, AudioProcessorFactory, Dimensions } from "../../compiler/nodeDef";
+import { AudioProcessor, Dimensions, AudioProcessorFactory, SCALAR_DIMS } from "../../compiler/nodeDef";
 import { scalarMatrix } from "../../math/matrix";
 import { Synth } from "../../runtime/synth";
 
 
-export class WavetableOscillator implements AudioProcessorFactory {
+export class WavetableOscillator extends AudioProcessorFactory {
     name = "osc";
-    inputs = [
+    getInputs = () => [
         {
             name: "frequency",
             dims: [1, 1] as Dimensions,
@@ -27,7 +27,7 @@ export class WavetableOscillator implements AudioProcessorFactory {
             dims: [1, 1] as Dimensions,
         }
     ];
-    outputDims: Dimensions = [1, 1];
+    getOutputDims = () => SCALAR_DIMS;
     make(synth: Synth): AudioProcessor {
         var phase = 0, prevIntegral: number;
         const value = scalarMatrix(0);

@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { AudioProcessorFactory, compile, ErrorReason, NodeGraph, NodeInputLocation } from "../src";
+import { AudioProcessorFactory, compile, ErrorReason, NodeGraph, SCALAR_DIMS } from "../src";
 import { getFragmentInputs, GraphFragment, NodeFragmentEdge, unifyGraphFragments } from "../src/graph/fragment";
 import { scalarMatrix } from "../src/math/matrix";
 import { Opcode } from "../src/runtime/program";
@@ -9,7 +9,7 @@ test("unify fragments", () => {
         out: { x: 0 },
         nodes: [
             ["a", [1, 0]],
-            ["b", [1, 0, [NodeInputLocation.FRAG_INPUT, "z"]]],
+            ["b", [1, 0, "z"]],
         ]
     };
     const fragment2: GraphFragment = {
@@ -37,21 +37,21 @@ test("compining graph with un-unified input returns an error but uses the defaul
     const fragment1: NodeGraph = {
         out: 0,
         nodes: [
-            ["b", [[NodeInputLocation.FRAG_INPUT, "z"]]],
+            ["b", ["z"]],
         ]
     };
     const nodes: AudioProcessorFactory[] = [
-        {
-            name: "b",
-            outputDims: [1, 1],
-            inputs: [
+        new class extends AudioProcessorFactory {
+            name = "b"
+            getOutputDims = () => SCALAR_DIMS
+            getInputs = () => [
                 {
                     name: "a",
-                    dims: [1, 1],
+                    dims: SCALAR_DIMS,
                     default: 123
                 }
-            ],
-            make: null as any
+            ]
+            make = null as any
         }
     ];
     expect(compile(fragment1, nodes)).toEqual([
@@ -81,7 +81,7 @@ test("fragment with constant inputs inlined constants", () => {
         out: { x: 0 },
         nodes: [
             ["a", [1, 0]],
-            ["b", [1, 0, [NodeInputLocation.FRAG_INPUT, "z"]]],
+            ["b", [1, 0, "z"]],
         ]
     };
     const links: NodeFragmentEdge[] = [
@@ -90,7 +90,7 @@ test("fragment with constant inputs inlined constants", () => {
     expect(unifyGraphFragments([fragment], links, 0, "x")).toEqual({
         nodes: [
             ["a", [1, 0]],
-            ["b", [1, 0, [NodeInputLocation.CONSTANT, 123]]],
+            ["b", [1, 0, [123]]],
         ],
         out: 0,
     });
@@ -100,7 +100,7 @@ test("fragment get all inputs", () => {
         out: { x: 0 },
         nodes: [
             ["a", [1, 0]],
-            ["b", [1, 0, [NodeInputLocation.FRAG_INPUT, "z"], [NodeInputLocation.FRAG_INPUT, "y"]]],
+            ["b", [1, 0, "z", "y"]],
         ]
     };
     expect(getFragmentInputs(fragment)).toEqual(["z", "y"])

@@ -1,5 +1,6 @@
 import { expect, test } from "bun:test";
-import { AudioProcessorFactory, compile, ErrorReason, NodeGraph, NodeInput, NodeInputLocation, SpecialNodeKind } from "../src";
+import { AudioProcessorFactory, compile, ErrorReason, NodeGraph, SCALAR_DIMS, Dimensions } from "../src";
+import { BuildMatrix } from "../src/lib/nodes/special";
 import { Matrix, scalarMatrix } from "../src/math/matrix";
 import { Opcode } from "../src/runtime/program";
 
@@ -12,28 +13,29 @@ test("compiles", () => {
         ]
     };
     const nodes: AudioProcessorFactory[] = [
-        {
-            name: "a",
-            inputs: [
+        new class extends AudioProcessorFactory {
+            name = "a"
+            getInputs = () => [
                 {
                     name: "a",
-                    dims: ["M", "N"],
+                    dims: ["M", "N"] as Dimensions,
                     default: 0
                 },
                 {
                     name: "a",
-                    dims: ["P", "Q"],
+                    dims: ["P", "Q"] as Dimensions,
                     default: 0
                 }
-            ],
-            outputDims: [1, 1],
-            make: null as any
+            ]
+            value = () => null
+            getOutputDims = () => SCALAR_DIMS
+            make = null as any
         },
-        {
-            name: "b",
-            inputs: [],
-            outputDims: [2, 3],
-            make: null as any
+        new class extends AudioProcessorFactory {
+            name = "b"
+            getInputs = () => []
+            getOutputDims = () => [2, 3] as Dimensions
+            make = null as any
         }
     ];
     expect(compile(fragment1, nodes)).toEqual([
@@ -63,18 +65,19 @@ test("compile with warnings", () => {
         ]
     };
     const nodes: AudioProcessorFactory[] = [
-        {
-            name: "a",
-            inputs: [
+        new class extends AudioProcessorFactory {
+            name = "a"
+            getInputs = () => [
                 {
                     name: "a",
-                    dims: ["N", "N"],
+                    dims: ["N", "N"] as Dimensions,
                     default: 0
                 },
-            ],
-            outputDims: [2, 4],
-            make: null as any
-        },
+            ]
+            value = () => null
+            getOutputDims = () => [2, 4] as Dimensions
+            make = null as any
+        }
     ];
     expect(compile(fragment1, nodes)).toEqual([
         {
@@ -109,23 +112,25 @@ test("compile with smeared nodes", () => {
         ]
     };
     const nodes: AudioProcessorFactory[] = [
-        {
-            name: "a",
-            inputs: [
+        new class extends AudioProcessorFactory {
+            name = "a"
+            getInputs = () => [
                 {
                     name: "a",
-                    dims: [2, 4],
+                    dims: [2, 4] as Dimensions,
                     default: 0
                 },
-            ],
-            outputDims: [1, 1],
-            make: null as any
+            ]
+            value = () => null
+            getOutputDims = () => SCALAR_DIMS
+            make = null as any
         },
-        {
-            name: "b",
-            inputs: [],
-            outputDims: [1, 1],
-            make: null as any
+        new class extends AudioProcessorFactory {
+            name = "b"
+            getInputs = () => []
+            value = () => null
+            getOutputDims = () => SCALAR_DIMS
+            make = null as any
         }
     ];
     expect(compile(fragment1, nodes)).toEqual([
@@ -147,14 +152,13 @@ test("compile with smeared nodes", () => {
 });
 
 test("compile with matrix builder", () => {
-    const k = (n: number): NodeInput => [NodeInputLocation.CONSTANT, n];
     const fragment1: NodeGraph = {
         out: 0,
         nodes: [
-            [[SpecialNodeKind.BUILD_MATRIX, 2, 3], [k(1), k(2), k(3), k(4), k(5), k(6)]],
+            [["matrix", 2, 3], [[1], [2], [3], [4], [5], [6]]],
         ]
     };
-    const nodes: AudioProcessorFactory[] = [];
+    const nodes: AudioProcessorFactory[] = [new BuildMatrix];
     expect(compile(fragment1, nodes)).toEqual([
         {
             code: [
@@ -168,20 +172,21 @@ test("compile with matrix builder", () => {
     ])
 });
 test("compile with matrix builder with inputs", () => {
-    const k = (n: number): NodeInput => [NodeInputLocation.CONSTANT, n];
     const fragment1: NodeGraph = {
         out: 0,
         nodes: [
-            [[SpecialNodeKind.BUILD_MATRIX, 2, 3], [k(1), 1, k(3), k(4), 1, k(6)]],
+            [["matrix", 2, 3], [[1], 1, [3], [4], 1, [6]]],
             ["a", []]
         ]
     };
     const nodes: AudioProcessorFactory[] = [
-        {
-            name: "a",
-            inputs: [],
-            outputDims: [1, 1],
-            make: null as any
+        new BuildMatrix,
+        new class extends AudioProcessorFactory {
+            name = "a"
+            getInputs = () => []
+            value = () => null
+            getOutputDims = () => SCALAR_DIMS
+            make = null as any
         }
     ];
     expect(compile(fragment1, nodes)).toEqual([
@@ -201,5 +206,34 @@ test("compile with matrix builder with inputs", () => {
             ]
         },
         []
+    ])
+});
+test("compile matrix builder reports wrong number of arguments", () => {
+    const fragment1: NodeGraph = {
+        out: 0,
+        nodes: [
+            [["matrix", 2, 3], [[1], [2], [3], [4], [5]]],
+        ]
+    };
+    const nodes: AudioProcessorFactory[] = [
+        new BuildMatrix,
+    ];
+    expect(compile(fragment1, nodes)).toEqual([
+        {
+            code: [
+                [Opcode.PUSH_CONSTANT, 0],
+            ],
+            registers: [],
+            constantTab: [Matrix.of2DList([[1, 2, 3], [4, 5, 0]])],
+            nodes: []
+        },
+        [
+            {
+                code: ErrorReason.WRONG_NO_OF_ARGS,
+                node: 0,
+                dim: 0,
+                index: 0
+            }
+        ]
     ])
 });

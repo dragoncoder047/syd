@@ -8,8 +8,10 @@ import { Bitcrusher, DelayLine, Filter } from "./nodes/effects";
 import { WavetableOscillator } from "./nodes/generators";
 import { Clock, Integrator, Shimmer } from "./nodes/logic";
 import { MathNode, MixAllNode } from "./nodes/math";
+import { BuildMatrix } from "./nodes/special";
 
 export const NODES: AudioProcessorFactory[] = [
+    new BuildMatrix,
     new WavetableOscillator,
     new Filter,
     new Bitcrusher,

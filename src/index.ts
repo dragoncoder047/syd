@@ -2,11 +2,12 @@ export {
     compile,
     ErrorReason
 } from "./compiler/compile";
-export type {
-    AudioProcessor,
+export  {
+    type AudioProcessor,
     AudioProcessorFactory,
-    Dimensions,
-    NodeInputDef
+    type Dimensions,
+    SCALAR_DIMS,
+    type NodeInputDef
 } from "./compiler/nodeDef";
 export {
     getFragmentInputs,
@@ -14,8 +15,6 @@ export {
     type NodeFragmentEdge
 } from "./graph/fragment";
 export {
-    NodeInputLocation,
-    SpecialNodeKind,
     type GraphNode,
     type Instrument,
     type NodeGraph,
@@ -36,6 +35,5 @@ export type {
     RenderingPreferences,
     Song,
     SongTuning,
-    TimelineEntry
 } from "./sequencer/types";
 

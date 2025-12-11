@@ -1,10 +1,10 @@
-import { AudioProcessor, AudioProcessorFactory, Dimensions, NodeInputDef } from "../../compiler/nodeDef";
+import { AudioProcessor, Dimensions, AudioProcessorFactory } from "../../compiler/nodeDef";
 import { Matrix } from "../../math/matrix";
 import { Synth } from "../../runtime/synth";
 
-export class MathNode implements AudioProcessorFactory {
+export class MathNode extends AudioProcessorFactory {
     name: string;
-    inputs = [
+    getInputs = () => [
         {
             name: "a",
             dims: ["M", "N"] as Dimensions,
@@ -16,8 +16,9 @@ export class MathNode implements AudioProcessorFactory {
             default: 1
         }
     ]
-    outputDims: Dimensions = ["M", "N"];
+    getOutputDims=()=> ["M", "N"] as Dimensions;
     constructor(operator: string, public opFunc: (a: number, b: number) => number) {
+        super();
         this.name = "op" + operator;
     }
     make(synth: Synth): AudioProcessor {
@@ -25,10 +26,10 @@ export class MathNode implements AudioProcessorFactory {
     }
 }
 
-export class MixAllNode implements AudioProcessorFactory {
+export class MixAllNode extends AudioProcessorFactory {
     name = "mixall";
-    inputs = [];
-    outputDims: Dimensions = [2, 1];
+    getInputs = () => [];
+    getOutputDims = () => [2, 1] as Dimensions;
     make(synth: Synth): AudioProcessor {
         const sum = new Matrix(2, 1);
         return _ => {

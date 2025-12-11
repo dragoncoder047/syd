@@ -58,8 +58,12 @@ export interface ChannelData extends Named<ChannelName> {
 export interface PatternData extends Named<PatternName> {
     instruments: InstrumentName[];
     tuning?: Tuning;
-    beatDiv?: [divisionsPerNote: number, beatsPerBar: number];
     data: EventSequence<NoteData>;
+    edit?: PatternEditSettings;
+}
+
+export interface PatternEditSettings {
+    beatDiv?: [divisionsPerNote: number, beatsPerBar: number];
 }
 
 export interface NoteData {
