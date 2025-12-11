@@ -29,7 +29,7 @@ export class WavetableOscillator extends AudioProcessorFactory {
     ];
     getOutputDims = () => SCALAR_DIMS;
     make(synth: Synth): AudioProcessor {
-        var phase = 0, prevIntegral: number;
+        var phase = 0, prevIntegral = 0;
         const value = scalarMatrix(0);
         return inputs => {
             var sample = 0;
@@ -38,25 +38,30 @@ export class WavetableOscillator extends AudioProcessorFactory {
             const phaseMod = inputs[2]!.toScalar();
             const aliasing = inputs[3]!.toScalar() > 0;
             if (wave) {
-                const baseFrequency = wave.b, waveSampleRate = wave.r;
+                const
+                    baseFrequency = wave.b,
+                    waveSampleRate = wave.r,
+                    table = wave.s,
+                    intTable = wave.i,
+                    len = table.length;
                 const pitchBendFactor = wantedFrequency / baseFrequency;
                 const samplesPerSample = pitchBendFactor * synth.dt * waveSampleRate;
-                phase = (phase + samplesPerSample) % wave.s.length;
+                phase += samplesPerSample;
                 const fIndex = phase + phaseMod * waveSampleRate / baseFrequency;
                 const iIndex = fIndex | 0;
+                const wIndex = iIndex % len;
                 if (aliasing) {
-                    sample = wave.s[iIndex]!;
+                    sample = table[wIndex]!;
                 } else {
                     const alpha = fIndex - iIndex;
-                    var next = wave.i[iIndex]!;
-                    next += (wave.i[iIndex + 1]! - next) * alpha;
+                    var next = intTable[wIndex]!;
+                    next += (intTable[wIndex + 1]! - next) * alpha;
                     sample = next - prevIntegral;
                     prevIntegral = next;
                 }
             }
             value.setScalar(sample);
             return value;
-
         }
     }
 }

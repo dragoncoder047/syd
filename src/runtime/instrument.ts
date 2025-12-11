@@ -27,8 +27,8 @@ export class Instrument {
         this.lni.push(id);
     }
     noteOff(id: number) {
-        if (this.lni.includes(id)) {
-            const index = this.lni.indexOf(id);
+        const index = this.lni.indexOf(id);
+        if (index >= 0) {
             const note = this.ln[index]!;
             this.dn.push([note, gainForChord(this.ln.length)]);
             this.ln[index] = this.ln.pop()!;
