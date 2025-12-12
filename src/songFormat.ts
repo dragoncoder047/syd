@@ -1,3 +1,5 @@
+import { FragmentGraph } from "./graph/builder";
+
 export type EventSequence<T> = {
     delta: number,
     events: T[]
@@ -21,7 +23,7 @@ export interface Song {
     timeline: EventSequence<PatternName>;
     patterns: PatternData[];
     noteShapes: NoteShape[];
-    postprocess: NodeGraph;
+    postprocess: FragmentGraph;
 }
 
 export interface SongMetadata {
@@ -47,7 +49,8 @@ export interface Tuning {
 }
 
 export interface InstrumentData extends Named<InstrumentName> {
-    // Not relevant
+    def: FragmentGraph;
+    // TODO: more stuff here
 }
 
 export interface ChannelData extends Named<ChannelName> {

@@ -8,15 +8,15 @@ test("unify fragments", () => {
     const fragment1: GraphFragment = {
         out: { x: 0 },
         nodes: [
-            ["a", [1, 0]],
-            ["b", [1, 0, "z"]],
+            ["a", [0, 1]],
+            ["b", [0, 1, "z"]],
         ]
     };
     const fragment2: GraphFragment = {
         out: { x: 0 },
         nodes: [
-            ["c", [1, 0]],
-            ["d", [1, 0]],
+            ["c", [0, 1]],
+            ["d", [0, 1]],
         ]
     };
     const links: NodeFragmentEdge[] = [
@@ -24,10 +24,10 @@ test("unify fragments", () => {
     ];
     expect(unifyGraphFragments([fragment1, fragment2], links, 0, "x")).toEqual({
         nodes: [
-            ["a", [1, 0]],
-            ["b", [1, 0, 2]],
-            ["c", [3, 2]],
-            ["d", [3, 2]],
+            ["a", [0, 1]],
+            ["b", [0, 1, 2]],
+            ["c", [2, 3]],
+            ["d", [2, 3]],
         ],
         out: 0,
     });
@@ -80,8 +80,8 @@ test("fragment with constant inputs inlined constants", () => {
     const fragment: GraphFragment = {
         out: { x: 0 },
         nodes: [
-            ["a", [1, 0]],
-            ["b", [1, 0, "z"]],
+            ["a", [0, 1]],
+            ["b", [0, 1, "z"]],
         ]
     };
     const links: NodeFragmentEdge[] = [
@@ -89,8 +89,8 @@ test("fragment with constant inputs inlined constants", () => {
     ];
     expect(unifyGraphFragments([fragment], links, 0, "x")).toEqual({
         nodes: [
-            ["a", [1, 0]],
-            ["b", [1, 0, [123]]],
+            ["a", [0, 1]],
+            ["b", [0, 1, [123]]],
         ],
         out: 0,
     });
@@ -99,9 +99,38 @@ test("fragment get all inputs", () => {
     const fragment: GraphFragment = {
         out: { x: 0 },
         nodes: [
-            ["a", [1, 0]],
-            ["b", [1, 0, "z", "y"]],
+            ["a", [0, 1]],
+            ["b", [0, 1, "z", "y"]],
         ]
     };
     expect(getFragmentInputs(fragment)).toEqual(["z", "y"])
+});
+test("using the same fragment multiple times behaves as though it's cloned", () => {
+    const frag1: GraphFragment = {
+        out: { x: 0 },
+        nodes: [
+            ["a", [0, 1]],
+            ["b", [0, 1]]
+        ]
+    };
+    const fragEnd: GraphFragment = {
+        out: { x: 0 },
+        nodes: [
+            ["aa", ["x", "y"]],
+        ]
+    };
+    const edges: NodeFragmentEdge[] = [
+        { from: [0, "x"], to: [2, "x"] },
+        { from: [1, "x"], to: [2, "y"] }
+    ];
+    expect(unifyGraphFragments([frag1, frag1, fragEnd], edges, 2, "x")).toEqual({
+        out: 4,
+        nodes: [
+            ["a", [0, 1]],
+            ["b", [0, 1]],
+            ["a", [2, 3]],
+            ["b", [2, 3]],
+            ["aa", [0, 2]],
+        ],
+    });
 });
