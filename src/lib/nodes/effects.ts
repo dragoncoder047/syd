@@ -1,13 +1,24 @@
 import { KRateHelper } from "..";
 import { AudioProcessor, AudioProcessorFactory, Dimensions, SCALAR_DIMS } from "../../compiler/nodeDef";
-import { TAU, cos, lerp, sin, sqrt, tan } from "../../math/math";
+import { allPass1stOrderInvertPhaseAbove, FilterCoefficients, highPass2ndOrderButterworth, highShelf1stOrder, lowPass2ndOrderButterworth, peak2ndOrder } from "../../math/filtering/iir";
+import { lerp, TAU } from "../../math/math";
 import { Matrix } from "../../math/matrix";
 import { Synth } from "../../runtime/synth";
 
 enum FilterType {
-    LOWPASS = 0,
-    HIGHPASS = 1,
-    PEAK = 2
+    LOWPASS,
+    HIGHPASS,
+    PEAK,
+    HIGH_SHELF,
+    ALLPASS,
+}
+
+const filterCoefficientFunctions: Record<FilterType, (cutoffOmega: number, resonance: number, width: number) => FilterCoefficients> = {
+    [FilterType.LOWPASS]: lowPass2ndOrderButterworth,
+    [FilterType.HIGHPASS]: highPass2ndOrderButterworth,
+    [FilterType.PEAK]: peak2ndOrder,
+    [FilterType.ALLPASS]: allPass1stOrderInvertPhaseAbove,
+    [FilterType.HIGH_SHELF]: highShelf1stOrder,
 }
 
 export class Filter extends AudioProcessorFactory {
@@ -15,8 +26,13 @@ export class Filter extends AudioProcessorFactory {
     getInputs = () => [
         {
             name: "sample",
-            dims: ["N", 1] as Dimensions,
+            dims: ["M", "N"] as Dimensions,
             default: 0
+        },
+        {
+            name: "kind",
+            dims: SCALAR_DIMS,
+            default: FilterType.LOWPASS,
         },
         {
             name: "cutoff",
@@ -29,64 +45,28 @@ export class Filter extends AudioProcessorFactory {
             dims: SCALAR_DIMS
         },
         {
-            name: "kind",
+            name: "width",
+            default: 1,
             dims: SCALAR_DIMS,
-            default: FilterType.LOWPASS,
         }
     ];
-    getOutputDims = () => ["N", 1] as Dimensions;
-    make(synth: Synth, sizeVars: { N: number }): AudioProcessor {
-        const N = sizeVars.N;
-        const x2 = new Matrix(N, 1), x1 = new Matrix(N,), y2 = new Matrix(N, 1), y1 = new Matrix(N, 1);
+    getOutputDims = () => ["M", "N"] as Dimensions;
+    make(synth: Synth, sizeVars: { M: number, N: number }): AudioProcessor {
+        const N = sizeVars.N, M = sizeVars.M;
+        const x2 = new Matrix(M, N), x1 = new Matrix(M, N), y2 = new Matrix(M, N), y1 = new Matrix(M, N);
         const coefficients = new KRateHelper(3, 2),
             cData = coefficients.current.data;
-        cData[0]! = 1; // a0 not used, but for completeness
         const historyList = [x1, x2, y1, y2];
         const historyNumbers = [0, 0, 0, 0] as [number, number, number, number];
         return (inputs, start, progress) => {
-            var alpha: number,
-                a0: number,
-                a1: number,
-                a2: number,
-                b0: number,
-                b1: number,
-                b2: number,
-                sign: number,
-                sqrtGain: number,
-                bandwidth: number;
             if (start) {
                 coefficients.nextBlock();
-                const cutoff = inputs[1]!.toScalar();
-                const resonance = inputs[2]!.toScalar();
-                const kind = inputs[3]!.toScalar() as FilterType;
+                const kind = inputs[1]!.toScalar() as FilterType;
+                const cutoff = inputs[2]!.toScalar();
+                const resonance = inputs[3]!.toScalar();
+                const width = inputs[4]!.toScalar();
                 const cornerRadiansPerSample = TAU * cutoff * synth.dt;
-                const c = cos(cornerRadiansPerSample);
-                switch (kind) {
-                    case FilterType.LOWPASS:
-                    case FilterType.HIGHPASS:
-                        // low-pass and high-pass
-                        alpha = sin(cornerRadiansPerSample) / 2 / resonance;
-                        a0 = 1 + alpha;
-                        sign = kind === FilterType.HIGHPASS ? -1 : 1;
-                        a1 = -2 * c / a0;
-                        a2 = (1 - alpha) / a0;
-                        b2 = b0 = (1 - c * sign) / 2 / a0;
-                        b1 = sign * 2 * b0;
-                        break;
-                    case FilterType.PEAK:
-                        // peak
-                        sqrtGain = sqrt(resonance);
-                        bandwidth = cornerRadiansPerSample / (sqrtGain < 1 ? 1 / sqrtGain : sqrtGain);
-                        alpha = tan(bandwidth / 2);
-                        a0 = 1 + alpha / sqrtGain;
-                        b0 = (1 + alpha * sqrtGain) / a0;
-                        b1 = a1 = -2 * c / a0;
-                        b2 = (1 - alpha * sqrtGain) / a0;
-                        a2 = (1.0 - alpha / sqrtGain) / a0;
-                        break;
-                    default:
-                        throw new Error();
-                }
+                const { a1, a2, b0, b1, b2 } = filterCoefficientFunctions[kind]!(cornerRadiansPerSample, resonance, width);
                 cData[1] = b0;
                 cData[2] = a1;
                 cData[3] = b1;
@@ -95,11 +75,11 @@ export class Filter extends AudioProcessorFactory {
             }
             const samples = inputs[0]!.asColumn();
             const params = coefficients.loadForSample(progress).data;
-            b0 = params[1]!;
-            a1 = params[2]!;
-            b1 = params[3]!;
-            a2 = params[4]!;
-            b2 = params[5]!;
+            const b0 = params[1]!;
+            const a1 = params[2]!;
+            const b1 = params[3]!;
+            const a2 = params[4]!;
+            const b2 = params[5]!;
             const out = samples.applyMulti((sample, [x1, x2, y1, y2]) =>
                 b0 * sample + b1 * x1 + b2 * x2 - a1 * y1 - a2 * y2,
                 historyList, historyNumbers);
@@ -173,7 +153,7 @@ export class DelayLine extends AudioProcessorFactory {
                 const alpha = delaySamples - di0;
                 if (buffer.rows <= di1) {
                     const numEl = buffer.rows * C;
-                    const newLen = buffer.rows << 1;
+                    const newLen = (1 << 31) - Math.clz32(di1);
                     const newBuffer = new Matrix(newLen, C);
                     // layout:
                     //    ->  ->   v delay ->  v pos -> v wrap delay  ->
@@ -181,6 +161,7 @@ export class DelayLine extends AudioProcessorFactory {
                     //                          ^ last entry about to be overwritten is where the new entries go in
                     newBuffer.data.set(buffer.data);
                     newBuffer.data.copyWithin(pos * C + numEl, pos * C, numEl);
+                    buffer = newBuffer;
                 }
                 const len = buffer.rows;
                 mask = len - 1;

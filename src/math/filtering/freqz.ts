@@ -1,6 +1,7 @@
 import { cos, sin } from "../math";
 import { FilterCoefficients } from "./iir";
 
+// blame matlab for the reading on this one
 export function freqz(coefficients: FilterCoefficients, w: number): [mag: number, phase: number] {
     var real = cos(w), imag = sin(w);
     const realZ1 = real;
