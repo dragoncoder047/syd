@@ -1,4 +1,4 @@
-import { isNumber, isString } from "../utils";
+import { isArray, isNumber, isString } from "../utils";
 import { NodeGraph } from "./types";
 
 export interface NodeFragmentEdge {
@@ -20,8 +20,11 @@ export function getFragmentInputs(fragment: GraphFragment): string[] {
     return out;
 }
 
-export function unifyGraphFragments(fragments: GraphFragment[], edges: NodeFragmentEdge[], outFrag: number, outPort: string): NodeGraph {
-    const merged: NodeGraph = {
+export type OutPort = [frag: number, port: string];
+export function unifyGraphFragments(fragments: GraphFragment[], edges: NodeFragmentEdge[], out: OutPort): NodeGraph;
+export function unifyGraphFragments(fragments: GraphFragment[], edges: NodeFragmentEdge[], out: Record<string, OutPort>): GraphFragment;
+export function unifyGraphFragments(fragments: GraphFragment[], edges: NodeFragmentEdge[], out: OutPort | Record<string, OutPort>): NodeGraph | GraphFragment {
+    const merged: NodeGraph | GraphFragment = {
         nodes: [],
         out: null as any,
     };
@@ -40,7 +43,11 @@ export function unifyGraphFragments(fragments: GraphFragment[], edges: NodeFragm
         }
     }
     const globalOutputNumberOfFragment = (fragNo: number, portNo: string) => fragToRenumberMap[fragNo]![fragments[fragNo]!.out[portNo]!]!
-    merged.out = globalOutputNumberOfFragment(outFrag, outPort);
+    if (isArray(out)) {
+        merged.out = globalOutputNumberOfFragment(out[0], out[1]);
+    } else {
+        merged.out = Object.fromEntries(Object.entries(out).map(([name, [frag, port]]) => [name, globalOutputNumberOfFragment(frag, port)]));
+    }
     // Finally, process all the links and re-numberings
     for (var globalNodeNo = 0; globalNodeNo < merged.nodes.length; globalNodeNo++) {
         const args = merged.nodes[globalNodeNo]![1];

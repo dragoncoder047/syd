@@ -1,4 +1,3 @@
-import IntervalTree from "@flatten-js/interval-tree";
 import { EventSequence } from "./types";
 
 export function eventsToAbsolute<T>(e: EventSequence<T>) {

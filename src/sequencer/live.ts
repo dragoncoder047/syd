@@ -1,4 +1,3 @@
-import IntervalTree from "@flatten-js/interval-tree";
 import { NotePin } from "./types";
 
 export class EditableSong {

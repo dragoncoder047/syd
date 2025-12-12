@@ -1,5 +1,4 @@
 import { Instrument, NodeGraph } from "../graph/types";
-import { ChannelMode } from "../runtime/channels";
 
 // TODO: make this use more records instead of arrays where possible
 
@@ -14,7 +13,7 @@ export interface Song {
     noteShapes: NoteShape[];
     postFX: NodeGraph;
     channels: Record<string, {
-        mode: ChannelMode,
+        sticky: boolean,
         rows: number,
         cols: number,
         data: number[]

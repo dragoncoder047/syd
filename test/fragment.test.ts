@@ -22,7 +22,7 @@ test("unify fragments", () => {
     const links: NodeFragmentEdge[] = [
         { from: [1, "x"], to: [0, "z"] }
     ];
-    expect(unifyGraphFragments([fragment1, fragment2], links, 0, "x")).toEqual({
+    expect(unifyGraphFragments([fragment1, fragment2], links, [0, "x"])).toEqual({
         nodes: [
             ["a", [0, 1]],
             ["b", [0, 1, 2]],
@@ -87,7 +87,7 @@ test("fragment with constant inputs inlined constants", () => {
     const links: NodeFragmentEdge[] = [
         { value: 123, to: [0, "z"], constant: true }
     ];
-    expect(unifyGraphFragments([fragment], links, 0, "x")).toEqual({
+    expect(unifyGraphFragments([fragment], links, [0, "x"])).toEqual({
         nodes: [
             ["a", [0, 1]],
             ["b", [0, 1, [123]]],
@@ -123,7 +123,7 @@ test("using the same fragment multiple times behaves as though it's cloned", () 
         { from: [0, "x"], to: [2, "x"] },
         { from: [1, "x"], to: [2, "y"] }
     ];
-    expect(unifyGraphFragments([frag1, frag1, fragEnd], edges, 2, "x")).toEqual({
+    expect(unifyGraphFragments([frag1, frag1, fragEnd], edges, [2, "x"])).toEqual({
         out: 4,
         nodes: [
             ["a", [0, 1]],
