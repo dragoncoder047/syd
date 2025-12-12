@@ -46,6 +46,7 @@ export class UndoRedo<T> {
     redo() {
         if (!this.canRedo) {
             if (this.canRepeat) this.doEdit(this.lastEdit!);
+            return;
         }
         this.undoStack.push(this.curDoc);
         this.curDoc = this.redoStack.pop()!;
