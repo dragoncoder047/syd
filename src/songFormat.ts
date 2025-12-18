@@ -54,7 +54,7 @@ export interface InstrumentData extends Named<InstrumentName> {
 }
 
 export interface ChannelData extends Named<ChannelName> {
-    size: [rows: number, cols: number]
+    dims: [rows: number, cols: number]
 }
 
 export interface PatternData extends Named<PatternName> {
@@ -66,6 +66,15 @@ export interface PatternData extends Named<PatternName> {
 
 export interface PatternEditSettings {
     beatDiv?: [divisionsPerNote: number, beatsPerBar: number];
+    ranges?: NoteRangeDisplaySettings[];
+}
+
+interface NoteRangeDisplaySettings {
+    forInstrument?: number;
+    min: number;
+    max: number;
+    percussion?: boolean;
+    // TODO: piano keys/scale stuff
 }
 
 export interface NoteData {

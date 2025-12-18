@@ -2,7 +2,7 @@ export {
     compile,
     ErrorReason
 } from "./compiler/compile";
-export  {
+export {
     type AudioProcessor,
     AudioProcessorFactory,
     type Dimensions,
@@ -27,13 +27,13 @@ export {
     Sequencer
 } from "./sequencer";
 export type {
-    Metadata,
-    Note,
+    SongMetadata,
+    NoteData,
     NotePin,
     NoteShape,
-    Pattern,
+    PatternData,
     RenderingPreferences,
     Song,
-    SongTuning,
-} from "./sequencer/types";
+    Tuning,
+} from "./songFormat";
 

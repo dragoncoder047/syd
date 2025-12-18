@@ -1,4 +1,3 @@
-import { EventSequence, NoteShape, Pattern } from "./types";
 
 export interface SequencerEvent {
     kind: SequencerEventType;
@@ -18,11 +17,8 @@ export enum SequencerEventType {
 export class Sequencer {
     beatPos = 0; // position in beats
     paused = true;
-    constructor(
-        public patterns: Pattern[],
-        public noteShapes: NoteShape[],
-        public timeline: EventSequence<number>,
-        public tempo: number) {
+    tempo = 0;
+    constructor() {
     }
     private _pt: number | null = 0;
     play() {
