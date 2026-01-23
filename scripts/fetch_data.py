@@ -5,6 +5,7 @@ import pathlib
 import shutil
 import subprocess
 import time
+import unicodedata
 from typing import Any
 
 # import themefix
@@ -54,7 +55,7 @@ def timed(func):
 
 
 def get_beepmod_file(path: str) -> str:
-    return (github_repo_dir / path).read_text()
+    return unicodedata.normalize("NFC", (github_repo_dir / path).read_text())
 
 
 @timed
