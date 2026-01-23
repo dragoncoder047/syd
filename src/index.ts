@@ -31,7 +31,7 @@ export type {
     NoteData,
     NotePin,
     NoteShape,
-    PatternData,
+    SectionData,
     RenderingPreferences,
     Song,
     Tuning,

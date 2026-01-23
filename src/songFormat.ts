@@ -7,7 +7,7 @@ export type EventSequence<T> = {
 
 interface Named<T extends string> { name: T }
 
-type PatternName = string;
+type SectionName = string;
 type InstrumentName = string;
 type ChannelName = string;
 
@@ -20,8 +20,8 @@ export interface Song {
         tuning?: Tuning;
         beatDiv?: [divisionsPerNote: number, beatsPerBar: number]; // Default: [4, 4], i.e. common time, 16th notes
     },
-    timeline: EventSequence<PatternName>;
-    patterns: PatternData[];
+    timeline: EventSequence<SectionName>;
+    sections: SectionData[];
     noteShapes: NoteShape[];
     postprocess: FragmentGraph;
 }
@@ -38,7 +38,7 @@ export interface SongMetadata {
 export interface RenderingPreferences {
     baseTheme?: string;
     instrumentColors?: Record<InstrumentName, string>;
-    patternColors?: Record<PatternName, string>;
+    sectionColors?: Record<SectionName, string>;
     playerLayout?: string;
 }
 
@@ -57,14 +57,14 @@ export interface ChannelData extends Named<ChannelName> {
     dims: [rows: number, cols: number]
 }
 
-export interface PatternData extends Named<PatternName> {
+export interface SectionData extends Named<SectionName> {
     instruments: InstrumentName[];
     tuning?: Tuning;
     data: EventSequence<NoteData>;
-    edit?: PatternEditSettings;
+    edit?: SectionEditSettings;
 }
 
-export interface PatternEditSettings {
+export interface SectionEditSettings {
     beatDiv?: [divisionsPerNote: number, beatsPerBar: number];
     ranges?: NoteRangeDisplaySettings[];
 }
@@ -73,13 +73,14 @@ interface NoteRangeDisplaySettings {
     forInstrument?: number;
     min: number;
     max: number;
-    percussion?: boolean;
     // TODO: piano keys/scale stuff
+    name?: string;
+    icon?: string; // Like an emoji or something
 }
 
 export interface NoteData {
     pitch: number;
-    instruments?: InstrumentName[]; // If present, overrides pattern instruments
+    instruments?: InstrumentName[]; // If present, overrides section instruments
     shape: number; // Index into global note shape table
 }
 

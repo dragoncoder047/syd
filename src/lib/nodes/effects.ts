@@ -1,7 +1,7 @@
 import { KRateHelper } from "..";
 import { AudioProcessor, AudioProcessorFactory, Dimensions, SCALAR_DIMS } from "../../compiler/nodeDef";
 import { allPass1stOrderInvertPhaseAbove, FilterCoefficients, highPass2ndOrderButterworth, highShelf1stOrder, lowPass2ndOrderButterworth, peak2ndOrder } from "../../math/filtering/iir";
-import { lerp, TAU } from "../../math/math";
+import { lerp, sin, TAU } from "../../math/math";
 import { Matrix } from "../../math/matrix";
 import { Synth } from "../../runtime/synth";
 
@@ -13,7 +13,7 @@ enum FilterType {
     ALLPASS,
 }
 
-const filterCoefficientFunctions: Record<FilterType, (cutoffOmega: number, resonance: number, width: number) => FilterCoefficients> = {
+const filterCoefficientFunctions: Record<FilterType, (filterCoefficients: FilterCoefficients, cutoffOmega: number, resonance: number, width: number) => void> = {
     [FilterType.LOWPASS]: lowPass2ndOrderButterworth,
     [FilterType.HIGHPASS]: highPass2ndOrderButterworth,
     [FilterType.PEAK]: peak2ndOrder,
@@ -56,6 +56,7 @@ export class Filter extends AudioProcessorFactory {
         const x2 = new Matrix(M, N), x1 = new Matrix(M, N), y2 = new Matrix(M, N), y1 = new Matrix(M, N);
         const coefficients = new KRateHelper(3, 2),
             cData = coefficients.current.data;
+        const filterCoefficients = new FilterCoefficients();
         const historyList = [x1, x2, y1, y2];
         const historyNumbers = [0, 0, 0, 0] as [number, number, number, number];
         return (inputs, start, progress) => {
@@ -66,7 +67,8 @@ export class Filter extends AudioProcessorFactory {
                 const resonance = inputs[3]!.toScalar();
                 const width = inputs[4]!.toScalar();
                 const cornerRadiansPerSample = TAU * cutoff * synth.dt;
-                const { a1, a2, b0, b1, b2 } = filterCoefficientFunctions[kind]!(cornerRadiansPerSample, resonance, width);
+                filterCoefficientFunctions[kind]!(filterCoefficients, cornerRadiansPerSample, resonance, width)
+                const { a1, a2, b0, b1, b2 } = filterCoefficients;
                 cData[1] = b0;
                 cData[2] = a1;
                 cData[3] = b1;
