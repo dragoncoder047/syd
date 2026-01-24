@@ -1,25 +1,24 @@
 import { max, min } from "../math";
-import { AVLNode, combinedHeight, NodeCopier, NodeMaker } from "./avl";
+import { AVLNode, combinedHeight, Comparator, NodeCopier, NodeMaker, numberComparator } from "./avl";
 
 
-export interface IntervalNode<T> extends AVLNode<T> {
-    /** this node's end */
-    readonly e: number;
+export interface IntervalNode<T> extends AVLNode<number, [T, end: number]> {
     /** left subtree's min end */
     readonly x: number;
     /** right subtree's max end */
     readonly y: number;
 }
-export const makeIntervalNode = (<T>(time: number, [data, end]: [T, number], left: IntervalNode<T> | null, right: IntervalNode<T> | null): IntervalNode<T> => ({
-    t: time, d: data, l: left, r: right,
+export const makeIntervalNode = (<T>(time: number, dataAndEnd: [T, number], left: IntervalNode<T> | null, right: IntervalNode<T> | null): IntervalNode<T> => ({
+    t: time, d: dataAndEnd, l: left, r: right,
     h: combinedHeight(left, right),
-    e: end,
-    x: min(end, left?.x ?? Infinity, right?.x ?? Infinity),
-    y: max(end, left?.y ?? -Infinity, right?.y ?? -Infinity),
-})) satisfies NodeMaker<IntervalNode<any>, [any, number]>;
+    x: min(time, left?.x ?? Infinity, right?.x ?? Infinity),
+    y: max(dataAndEnd[1], left?.y ?? -Infinity, right?.y ?? -Infinity),
+})) satisfies NodeMaker<IntervalNode<any>, [any, number], any>;
 
-export const cloneIntervalNode = (<T>({ t, d, x, y, e }: IntervalNode<T>, left: IntervalNode<T> | null, right: IntervalNode<T> | null): IntervalNode<T> => ({
-    t, d, x, y, e, l: left, r: right,
+export const cloneIntervalNode = (<T>({ t, d }: IntervalNode<T>, left: IntervalNode<T> | null, right: IntervalNode<T> | null): IntervalNode<T> => ({
+    t, d, l: left, r: right,
+    x: min(t, left?.x ?? Infinity, right?.x ?? Infinity),
+    y: max(d[1], left?.y ?? -Infinity, right?.y ?? -Infinity),
     h: combinedHeight(left, right)
 })) satisfies NodeCopier<IntervalNode<any>>;
 
@@ -40,13 +39,24 @@ export function intervalQuery<T>(
     const stack: IntervalNode<T>[] = [];
     if (root) stack.push(root);
     while (stack.length) {
-        const { t: nStart, e: nEnd, d: data, l: left, r: right } = stack.pop()!;
-        // if the current node is in the interval, save it
-        if (!(nEnd < start || nStart > end)) out.push(data);
-        // if the left tree exists and its right edge is in the interval, check it
-        if (left && left.y >= start) stack.push(left);
-        // if the right tree exists and its left edge is in the interval, check it
-        if (right && right.x <= end) stack.push(right);
+        const { t: nStart, d: [data, nEnd], l: left, r: right } = stack.pop()!;
+        // if the current node touches the interval, save it
+        if (intervalsIntersect(start, end, nStart, nEnd, numberComparator)) out.push(data);
+        // if the left tree exists and its span is in the interval, check it
+        if (left && intervalsIntersect(start, end, left.x, left.y, numberComparator)) stack.push(left);
+        // if the right tree exists and its span is in the interval, check it
+        if (right && intervalsIntersect(start, end, right.x, right.y, numberComparator)) stack.push(right);
     }
     return out;
+}
+
+function intervalsIntersect<T>(a: T, b: T, x: T, y: T, comparator: Comparator<T>) {
+    return (
+        between(a, x, y, comparator) || between(b, x, y, comparator) // [a, b] intersects or is contained within [x, y]
+        || between(x, a, b, comparator) || between(y, a, b, comparator) // [x, y] intersects or is contained within [a, b]
+    );
+}
+
+export function between<T>(x: T, low: T, high: T, comparator: Comparator<T>) {
+    return comparator(x, low) >= 0 && comparator(x, high) < 0;
 }

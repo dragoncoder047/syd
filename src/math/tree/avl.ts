@@ -1,8 +1,9 @@
 import { max } from "../math";
+import { between } from "./interval";
 
-export interface AVLNode<T> {
+export interface AVLNode<K, T> {
     /** timestamp */
-    readonly t: number;
+    readonly t: K;
     /** data */
     readonly d: T;
     /** left subtree */
@@ -13,36 +14,39 @@ export interface AVLNode<T> {
     readonly h: number;
 }
 
-function height(n: AVLNode<any> | null) {
+export const numberComparator: Comparator<number> = (a, b) => a < b ? -1 : a > b ? 1 : 0;
+
+function height(n: AVLNode<any, any> | null) {
     return n?.h ?? 0;
 }
 
-export function combinedHeight(left: AVLNode<any> | null, right: AVLNode<any> | null) {
+export function combinedHeight(left: AVLNode<any, any> | null, right: AVLNode<any, any> | null) {
     return 1 + max(height(left), height(right))
 }
 
-export type NodeCopier<N extends AVLNode<any>> = (old: N, newLeft: N | null, newRight: N | null) => N;
-export type NodeMaker<N extends AVLNode<any>, D> = (time: number, data: D, newLeft: N | null, newRight: N | null) => N;
+export type NodeCopier<N extends AVLNode<any, any>> = (old: N, newLeft: N | null, newRight: N | null) => N;
+export type NodeMaker<N extends AVLNode<K, D>, D, K> = (time: K, data: D, newLeft: N | null, newRight: N | null) => N;
+export type Comparator<K> = (a: K, b: K) => -1 | 0 | 1;
 
-function makeLeaf<N extends AVLNode<any>, D>(time: number, data: D, nodeMaker: NodeMaker<N, D>): N {
+function makeLeaf<N extends AVLNode<K, D>, D, K>(time: K, data: D, nodeMaker: NodeMaker<N, D, K>): N {
     return nodeMaker(time, data, null, null);
 }
 
-function rightRotate<N extends AVLNode<any>>(y: N, copy: NodeCopier<N>): N {
+function rightRotate<N extends AVLNode<K, D>, D, K>(y: N, copy: NodeCopier<N>): N {
     const x = y.l!, lr = x.r;
     return copy(x, x.l, copy(y, lr, y.r));
 }
 
-function leftRotate<N extends AVLNode<any>>(x: N, copy: NodeCopier<N>): N {
+function leftRotate<N extends AVLNode<K, D>, D, K>(x: N, copy: NodeCopier<N>): N {
     const y = x.r!, rl = y.l;
     return copy(y, copy(x, x.l, rl), y.r);
 }
 
-function balanceFactor(n: AVLNode<any> | null) {
+function balanceFactor(n: AVLNode<any, any> | null) {
     return n ? height(n.l) - height(n.r) : 0;
 }
 
-function rebalance<N extends AVLNode<any>>(n: N, copy: NodeCopier<N>): N {
+function rebalance<N extends AVLNode<any, any>>(n: N, copy: NodeCopier<N>): N {
     const bf = balanceFactor(n);
     if (bf > 1) {
         if (balanceFactor(n.l) < 0) {
@@ -66,20 +70,32 @@ function rebalance<N extends AVLNode<any>>(n: N, copy: NodeCopier<N>): N {
 /**
  * Insert data into an existing tree
  * @param root The existing tree
- * @param time The time stamp to insert at
+ * @param time The key to insert at (or generic comparable key if comparator provided)
  * @param data The data to insert
- * @returns Them updated tree
+ * @param make Function to create new nodes
+ * @param copy Function to copy nodes
+ * @param comparator Optional comparator function; defaults to numeric comparison
+ * @returns The updated tree
  */
-export function treeInsertOrUpdate<N extends AVLNode<any>, D>(root: N | null, time: number, data: D, make: NodeMaker<N, D>, copy: NodeCopier<N>): N {
+export function treeInsertOrUpdate<N extends AVLNode<K, D>, D, K = number>(
+    root: N | null,
+    time: K,
+    data: D,
+    make: NodeMaker<N, D, K>,
+    copy: NodeCopier<N>,
+    comparator: Comparator<K>
+): N {
+
     if (!root) return makeLeaf(time, data, make);
 
-    if (time < root.t) {
-        return rebalance(make(root.t, root.d, treeInsertOrUpdate(root.l, time, data, make, copy), root.r), copy);
-    } else if (time > root.t) {
-        return rebalance(make(root.t, root.d, root.l, treeInsertOrUpdate(root.r, time, data, make, copy)), copy);
+    const comparison = comparator(time, root.t as any);
+    if (comparison < 0) {
+        return rebalance(make(root.t, root.d, treeInsertOrUpdate(root.l, time, data, make, copy, comparator), root.r), copy);
+    } else if (comparison > 0) {
+        return rebalance(make(root.t, root.d, root.l, treeInsertOrUpdate(root.r, time, data, make, copy, comparator)), copy);
     } else {
         // found it, replace the data
-        return make(time, data, root.l, root.r);
+        return make(root.t, data, root.l, root.r);
     }
 }
 
@@ -90,16 +106,17 @@ export function treeInsertOrUpdate<N extends AVLNode<any>, D>(root: N | null, ti
  * @param mapper The function to transform the old value into the new value
  * @returns The updated tree
  */
-export function treeUpdateByMapping<N extends AVLNode<any>, D>(root: N | null, time: number, mapper: (d: D) => D, make: NodeMaker<N, D>, copy: NodeCopier<N>): N | null {
+export function treeUpdateByMapping<N extends AVLNode<K, D>, D, K>(root: N | null, time: K, mapper: (d: D) => D, make: NodeMaker<N, D, K>, copy: NodeCopier<N>, comparator: Comparator<K>): N | null {
     if (!root) return null;
+    const comparison = comparator(time, root.t);
     // No need to rebalance since we're not adding or removing nodes
-    if (time < root.t) {
-        const newLeft = treeUpdateByMapping(root.l, time, mapper, make, copy);
+    if (comparison < 0) {
+        const newLeft = treeUpdateByMapping(root.l, time, mapper, make, copy, comparator);
         // if nothing happened, don't make a new node
         if (newLeft === root.l) return root;
         return copy(root, newLeft, root.r);
-    } else if (time > root.t) {
-        const newRight = treeUpdateByMapping(root.r, time, mapper, make, copy);
+    } else if (comparison > 0) {
+        const newRight = treeUpdateByMapping(root.r, time, mapper, make, copy, comparator);
         // if nothing happened, don't make a new node
         if (newRight === root.r) return root;
         return copy(root, root.l, newRight);
@@ -110,9 +127,22 @@ export function treeUpdateByMapping<N extends AVLNode<any>, D>(root: N | null, t
     }
 }
 
-function leftmostLeaf<N extends AVLNode<any>>(n: N): N {
+export function leftmostLeaf<N extends AVLNode<any, any>>(n: N): N {
     while (n.l) n = n.l;
     return n;
+}
+
+export function inOrderSuccessor<N extends AVLNode<any, any>>(n: N): N | null {
+    return n.r ? leftmostLeaf(n.r) : null;
+}
+
+export function rightmostLeaf<N extends AVLNode<any, any>>(n: N): N {
+    while (n.r) n = n.r;
+    return n;
+}
+
+export function inOrderPredecessor<N extends AVLNode<any, any>>(n: N): N | null {
+    return n.l ? rightmostLeaf(n.l) : null;
 }
 
 /**
@@ -121,15 +151,21 @@ function leftmostLeaf<N extends AVLNode<any>>(n: N): N {
  * @param time The time stamp to remove the data of
  * @returns The update tree
  */
-export function treeRemove<N extends AVLNode<any>>(root: N | null, time: number, copy: NodeCopier<N>): N | null {
+export function treeRemove<N extends AVLNode<K, D>, D, K>(
+    root: N | null,
+    time: K,
+    copy: NodeCopier<N>,
+    comparator: Comparator<K>
+): N | null {
     if (!root) return null;
-    if (time < root.t) {
-        const newLeft = treeRemove(root.l, time, copy);
+    const comparison = comparator(time, root.t as any);
+    if (comparison < 0) {
+        const newLeft = treeRemove(root.l, time, copy, comparator);
         // if nothing happened, don't make a new node
         if (newLeft === root.l) return root;
         return rebalance(copy(root, newLeft, root.r), copy);
-    } else if (time > root.t) {
-        const newRight = treeRemove(root.r, time, copy);
+    } else if (comparison > 0) {
+        const newRight = treeRemove(root.r, time, copy, comparator);
         // if nothing happened, don't make a new node
         if (newRight === root.r) return root;
         return rebalance(copy(root, root.l, newRight), copy);
@@ -140,77 +176,82 @@ export function treeRemove<N extends AVLNode<any>>(root: N | null, time: number,
         if (!root.r) return root.l;
         // two children: replace with in-order successor (min of right)
         const next = leftmostLeaf(root.r);
-        return rebalance(copy(next, root.l, treeRemove(root.r, next.t, copy)), copy);
+        return rebalance(copy(next, root.l, treeRemove(root.r, next.t as any, copy, comparator)), copy);
     }
 }
 
-// /**
-//  * Search a tree for a particular timestamp
-//  * @param root The tree to search
-//  * @param time The time stamp to look for
-//  * @returns The data stored at that node or null if it doesn't exist
-//  */
-// export function treeSearch<T>(root: AVLNode<T> | null, time: number): T | null {
-//     while (root) {
-//         if (time === root.t) return root.d;
-//         root = time < root.t ? root.l : root.r;
-//     }
-//     return null;
-// }
+/**
+ * Search a tree for a particular key
+ * @param root The tree to search
+ * @param time The key to look for (or numeric timestamp if comparator not provided)
+ * @param comparator Optional comparator function; defaults to numeric comparison
+ * @returns The node or null if it doesn't exist
+ */
+export function treeSearch<T extends AVLNode<K, D>, D, K>(root: T | null, time: K, comparator: Comparator<K>): T | null {
+    while (root) {
+        const comparison = comparator(time, root.t as any);
+        if (comparison === 0) return root;
+        root = comparison < 0 ? root.l : root.r;
+    }
+    return null;
+}
 
 /**
  * In-order traversal of the tree
  * @param root The tree to iterate over
  * @param fn The callback for each iteration
  */
-export function treeMap<T>(root: AVLNode<T> | null, fn: (data: T) => void) {
+export function treeMap<T extends AVLNode<any, any>>(root: T | null, fn: (data: T) => void) {
     if (!root) return;
     treeMap(root.l, fn);
-    fn(root.d);
+    fn(root);
     treeMap(root.r, fn);
 }
 
-// /**
-//  * Collects the data of all of the items within the range specified
-//  * @param root The tree to search
-//  * @param start The start of the range (inclusive)
-//  * @param end The end of the range (inclusive)
-//  * @param out A list to collect the data
-//  * @returns The list with all the data
-//  */
-// export function treeGetInRange<T>(root: AVLNode<T> | null, start: number, end: number, out: T[] = []): T[] {
-//     if (root) {
-//         if (start <= root.t) treeGetInRange(root.l, start, end, out);
-//         if (root.t >= start && root.t <= end) out.push(root.d);
-//         if (root.t <= end) treeGetInRange(root.r, start, end, out);
-//     }
-//     return out;
-// }
+/**
+ * Collects the data of all of the items within the range specified
+ * @param root The tree to search
+ * @param start The start of the range (inclusive)
+ * @param end The end of the range (exclusive)
+ * @param out A list to collect the data
+ * @returns The list with all the nodes in the range
+ */
+export function treeGetInRange<T extends AVLNode<K, any>, K>(root: T | null, start: K, end: K, out: T[] = [], comparator: Comparator<K>): T[] {
+    if (root) {
+        if (comparator(start, root.t) <= 0) treeGetInRange(root.l, start, end, out, comparator);
+        if (between(root.t, start, end, comparator)) out.push(root);
+        if (comparator(root.t, end) <= 0) treeGetInRange(root.r, start, end, out, comparator);
+    }
+    return out;
+}
 
 /**
- * Get the two points immediately to the right and to the left of the time value.
+ * Get the two points immediately to the left and right of the key value
  * @param tree The tree to search
- * @param time The time at which to look
- * @returns The time value in the tree immediately to the left and to the right of the time value.
+ * @param time The key at which to look (or numeric timestamp if comparator not provided)
+ * @param comparator Optional comparator function; defaults to numeric comparison
+ * @returns [left, right] - the nodes on either side
  */
-export function treeGetBookends(tree: AVLNode<any> | null, time: number): [number | null, number | null] {
-    var left: number | null = null;
-    var right: number | null = null;
+export function treeGetBookends<T extends AVLNode<K, any>, K>(tree: T | null, time: K, comparator: Comparator<K>): [T | null, T | null] {
+    var left: T | null = null;
+    var right: T | null = null;
 
     while (tree !== null) {
-        if (time === tree.t) {
+        const comparison = comparator(time, tree.t as any);
+        if (comparison === 0) {
             // exact match
-            return [tree.t, tree.r ? leftmostLeaf(tree.r).t : null];
-        } else if (time < tree.t) {
+            left = tree;
+            right ??= inOrderSuccessor(tree);
+            break;
+        } else if (comparison < 0) {
             // node.t is a candidate successor (strictly > time)
-            right = tree.t;
+            right = tree;
             tree = tree.l;
-        } else { // time > node.t
+        } else { // comparison > 0
             // node.t is a candidate predecessor (<= time)
-            left = tree.t;
+            left = tree;
             tree = tree.r;
         }
     }
-
     return [left, right];
 }

@@ -1,9 +1,6 @@
 import { FragmentGraph } from "./graph/builder";
 
-export type EventSequence<T> = {
-    delta: number,
-    events: T[]
-}[];
+export type EventSequence<T> = { delta: number, data: T }[];
 
 interface Named<T extends string> { name: T }
 
@@ -11,11 +8,14 @@ type SectionName = string;
 type InstrumentName = string;
 type ChannelName = string;
 
+type BPM = number;
+export type TempoTrack = EventSequence<BPM>;
+
 export interface Song {
     metadata: SongMetadata;
     instruments: InstrumentData[];
     channels: ChannelData[];
-    conductor: ChannelName;
+    conductor: TempoTrack;
     defaults?: {
         tuning?: Tuning;
         beatDiv?: [divisionsPerNote: number, beatsPerBar: number]; // Default: [4, 4], i.e. common time, 16th notes

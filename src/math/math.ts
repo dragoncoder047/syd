@@ -9,6 +9,8 @@ export const cos = Math.cos;
 export const sgn = Math.sign;
 export const abs = Math.abs;
 export const tan = Math.tan;
+export const ln = Math.log;
+export const exp = Math.exp;
 export const tanW = (x: number) => clamp(Math.tan(x), -1, 1);
 export const saw = (x: number) => 1 - (2 * x / TAU % 2 + 2) % 2;
 export const tri = (x: number) => 1 - 4 * abs(Math.round(x / TAU) - x / TAU);

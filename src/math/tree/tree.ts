@@ -1,11 +1,11 @@
 import { AVLNode, combinedHeight, NodeCopier, NodeMaker } from "./avl";
 
-export const makeTreeNode = (<T>(time: number, data: T, left: AVLNode<T> | null, right: AVLNode<T> | null): AVLNode<T> => ({
+export const makeTreeNode = (<K, D>(time: K, data: D, left: AVLNode<K, D> | null, right: AVLNode<K, D> | null): AVLNode<K, D> => ({
     t: time, d: data, l: left, r: right,
     h: combinedHeight(left, right)
-})) satisfies NodeMaker<AVLNode<any>, any>;
+})) satisfies NodeMaker<AVLNode<any, any>, any, any>;
 
-export const cloneTreeNode = (<T>({t, d}: AVLNode<T>, left: AVLNode<T> | null, right: AVLNode<T> | null): AVLNode<T> => ({
+export const cloneTreeNode = (<K, D>({ t, d }: AVLNode<K, D>, left: AVLNode<K, D> | null, right: AVLNode<K, D> | null): AVLNode<K, D> => ({
     t, d, l: left, r: right,
     h: combinedHeight(left, right)
-})) satisfies NodeCopier<AVLNode<any>>;
+})) satisfies NodeCopier<AVLNode<any, any>>;
