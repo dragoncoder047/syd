@@ -1,11 +1,11 @@
 import { max } from "../math";
 import { between } from "./interval";
 
-export interface AVLNode<K, T> {
-    /** timestamp */
-    readonly t: K;
+export interface AVLNode<K, D> {
+    /** key */
+    readonly k: K;
     /** data */
-    readonly d: T;
+    readonly d: D;
     /** left subtree */
     readonly l: this | null;
     /** right subtree */
@@ -14,7 +14,7 @@ export interface AVLNode<K, T> {
     readonly h: number;
 }
 
-export const numberComparator: Comparator<number> = (a, b) => a < b ? -1 : a > b ? 1 : 0;
+export const compareNumbers: Comparator<number> = (a, b) => a < b ? -1 : a > b ? 1 : 0;
 
 function height(n: AVLNode<any, any> | null) {
     return n?.h ?? 0;
@@ -24,7 +24,6 @@ export function combinedHeight(left: AVLNode<any, any> | null, right: AVLNode<an
     return 1 + max(height(left), height(right))
 }
 
-export type NodeCopier<N extends AVLNode<any, any>> = (old: N, newLeft: N | null, newRight: N | null) => N;
 export type NodeMaker<N extends AVLNode<K, D>, D, K> = (time: K, data: D, newLeft: N | null, newRight: N | null) => N;
 export type Comparator<K> = (a: K, b: K) => -1 | 0 | 1;
 
@@ -32,37 +31,37 @@ function makeLeaf<N extends AVLNode<K, D>, D, K>(time: K, data: D, nodeMaker: No
     return nodeMaker(time, data, null, null);
 }
 
-function rightRotate<N extends AVLNode<K, D>, D, K>(y: N, copy: NodeCopier<N>): N {
+function rightRotate<N extends AVLNode<K, D>, D, K>(y: N, make: NodeMaker<N, D, K>): N {
     const x = y.l!, lr = x.r;
-    return copy(x, x.l, copy(y, lr, y.r));
+    return make(x.k, x.d, x.l, make(y.k, y.d, lr, y.r));
 }
 
-function leftRotate<N extends AVLNode<K, D>, D, K>(x: N, copy: NodeCopier<N>): N {
+function leftRotate<N extends AVLNode<K, D>, D, K>(x: N, make: NodeMaker<N, D, K>): N {
     const y = x.r!, rl = y.l;
-    return copy(y, copy(x, x.l, rl), y.r);
+    return make(y.k, y.d, make(x.k, x.d, x.l, rl), y.r);
 }
 
 function balanceFactor(n: AVLNode<any, any> | null) {
     return n ? height(n.l) - height(n.r) : 0;
 }
 
-function rebalance<N extends AVLNode<any, any>>(n: N, copy: NodeCopier<N>): N {
+function rebalance<N extends AVLNode<K, D>, D, K>(n: N, make: NodeMaker<N, D, K>): N {
     const bf = balanceFactor(n);
     if (bf > 1) {
         if (balanceFactor(n.l) < 0) {
-            const newLeft = leftRotate(n.l!, copy);
-            const nWithNewLeft = copy(n, newLeft, n.r);
-            return rightRotate(nWithNewLeft, copy);
+            const newLeft = leftRotate(n.l!, make);
+            const nWithNewLeft = make(n.k, n.d, newLeft, n.r);
+            return rightRotate(nWithNewLeft, make);
         }
-        return rightRotate(n, copy);
+        return rightRotate(n, make);
     }
     if (bf < -1) {
         if (balanceFactor(n.r) > 0) {
-            const newRight = rightRotate(n.r!, copy);
-            const nWithNewRight = copy(n, n.l, newRight);
-            return leftRotate(nWithNewRight, copy);
+            const newRight = rightRotate(n.r!, make);
+            const nWithNewRight = make(n.k, n.d, n.l, newRight);
+            return leftRotate(nWithNewRight, make);
         }
-        return leftRotate(n, copy);
+        return leftRotate(n, make);
     }
     return n;
 }
@@ -82,20 +81,19 @@ export function treeInsertOrUpdate<N extends AVLNode<K, D>, D, K = number>(
     time: K,
     data: D,
     make: NodeMaker<N, D, K>,
-    copy: NodeCopier<N>,
     comparator: Comparator<K>
 ): N {
 
     if (!root) return makeLeaf(time, data, make);
 
-    const comparison = comparator(time, root.t as any);
+    const comparison = comparator(time, root.k as any);
     if (comparison < 0) {
-        return rebalance(make(root.t, root.d, treeInsertOrUpdate(root.l, time, data, make, copy, comparator), root.r), copy);
+        return rebalance(make(root.k, root.d, treeInsertOrUpdate(root.l, time, data, make, comparator), root.r), make);
     } else if (comparison > 0) {
-        return rebalance(make(root.t, root.d, root.l, treeInsertOrUpdate(root.r, time, data, make, copy, comparator)), copy);
+        return rebalance(make(root.k, root.d, root.l, treeInsertOrUpdate(root.r, time, data, make, comparator)), make);
     } else {
         // found it, replace the data
-        return make(root.t, data, root.l, root.r);
+        return make(root.k, data, root.l, root.r);
     }
 }
 
@@ -106,24 +104,24 @@ export function treeInsertOrUpdate<N extends AVLNode<K, D>, D, K = number>(
  * @param mapper The function to transform the old value into the new value
  * @returns The updated tree
  */
-export function treeUpdateByMapping<N extends AVLNode<K, D>, D, K>(root: N | null, time: K, mapper: (d: D) => D, make: NodeMaker<N, D, K>, copy: NodeCopier<N>, comparator: Comparator<K>): N | null {
+export function treeUpdateByMapping<N extends AVLNode<K, D>, D, K>(root: N | null, time: K, mapper: (k: K, d: D) => { k: K, d: D }, make: NodeMaker<N, D, K>, comparator: Comparator<K>): N | null {
     if (!root) return null;
-    const comparison = comparator(time, root.t);
+    const comparison = comparator(time, root.k);
     // No need to rebalance since we're not adding or removing nodes
     if (comparison < 0) {
-        const newLeft = treeUpdateByMapping(root.l, time, mapper, make, copy, comparator);
+        const newLeft = treeUpdateByMapping(root.l, time, mapper, make, comparator);
         // if nothing happened, don't make a new node
         if (newLeft === root.l) return root;
-        return copy(root, newLeft, root.r);
+        return make(root.k, root.d, newLeft, root.r);
     } else if (comparison > 0) {
-        const newRight = treeUpdateByMapping(root.r, time, mapper, make, copy, comparator);
+        const newRight = treeUpdateByMapping(root.r, time, mapper, make, comparator);
         // if nothing happened, don't make a new node
         if (newRight === root.r) return root;
-        return copy(root, root.l, newRight);
+        return make(root.k, root.d, root.l, newRight);
     } else {
-        const newData = mapper(root.d);
-        if (root.d === newData) return root;
-        return make(root.t, newData, root.l, root.r);
+        const { k: newKey, d: newData } = mapper(root.k, root.d);
+        if (root.k === newKey && root.d === newData) return root;
+        return make(root.k, newData, root.l, root.r);
     }
 }
 
@@ -154,21 +152,21 @@ export function inOrderPredecessor<N extends AVLNode<any, any>>(n: N): N | null 
 export function treeRemove<N extends AVLNode<K, D>, D, K>(
     root: N | null,
     time: K,
-    copy: NodeCopier<N>,
+    make: NodeMaker<N, D, K>,
     comparator: Comparator<K>
 ): N | null {
     if (!root) return null;
-    const comparison = comparator(time, root.t as any);
+    const comparison = comparator(time, root.k as any);
     if (comparison < 0) {
-        const newLeft = treeRemove(root.l, time, copy, comparator);
+        const newLeft = treeRemove(root.l, time, make, comparator);
         // if nothing happened, don't make a new node
         if (newLeft === root.l) return root;
-        return rebalance(copy(root, newLeft, root.r), copy);
+        return rebalance(make(root.k, root.d, newLeft, root.r), make);
     } else if (comparison > 0) {
-        const newRight = treeRemove(root.r, time, copy, comparator);
+        const newRight = treeRemove(root.r, time, make, comparator);
         // if nothing happened, don't make a new node
         if (newRight === root.r) return root;
-        return rebalance(copy(root, root.l, newRight), copy);
+        return rebalance(make(root.k, root.d, root.l, newRight), make);
     } else {
         // delete this node
         if (!root.l && !root.r) return null;
@@ -176,7 +174,7 @@ export function treeRemove<N extends AVLNode<K, D>, D, K>(
         if (!root.r) return root.l;
         // two children: replace with in-order successor (min of right)
         const next = leftmostLeaf(root.r);
-        return rebalance(copy(next, root.l, treeRemove(root.r, next.t as any, copy, comparator)), copy);
+        return rebalance(make(next.k, next.d, root.l, treeRemove(root.r, next.k, make, comparator)), make);
     }
 }
 
@@ -189,7 +187,7 @@ export function treeRemove<N extends AVLNode<K, D>, D, K>(
  */
 export function treeSearch<T extends AVLNode<K, D>, D, K>(root: T | null, time: K, comparator: Comparator<K>): T | null {
     while (root) {
-        const comparison = comparator(time, root.t as any);
+        const comparison = comparator(time, root.k as any);
         if (comparison === 0) return root;
         root = comparison < 0 ? root.l : root.r;
     }
@@ -218,9 +216,9 @@ export function treeMap<T extends AVLNode<any, any>>(root: T | null, fn: (data: 
  */
 export function treeGetInRange<T extends AVLNode<K, any>, K>(root: T | null, start: K, end: K, out: T[] = [], comparator: Comparator<K>): T[] {
     if (root) {
-        if (comparator(start, root.t) <= 0) treeGetInRange(root.l, start, end, out, comparator);
-        if (between(root.t, start, end, comparator)) out.push(root);
-        if (comparator(root.t, end) <= 0) treeGetInRange(root.r, start, end, out, comparator);
+        if (comparator(start, root.k) <= 0) treeGetInRange(root.l, start, end, out, comparator);
+        if (between(root.k, start, end, comparator)) out.push(root);
+        if (comparator(root.k, end) <= 0) treeGetInRange(root.r, start, end, out, comparator);
     }
     return out;
 }
@@ -237,7 +235,7 @@ export function treeGetBookends<T extends AVLNode<K, any>, K>(tree: T | null, ti
     var right: T | null = null;
 
     while (tree !== null) {
-        const comparison = comparator(time, tree.t as any);
+        const comparison = comparator(time, tree.k as any);
         if (comparison === 0) {
             // exact match
             left = tree;

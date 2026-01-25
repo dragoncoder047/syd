@@ -1,5 +1,5 @@
 import { max, min } from "../math";
-import { AVLNode, combinedHeight, Comparator, NodeCopier, NodeMaker, numberComparator } from "./avl";
+import { AVLNode, combinedHeight, Comparator, NodeMaker, compareNumbers } from "./avl";
 
 
 export interface IntervalNode<T> extends AVLNode<number, [T, end: number]> {
@@ -9,18 +9,11 @@ export interface IntervalNode<T> extends AVLNode<number, [T, end: number]> {
     readonly y: number;
 }
 export const makeIntervalNode = (<T>(time: number, dataAndEnd: [T, number], left: IntervalNode<T> | null, right: IntervalNode<T> | null): IntervalNode<T> => ({
-    t: time, d: dataAndEnd, l: left, r: right,
+    k: time, d: dataAndEnd, l: left, r: right,
     h: combinedHeight(left, right),
     x: min(time, left?.x ?? Infinity, right?.x ?? Infinity),
     y: max(dataAndEnd[1], left?.y ?? -Infinity, right?.y ?? -Infinity),
 })) satisfies NodeMaker<IntervalNode<any>, [any, number], any>;
-
-export const cloneIntervalNode = (<T>({ t, d }: IntervalNode<T>, left: IntervalNode<T> | null, right: IntervalNode<T> | null): IntervalNode<T> => ({
-    t, d, l: left, r: right,
-    x: min(t, left?.x ?? Infinity, right?.x ?? Infinity),
-    y: max(d[1], left?.y ?? -Infinity, right?.y ?? -Infinity),
-    h: combinedHeight(left, right)
-})) satisfies NodeCopier<IntervalNode<any>>;
 
 /**
  * Find all of the data that intersects with the range
@@ -39,13 +32,13 @@ export function intervalQuery<T>(
     const stack: IntervalNode<T>[] = [];
     if (root) stack.push(root);
     while (stack.length) {
-        const { t: nStart, d: [data, nEnd], l: left, r: right } = stack.pop()!;
+        const { k: nStart, d: [data, nEnd], l: left, r: right } = stack.pop()!;
         // if the current node touches the interval, save it
-        if (intervalsIntersect(start, end, nStart, nEnd, numberComparator)) out.push(data);
+        if (intervalsIntersect(start, end, nStart, nEnd, compareNumbers)) out.push(data);
         // if the left tree exists and its span is in the interval, check it
-        if (left && intervalsIntersect(start, end, left.x, left.y, numberComparator)) stack.push(left);
+        if (left && intervalsIntersect(start, end, left.x, left.y, compareNumbers)) stack.push(left);
         // if the right tree exists and its span is in the interval, check it
-        if (right && intervalsIntersect(start, end, right.x, right.y, numberComparator)) stack.push(right);
+        if (right && intervalsIntersect(start, end, right.x, right.y, compareNumbers)) stack.push(right);
     }
     return out;
 }

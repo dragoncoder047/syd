@@ -8,8 +8,8 @@ type SectionName = string;
 type InstrumentName = string;
 type ChannelName = string;
 
-type BPM = number;
-export type TempoTrack = EventSequence<BPM>;
+type BPMControlPoint = [number, number];
+export type TempoTrack = EventSequence<BPMControlPoint>;
 
 export interface Song {
     metadata: SongMetadata;

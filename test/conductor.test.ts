@@ -5,8 +5,8 @@ import { TempoTrack } from "../src/songFormat";
 
 test("maintain beat position when tempo is hot-swapped", () => {
     const conductor = new Conductor(createTempoTreeState([
-        { delta: 0, data: 120 },
-        { delta: 32, data: 120 }
+        { delta: 0, data: [120, 120] },
+        { delta: 32, data: [120, 120] }
     ]));
 
     // Seek to beat 16
@@ -17,8 +17,8 @@ test("maintain beat position when tempo is hot-swapped", () => {
 
     // Hot-swap to 240 BPM
     conductor.state = createTempoTreeState([
-        { delta: 0, data: 240 },
-        { delta: 32, data: 240 }
+        { delta: 0, data: [240, 240] },
+        { delta: 32, data: [240, 240] }
     ]);
 
     // Beat position should be preserved
@@ -29,8 +29,8 @@ test("maintain beat position when tempo is hot-swapped", () => {
 
 test("handles multiple hot-swaps", () => {
     const conductor = new Conductor(createTempoTreeState([
-        { delta: 0, data: 120 },
-        { delta: 32, data: 120 }
+        { delta: 0, data: [120, 120] },
+        { delta: 32, data: [120, 120] }
     ]));
 
     // Seek to beat 10
@@ -39,16 +39,16 @@ test("handles multiple hot-swaps", () => {
 
     // Swap to 240 BPM
     conductor.state = createTempoTreeState([
-        { delta: 0, data: 240 },
-        { delta: 32, data: 240 }
+        { delta: 0, data: [240, 240] },
+        { delta: 32, data: [240, 240] }
     ]);
     expect(conductor.beatPos).toEqual(10);
     expect(conductor.curBPM).toEqual(240);
 
     // Swap to 60 BPM
     conductor.state = createTempoTreeState([
-        { delta: 0, data: 60 },
-        { delta: 32, data: 60 }
+        { delta: 0, data: [60, 60] },
+        { delta: 32, data: [60, 60] }
     ]);
     expect(conductor.beatPos).toEqual(10);
     expect(conductor.curBPM).toEqual(60);
@@ -56,8 +56,8 @@ test("handles multiple hot-swaps", () => {
 
 test("works with complex tempo patterns after hot-swap", () => {
     const conductor = new Conductor(createTempoTreeState([
-        { delta: 0, data: 120 },
-        { delta: 32, data: 120 }
+        { delta: 0, data: [120, 120] },
+        { delta: 32, data: [120, 120] }
     ]));
 
     // Seek to beat 16
@@ -65,14 +65,12 @@ test("works with complex tempo patterns after hot-swap", () => {
 
     // Hot-swap to complex pattern
     const complexTempo: TempoTrack = [
-        { delta: 0, data: 100 },
-        { delta: 16, data: 100 },
-        { delta: 16, data: 150 },
-        { delta: 0, data: 120 },
-        { delta: 32, data: 120 },
-        { delta: 64, data: 120 },
-        { delta: 0, data: 90 },
-        { delta: 32, data: 90 }
+        { delta: 0, data: [100, 100] },
+        { delta: 16, data: [100, 100] },
+        { delta: 16, data: [150, 120] },
+        { delta: 32, data: [120, 120] },
+        { delta: 64, data: [120, 90] },
+        { delta: 32, data: [90, 90] }
     ];
     conductor.state = createTempoTreeState(complexTempo);
 
@@ -84,14 +82,14 @@ test("works with complex tempo patterns after hot-swap", () => {
 
 test("hot-swapping and then seeking doesn't crash", () => {
     const conductor = new Conductor(createTempoTreeState([
-        { delta: 0, data: 120 },
-        { delta: 32, data: 120 }
+        { delta: 0, data: [120, 120] },
+        { delta: 32, data: [120, 120] }
     ]));
 
     // Hot-swap
     conductor.state = createTempoTreeState([
-        { delta: 0, data: 240 },
-        { delta: 32, data: 240 }
+        { delta: 0, data: [240, 240] },
+        { delta: 32, data: [240, 240] }
     ]);
 
     // Should be able to seek without errors
@@ -101,8 +99,8 @@ test("hot-swapping and then seeking doesn't crash", () => {
 
 test("advances beat position based on tempo", () => {
     const conductor = new Conductor(createTempoTreeState([
-        { delta: 0, data: 120 },
-        { delta: 32, data: 120 }
+        { delta: 0, data: [120, 120] },
+        { delta: 32, data: [120, 120] }
     ]));
 
     conductor.beatPos = 10;
@@ -113,8 +111,8 @@ test("advances beat position based on tempo", () => {
 
     // Hot-swap to 240 BPM
     conductor.state = createTempoTreeState([
-        { delta: 0, data: 240 },
-        { delta: 32, data: 240 }
+        { delta: 0, data: [240, 240] },
+        { delta: 32, data: [240, 240] }
     ]);
 
     // Should have updated BPM
@@ -127,8 +125,8 @@ test("advances beat position based on tempo", () => {
 
 test("maintains beat position during hot-swap with advance", () => {
     const conductor = new Conductor(createTempoTreeState([
-        { delta: 0, data: 120 },
-        { delta: 32, data: 120 }
+        { delta: 0, data: [120, 120] },
+        { delta: 32, data: [120, 120] }
     ]));
 
     conductor.beatPos = 5;
@@ -137,8 +135,8 @@ test("maintains beat position during hot-swap with advance", () => {
 
     // Hot-swap
     conductor.state = createTempoTreeState([
-        { delta: 0, data: 240 },
-        { delta: 32, data: 240 }
+        { delta: 0, data: [240, 240] },
+        { delta: 32, data: [240, 240] }
     ]);
 
     // Beat position preserved

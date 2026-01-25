@@ -3,8 +3,8 @@ import { beatToTime, createTempoTreeState, getBPMAtBeat, timeToBeat } from "../s
 
 test("handles constant tempo", () => {
     const state = createTempoTreeState([
-        { delta: 0, data: 120 },
-        { delta: 32, data: 120 }
+        { delta: 0, data: [120, 120] },
+        { delta: 32, data: [120, 120] }
     ]);
 
     // At 120 BPM, 1 beat = 0.5 seconds
@@ -17,10 +17,9 @@ test("handles constant tempo", () => {
 
 test("handles step tempo changes", () => {
     const state = createTempoTreeState([
-        { delta: 0, data: 120 },
-        { delta: 32, data: 120 },
-        { delta: 0, data: 240 },
-        { delta: 32, data: 240 }
+        { delta: 0, data: [120, 120] },
+        { delta: 32, data: [120, 240] },
+        { delta: 32, data: [240, 240] }
     ]);
 
     // First 32 beats at 120 BPM = 16 seconds
@@ -36,8 +35,8 @@ test("handles step tempo changes", () => {
 
 test("handles linear tempo ramps", () => {
     const state = createTempoTreeState([
-        { delta: 0, data: 120 },
-        { delta: 32, data: 240 }
+        { delta: 0, data: [120, 120] },
+        { delta: 32, data: [240, 240] }
     ]);
 
     // Round-trip lookup
@@ -54,8 +53,8 @@ test("handles linear tempo ramps", () => {
 
 test("can get BPM at any beat position", () => {
     const state = createTempoTreeState([
-        { delta: 0, data: 100 },
-        { delta: 100, data: 200 }
+        { delta: 0, data: [100, 100] },
+        { delta: 100, data: [200, 200] }
     ]);
 
     // At start, should be 100 BPM
@@ -70,12 +69,12 @@ test("can get BPM at any beat position", () => {
 
 test("handles complex tempo patterns", () => {
     const state = createTempoTreeState([
-        { delta: 0, data: 100 },
-        { delta: 16, data: 100 },
-        { delta: 16, data: 150 },
-        { delta: 32, data: 120 },
-        { delta: 64, data: 120 },
-        { delta: 32, data: 90 }
+        { delta: 0, data: [100, 100] },
+        { delta: 16, data: [100, 100] },
+        { delta: 16, data: [150, 150] },
+        { delta: 32, data: [120, 120] },
+        { delta: 64, data: [120, 120] },
+        { delta: 32, data: [90, 90] }
     ]);
 
     // Verify roundtripping at various points

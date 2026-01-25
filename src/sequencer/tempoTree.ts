@@ -1,73 +1,65 @@
 import { exp, ln } from "../math/math";
-import { AVLNode, leftmostLeaf, treeGetBookends, treeInsertOrUpdate, Comparator, numberComparator } from "../math/tree/avl";
-import { cloneTreeNode, makeTreeNode } from "../math/tree/tree";
+import { AVLNode, Comparator, NodeMaker, combinedHeight, compareNumbers, treeInsertOrUpdate } from "../math/tree/avl";
 import { TempoTrack } from "../songFormat";
 
 /**
- * Precomputed data for a single tempo segment.
- * 
- * These are stored in an AVL tree at their beat positions;
- * on their own they form a doubly linked list.
- * 
  * Each point represents the boundary between two regions of
  * smooth tempo interpolation. If l != r, the tempo does a
  * step change at this control point.
  */
 export interface TempoControlPoint {
-    /** Absolute beat position */
-    t: number;
     /** BPM on left side of point */
-    l: number;
+    readonly l: number;
     /** BPM on right side of point */
-    r: number;
-    /** Previous point */
-    p: TempoControlPoint | null;
-    /** Next point */
-    n: TempoControlPoint | null;
-    /** Duration since previous point in seconds (precalculated for speed) */
-    d: number;
+    readonly r: number;
 }
 
-export type TempoTreeNode = AVLNode<TempoControlPoint, null>;
+export interface TempoTreeNode extends AVLNode<number, TempoControlPoint> {
+    /** Subtree span in beats */
+    readonly len: number;
+    /** Subtree span in seconds */
+    readonly lenSec: number;
+    /** rightmost child t in beats */
+    readonly rb: number;
+    /** leftmost child t in beats */
+    readonly lb: number;
+    /** Rightmost child's right bpm */
+    readonly rr: number;
+    /** Leftmost child's left bpm */
+    readonly ll: number;
+}
 
-export const compareTempoTreeNodes: Comparator<TempoControlPoint> = (a, b) => numberComparator(a.t, b.t);
+export const createTempoTreeNode: NodeMaker<TempoTreeNode, TempoControlPoint, number> = (t, pt, left, right) => {
+    return {
+        k: t,
+        d: pt,
+        l: left,
+        r: right,
+        h: combinedHeight(left, right),
+        len: (left?.len ?? 0) + (right?.len ?? 0) + ((right?.lb ?? t) - (left?.rb ?? t)),
+        rb: right?.rb ?? t,
+        lb: left?.lb ?? t,
+        rr: right?.rr ?? pt.r,
+        ll: left?.ll ?? pt.l,
+        lenSec: (left?.lenSec ?? 0) + (right?.lenSec ?? 0) + (left && right ? segmentBeatNumberToTime(right.lb - left.rb, left.rr, right.ll, right.lb - left.rb) : right ? segmentBeatNumberToTime(right.k - t, pt.r, right.ll, right.k - t) : left ? segmentBeatNumberToTime(t - left.k, left.rr, pt.l, t - left.k) : 0),
+    }
+}
 
 export function createTempoTreeState(baseTrack: TempoTrack): TempoTreeNode | null {
     if (baseTrack.length < 2) return null;
     if (baseTrack[0]!.delta !== 0) throw new Error("first delta must be zero to set the initial tempo");
     var beatPos = 0;
-    var prevBPM = baseTrack[0]!.data;
+    var prevBPM = baseTrack[0]!.data[1];
     var tree: TempoTreeNode | null = null;
     var prevPt: TempoControlPoint | null = null;
 
-    for (var { delta, data } of baseTrack.slice(1)) {
-        if (delta === 0) {
-            // Instantaneous tempo change: modify the previous point's right BPM
-            if (prevPt) prevPt.r = data;
-        } else {
-            // Normal segment: add a new control point
-            const durationSeconds = segmentBeatNumberToTime(delta, prevBPM, data, delta);
-            const nextPt: TempoControlPoint = {
-                t: beatPos,
-                l: prevBPM,
-                r: data,
-                p: prevPt,
-                n: null,
-                d: durationSeconds,
-            };
-            if (prevPt) prevPt.n = nextPt;
-            tree = treeInsertOrUpdate(
-                tree,
-                nextPt,
-                null,
-                makeTreeNode,
-                cloneTreeNode,
-                compareTempoTreeNodes
-            );
-            prevPt = nextPt;
-            beatPos += delta;
-        }
-        prevBPM = data;
+    for (var { delta, data: [left, right] } of baseTrack) {
+        tree = treeInsertOrUpdate(tree, beatPos, {
+            l: left,
+            r: right,
+        }, createTempoTreeNode, compareNumbers);
+        beatPos += delta;
+        prevBPM = right;;
     }
 
     return tree;
@@ -169,23 +161,88 @@ export function timeToBeat(track: TempoTreeNode | null, time: number): number | 
 }
 
 interface SegmentWithOffset {
+    /** Left tempo control point in the segment bounding the requested time or beat */
     l: TempoControlPoint;
+    /** Right tempo control point in the segment bounding the requested time or beat */
     r: TempoControlPoint;
+    /** Length of the segment in beats */
     len: number;
+    /** Accumulated beats since the beginning to the start of the segment */
     ab: number;
+    /** Accumulated seconds since the beginning to the start of the segment */
     at: number;
+}
+
+
+/**
+ * Generic helper to find a segment by traversing the tree.
+ * @param tree The tree to search
+ * @param comparator Returns -1 if searchValue is in left subtree, 0 if in current segment, 1 if in right subtree
+ * @returns The segment and accumulated offsets, or undefined if not found
+ */
+function findSegmentInTree(
+    tree: TempoTreeNode | null,
+    comparator: (node: TempoTreeNode, accumulatedBeat: number, accumulatedTime: number) => -1 | 0 | 1,
+): SegmentWithOffset | undefined {
+    let node = tree;
+    let accumulatedBeat = 0;
+    let accumulatedTime = 0;
+
+    while (node) {
+        const cmp = comparator(node, accumulatedBeat, accumulatedTime);
+
+        if (cmp === -1) {
+            // Search in left subtree
+            node = node.l ?? null;
+        } else if (cmp === 0) {
+            // Found the segment: from this node to its right child
+            const rightChild = node.r;
+            return {
+                l: node.d,
+                r: rightChild?.d ?? node.d,
+                len: rightChild ? (rightChild.lb - node.k) : 0,
+                ab: accumulatedBeat + (node.l?.len ?? 0),
+                at: accumulatedTime + (node.l?.lenSec ?? 0),
+            };
+        } else {
+            // Search in right subtree
+            const segmentLen = (node.rb ?? node.k) - node.k;
+            accumulatedBeat += (node.l?.len ?? 0) + ((node.rb ?? node.k) - (node.lb ?? node.k));
+            accumulatedTime += (node.l?.lenSec ?? 0) + segmentBeatNumberToTime(segmentLen, node.d.r, node.rr ?? node.d.r, segmentLen);
+            node = node.r ?? null;
+        }
+    }
+
+    return undefined;
 }
 
 /** Find segment containing beat with accumulated offsets */
 function findSegmentAndOffsetByBeat(tree: TempoTreeNode | null, beat: number): SegmentWithOffset | undefined {
-    if (!tree) return;
-    throw "TDO";
+    return findSegmentInTree(
+        tree,
+        (node, accBeat, accTime) => {
+            const beatSpan = (node.rb ?? node.k) - (node.lb ?? node.k);
+            const leftBeatLen = node.l?.len ?? 0;
+            if (beat < accBeat + leftBeatLen) return -1;
+            if (beat < accBeat + leftBeatLen + beatSpan) return 0;
+            return 1;
+        },
+    );
 }
 
 /** Find segment containing time with accumulated offsets */
 function findSegmentAndOffsetByTime(tree: TempoTreeNode | null, time: number): SegmentWithOffset | undefined {
-    if (!tree) return;
-    throw "TODO";
+    return findSegmentInTree(
+        tree,
+        (node, accBeat, accTime) => {
+            const beatSpan = (node.rb ?? node.k) - (node.lb ?? node.k);
+            const timeSpan = segmentBeatNumberToTime(beatSpan, node.d.r, node.rr ?? node.d.r, beatSpan);
+            const leftTimeLen = node.l?.lenSec ?? 0;
+            if (time < accTime + leftTimeLen) return -1;
+            if (time < accTime + leftTimeLen + timeSpan) return 0;
+            return 1;
+        },
+    );
 }
 
 /**
