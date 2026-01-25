@@ -49,17 +49,11 @@ export function createTempoTreeState(baseTrack: TempoTrack): TempoTreeNode | nul
     if (baseTrack.length < 2) return null;
     if (baseTrack[0]!.delta !== 0) throw new Error("first delta must be zero to set the initial tempo");
     var beatPos = 0;
-    var prevBPM = baseTrack[0]!.data[1];
     var tree: TempoTreeNode | null = null;
-    var prevPt: TempoControlPoint | null = null;
 
-    for (var { delta, data: [left, right] } of baseTrack) {
-        tree = treeInsertOrUpdate(tree, beatPos, {
-            l: left,
-            r: right,
-        }, createTempoTreeNode, compareNumbers);
+    for (var { delta, data: [l, r] } of baseTrack) {
+        tree = treeInsertOrUpdate(tree, beatPos, { l, r }, createTempoTreeNode, compareNumbers);
         beatPos += delta;
-        prevBPM = right;;
     }
 
     return tree;

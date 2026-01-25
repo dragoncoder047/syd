@@ -1,5 +1,25 @@
 import { expect, test } from "bun:test";
 import { beatToTime, createTempoTreeState, getBPMAtBeat, timeToBeat } from "../src/sequencer/tempoTree";
+import { treeMap } from "../src/math/tree/avl";
+
+test("creates tempo tree correctly", () => {
+    const state = createTempoTreeState([
+        { delta: 0, data: [120, 120] },
+        { delta: 32, data: [120, 120] }
+    ]);
+
+    expect(state).not.toBeNull();
+    expect(state!.len).toEqual(32);
+    expect(state!.lenSec).toEqual(16);
+    expect(state!.lb).toEqual(0);
+    expect(state!.rb).toEqual(32);
+    expect(state!.ll).toEqual(120);
+    expect(state!.rr).toEqual(120);
+
+    const elements: number[] = [];
+    treeMap(state, node => elements.push(node.k));
+    expect(elements).toEqual([0, 32]);
+});
 
 test("handles constant tempo", () => {
     const state = createTempoTreeState([
@@ -40,10 +60,10 @@ test("handles linear tempo ramps", () => {
     ]);
 
     // Round-trip lookup
-    expect(timeToBeat(state, beatToTime(state, 32))).toEqual(32);
+    expect(timeToBeat(state, beatToTime(state, 32)!)).toEqual(32);
 
     // Check midpoint (beat 16)
-    const timeMidRamp = beatToTime(state, 16);
+    const timeMidRamp = beatToTime(state, 16)!;
     expect(timeMidRamp).toEqual(6);
 
     // round-trip at midpoint
@@ -80,7 +100,7 @@ test("handles complex tempo patterns", () => {
     // Verify roundtripping at various points
     const testBeats = [0, 16, 32, 64, 128, 160];
     for (const beat of testBeats) {
-        expect(timeToBeat(state, beatToTime(state, beat))).toEqual(beat);
+        expect(timeToBeat(state, beatToTime(state, beat)!)).toEqual(beat);
     }
 
     // Verify BPM transitions
