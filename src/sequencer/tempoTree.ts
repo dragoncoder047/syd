@@ -184,6 +184,7 @@ function findSegmentInTree(
     tree: TempoTreeNode | null,
     comparator: (node: TempoTreeNode, accumulatedBeat: number, accumulatedTime: number) => -1 | 0 | 1,
 ): SegmentWithOffset | undefined {
+    // This function may be bugged.
     let node = tree;
     let accumulatedBeat = 0;
     let accumulatedTime = 0;
@@ -221,6 +222,7 @@ function findSegmentAndOffsetByBeat(tree: TempoTreeNode | null, beat: number): S
     return findSegmentInTree(
         tree,
         (node, accBeat, accTime) => {
+            // This function may be bugged.
             const beatSpan = (node.rb ?? node.k) - (node.lb ?? node.k);
             const leftBeatLen = node.l?.len ?? 0;
             if (beat < accBeat + leftBeatLen) return -1;
@@ -235,6 +237,7 @@ function findSegmentAndOffsetByTime(tree: TempoTreeNode | null, time: number): S
     return findSegmentInTree(
         tree,
         (node, accBeat, accTime) => {
+            // This function may be bugged.
             const beatSpan = (node.rb ?? node.k) - (node.lb ?? node.k);
             const timeSpan = segmentBeatNumberToTime(beatSpan, node.d.r, node.rr ?? node.d.r, beatSpan);
             const leftTimeLen = node.l?.lenSec ?? 0;
