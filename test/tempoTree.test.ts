@@ -8,6 +8,8 @@ test("creates tempo tree correctly", () => {
         { delta: 32, data: [120, 120] }
     ]);
 
+    console.log(state);
+
     expect(state).not.toBeNull();
     expect(state!.len).toEqual(32);
     expect(state!.lenSec).toEqual(16);

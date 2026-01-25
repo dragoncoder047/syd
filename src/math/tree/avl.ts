@@ -72,7 +72,6 @@ function rebalance<N extends AVLNode<K, D>, D, K>(n: N, make: NodeMaker<N, D, K>
  * @param time The key to insert at (or generic comparable key if comparator provided)
  * @param data The data to insert
  * @param make Function to create new nodes
- * @param copy Function to copy nodes
  * @param comparator Optional comparator function; defaults to numeric comparison
  * @returns The updated tree
  */
@@ -83,7 +82,7 @@ export function treeInsertOrUpdate<N extends AVLNode<K, D>, D, K = number>(
     make: NodeMaker<N, D, K>,
     comparator: Comparator<K>
 ): N {
-
+    // Reached a null point = insert
     if (!root) return makeLeaf(time, data, make);
 
     const comparison = comparator(time, root.k as any);
@@ -92,7 +91,7 @@ export function treeInsertOrUpdate<N extends AVLNode<K, D>, D, K = number>(
     } else if (comparison > 0) {
         return rebalance(make(root.k, root.d, root.l, treeInsertOrUpdate(root.r, time, data, make, comparator)), make);
     } else {
-        // found it, replace the data
+        // found it, update the data
         return make(root.k, data, root.l, root.r);
     }
 }
@@ -104,7 +103,7 @@ export function treeInsertOrUpdate<N extends AVLNode<K, D>, D, K = number>(
  * @param mapper The function to transform the old value into the new value
  * @returns The updated tree
  */
-export function treeUpdateByMapping<N extends AVLNode<K, D>, D, K>(root: N | null, time: K, mapper: (k: K, d: D) => { k: K, d: D }, make: NodeMaker<N, D, K>, comparator: Comparator<K>): N | null {
+export function treeUpdateByMapping<N extends AVLNode<K, D>, D, K>(root: N | null, time: K, mapper: (d: D) => D, make: NodeMaker<N, D, K>, comparator: Comparator<K>): N | null {
     if (!root) return null;
     const comparison = comparator(time, root.k);
     // No need to rebalance since we're not adding or removing nodes
@@ -119,8 +118,8 @@ export function treeUpdateByMapping<N extends AVLNode<K, D>, D, K>(root: N | nul
         if (newRight === root.r) return root;
         return make(root.k, root.d, root.l, newRight);
     } else {
-        const { k: newKey, d: newData } = mapper(root.k, root.d);
-        if (root.k === newKey && root.d === newData) return root;
+        const newData = mapper(root.d);
+        if (root.d === newData) return root;
         return make(root.k, newData, root.l, root.r);
     }
 }

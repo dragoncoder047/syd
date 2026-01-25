@@ -35,7 +35,7 @@ test("treeUpdateByMapping updates values at specific times", () => {
     }
 
     // Update value at time 5 by doubling it
-    tree = treeUpdateByMapping(tree, 5, (k, d) => ({ k, d: d * 2 }), makeTreeNode, compareNumbers)!;
+    tree = treeUpdateByMapping(tree, 5, d => d * 2, makeTreeNode, compareNumbers)!;
 
     const list: number[] = [];
     treeMap(tree, x => list.push(x.d));
@@ -47,14 +47,14 @@ test("treeUpdateByMapping with no matching time returns original tree", () => {
     tree = treeInsertOrUpdate(tree, 5, 50, makeTreeNode, compareNumbers);
 
 
-    expect(treeUpdateByMapping(tree, 10, (k, d) => ({ k, d: d * 2 }), makeTreeNode, compareNumbers)).toBe(tree);
+    expect(treeUpdateByMapping(tree, 10, d => d * 2, makeTreeNode, compareNumbers)).toBe(tree);
 });
 
 test("treeUpdateByMapping with no change returns original tree", () => {
     var tree: AVLNode<number, number> | null = null;
     tree = treeInsertOrUpdate(tree, 5, 50, makeTreeNode, compareNumbers);
 
-    expect(treeUpdateByMapping(tree, 5, (k, d) => ({ k, d }), makeTreeNode, compareNumbers)).toBe(tree);
+    expect(treeUpdateByMapping(tree, 5, d => d, makeTreeNode, compareNumbers)).toBe(tree);
 });
 
 test("treeRemove removes values from tree", () => {

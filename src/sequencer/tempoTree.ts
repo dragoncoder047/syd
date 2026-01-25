@@ -52,8 +52,8 @@ export function createTempoTreeState(baseTrack: TempoTrack): TempoTreeNode | nul
     var tree: TempoTreeNode | null = null;
 
     for (var { delta, data: [l, r] } of baseTrack) {
-        tree = treeInsertOrUpdate(tree, beatPos, { l, r }, createTempoTreeNode, compareNumbers);
         beatPos += delta;
+        tree = treeInsertOrUpdate(tree, beatPos, { l, r }, createTempoTreeNode, compareNumbers);
     }
 
     return tree;
