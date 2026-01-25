@@ -17,6 +17,15 @@ const double: Edit<number> = {
     repeatable: true,
 }
 
+const log: Edit<number> = {
+    doIt(n) {
+        console.log("log:", n);
+        return n;
+    },
+    trivial: true,
+    repeatable: true,
+}
+
 test("undo redo", () => {
     const doc = new UndoRedo<number>(0);
     doc.doEdit(increment);
@@ -37,4 +46,20 @@ test("undo redo", () => {
     expect(doc.curDoc).toEqual(0);
     expect(() => doc.undo()).not.toThrow();
     expect(doc.curDoc).toEqual(0);
+});
+
+test("undoing trivial edits get batched", () => {
+    const doc = new UndoRedo<number>(0);
+    doc.doEdit(increment);
+    doc.doEdit(double);
+    doc.doEdit(log);
+    doc.doEdit(log);
+    doc.doEdit(double);
+    expect(doc.curDoc).toEqual(4);
+    expect(doc.canUndo).toBeTrue();
+    doc.undo();
+    expect(doc.curDoc).toEqual(2);
+    expect(doc.canUndo).toBeTrue();
+    doc.undo();
+    expect(doc.curDoc).toEqual(1);
 });

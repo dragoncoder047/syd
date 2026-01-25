@@ -285,8 +285,6 @@ test("compile matrix builder input with smash input", () => {
     ])
 });
 test("compile matrix builder input with input from another matrix", () => {
-    // Later on, when the matrix builder node is able to compute that it's
-    // filled with entirely constants, then it will 
     const fragment1: NodeGraph = {
         out: 0,
         nodes: [
