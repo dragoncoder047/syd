@@ -89,13 +89,13 @@ export function compile(graph: NodeGraph, defs: AudioProcessorFactory[]): [Compi
             program.push([Opcode.PUSH_CONSTANT, existIndex >= 0 ? existIndex : (constantTab.push(value) - 1)]);
         },
     };
-    compile(graph.out, 0, -1, 0);
     for (var i = 0; i < graph.nodes.length; i++) {
         if (!outputUsed.has(i)) {
             compile(i, 0, -1, 0);
             program.push([Opcode.DROP_TOP]);
         }
     }
+    compile(graph.out, 0, -1, 0);
     // Renumber CALL_NODE used nodes them to be consecutive
     const usedNodes: (number | undefined)[] = new Array(nodeInfoTab.length).fill(0).map((_, i) => i);
     for (var i = 0; i < nodeInfoTab.length; i++) {

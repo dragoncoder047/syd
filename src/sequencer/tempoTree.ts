@@ -1,5 +1,5 @@
 import { exp, ln } from "../math/math";
-import { AVLNode, Comparator, NodeMaker, combinedHeight, compareNumbers, treeInsertOrUpdate } from "../math/tree/avl";
+import { AVLNode, Comparator, NodeMaker, combinedHeight, compareNumbers, treeGetBookends, treeInsertOrUpdate } from "../math/tree/avl";
 import { TempoTrack } from "../songFormat";
 
 /**
@@ -15,10 +15,10 @@ export interface TempoControlPoint {
 }
 
 export interface TempoTreeNode extends AVLNode<number, TempoControlPoint> {
-    /** Subtree span in beats */
-    readonly len: number;
-    /** Subtree span in seconds */
-    readonly lenSec: number;
+    /** Left subtree span from leftmost to center in seconds */
+    readonly lt: number;
+    /** Right subtree span from center to rightmost in seconds */
+    readonly rt: number;
     /** rightmost child t in beats */
     readonly rb: number;
     /** leftmost child t in beats */
@@ -36,12 +36,12 @@ export const createTempoTreeNode: NodeMaker<TempoTreeNode, TempoControlPoint, nu
         l: left,
         r: right,
         h: combinedHeight(left, right),
-        len: (left?.len ?? 0) + (right?.len ?? 0) + ((right?.lb ?? t) - (left?.rb ?? t)),
         rb: right?.rb ?? t,
         lb: left?.lb ?? t,
         rr: right?.rr ?? pt.r,
         ll: left?.ll ?? pt.l,
-        lenSec: (left?.lenSec ?? 0) + (right?.lenSec ?? 0) + (left && right ? segmentBeatNumberToTime(right.lb - left.rb, left.rr, right.ll, right.lb - left.rb) : right ? segmentBeatNumberToTime(right.k - t, pt.r, right.ll, right.k - t) : left ? segmentBeatNumberToTime(t - left.k, left.rr, pt.l, t - left.k) : 0),
+        lt: left ? left.lt + left.rt + segmentBeatNumberToTime(t - left.rb, left.rr, pt.l, t - left.rb) : 0,
+        rt: right ? right.lt + right.rt + segmentBeatNumberToTime(right.lb - t, pt.r, right.ll, right.lb - t) : 0,
     }
 }
 
@@ -137,9 +137,10 @@ export function segmentTimeToBeatPosition(
 /**
  * Convert beat position to time in seconds using the tree.
  */
-export function beatToTime(track: TempoTreeNode | null, beat: number): number | undefined {
+export function beatToTime(track: TempoTreeNode | null, beat: number): number {
+    if (!track) throw new Error("empty conductor track");
+    if (track.lb > beat || track.rb < beat) throw new Error("beat out of range of track");
     const result = findSegmentAndOffsetByBeat(track, beat);
-    if (!result) return;
     const { l: { r: bpmStart }, r: { l: bpmEnd }, len, ab: accumulatedBeat, at: accumulatedTime } = result;
     return accumulatedTime + segmentBeatNumberToTime(beat - accumulatedBeat, bpmStart, bpmEnd, len);
 }
@@ -147,9 +148,10 @@ export function beatToTime(track: TempoTreeNode | null, beat: number): number | 
 /**
  * Convert time in seconds to beat position using the tree.
  */
-export function timeToBeat(track: TempoTreeNode | null, time: number): number | undefined {
+export function timeToBeat(track: TempoTreeNode | null, time: number): number {
+    if (!track) throw new Error("empty conductor track");
+    if (time < 0 || time > (track.lt + track.rt)) throw new Error("beat out of range of track");
     const result = findSegmentAndOffsetByTime(track, time);
-    if (!result) return;
     const { l: { r: bpmStart }, r: { l: bpmEnd }, len, ab: accumulatedBeat, at: accumulatedTime } = result;
     return accumulatedBeat + segmentTimeToBeatPosition(time - accumulatedTime, bpmStart, bpmEnd, len);
 }
@@ -167,91 +169,53 @@ interface SegmentWithOffset {
     at: number;
 }
 
+function findSegmentHelper(tree: TempoTreeNode, shouldGoLeft: (accumulatedBeat: number, accumulatedTime: number) => boolean): SegmentWithOffset {
+    var left: TempoTreeNode = null as any;
+    var right: TempoTreeNode = null as any;
+    var accumulatedSeconds = 0;
+    var accumulatedBeat = 0;
 
-/**
- * Generic helper to find a segment by traversing the tree.
- * @param tree The tree to search
- * @param comparator Returns -1 if searchValue is in left subtree, 0 if in current segment, 1 if in right subtree
- * @returns The segment and accumulated offsets, or undefined if not found
- */
-function findSegmentInTree(
-    tree: TempoTreeNode | null,
-    comparator: (node: TempoTreeNode, accumulatedBeat: number, accumulatedTime: number) => -1 | 0 | 1,
-): SegmentWithOffset | undefined {
-    // This function may be bugged.
-    let node = tree;
-    let accumulatedBeat = 0;
-    let accumulatedTime = 0;
-
-    while (node) {
-        const cmp = comparator(node, accumulatedBeat, accumulatedTime);
-
-        if (cmp === -1) {
-            // Search in left subtree
-            node = node.l ?? null;
-        } else if (cmp === 0) {
-            // Found the segment: from this node to its right child
-            const rightChild = node.r;
-            return {
-                l: node.d,
-                r: rightChild?.d ?? node.d,
-                len: rightChild ? (rightChild.lb - node.k) : 0,
-                ab: accumulatedBeat + (node.l?.len ?? 0),
-                at: accumulatedTime + (node.l?.lenSec ?? 0),
-            };
+    while (tree) {
+        console.log("loop", left, right, accumulatedBeat, accumulatedSeconds);
+        if (shouldGoLeft(tree.k, accumulatedSeconds + tree.lt)) {
+            tree = (right = tree).l!;
+            console.log("go left");
         } else {
-            // Search in right subtree
-            const segmentLen = (node.rb ?? node.k) - node.k;
-            accumulatedBeat += (node.l?.len ?? 0) + ((node.rb ?? node.k) - (node.lb ?? node.k));
-            accumulatedTime += (node.l?.lenSec ?? 0) + segmentBeatNumberToTime(segmentLen, node.d.r, node.rr ?? node.d.r, segmentLen);
-            node = node.r ?? null;
+            accumulatedSeconds += tree.lt;
+            accumulatedBeat = tree.lb;
+            tree = (left = tree).r!;
+            console.log("go right");
         }
     }
-
-    return undefined;
+    console.log("final", left, right, accumulatedBeat, accumulatedSeconds);
+    return {
+        l: left.d,
+        r: right.d,
+        len: right.k - left.k,
+        ab: accumulatedBeat,
+        at: accumulatedSeconds
+    }
 }
 
 /** Find segment containing beat with accumulated offsets */
-function findSegmentAndOffsetByBeat(tree: TempoTreeNode | null, beat: number): SegmentWithOffset | undefined {
-    return findSegmentInTree(
-        tree,
-        (node, accBeat, accTime) => {
-            // This function may be bugged.
-            const beatSpan = (node.rb ?? node.k) - (node.lb ?? node.k);
-            const leftBeatLen = node.l?.len ?? 0;
-            if (beat < accBeat + leftBeatLen) return -1;
-            if (beat < accBeat + leftBeatLen + beatSpan) return 0;
-            return 1;
-        },
-    );
+function findSegmentAndOffsetByBeat(tree: TempoTreeNode, beat: number): SegmentWithOffset {
+    console.log("find segment by beat", beat);
+    return findSegmentHelper(tree, searchBeat => searchBeat > beat)
 }
 
 /** Find segment containing time with accumulated offsets */
-function findSegmentAndOffsetByTime(tree: TempoTreeNode | null, time: number): SegmentWithOffset | undefined {
-    return findSegmentInTree(
-        tree,
-        (node, accBeat, accTime) => {
-            // This function may be bugged.
-            const beatSpan = (node.rb ?? node.k) - (node.lb ?? node.k);
-            const timeSpan = segmentBeatNumberToTime(beatSpan, node.d.r, node.rr ?? node.d.r, beatSpan);
-            const leftTimeLen = node.l?.lenSec ?? 0;
-            if (time < accTime + leftTimeLen) return -1;
-            if (time < accTime + leftTimeLen + timeSpan) return 0;
-            return 1;
-        },
-    );
+function findSegmentAndOffsetByTime(tree: TempoTreeNode, time: number): SegmentWithOffset {
+    console.log("find segment by time", time);
+    return findSegmentHelper(tree, (_, searchTime) => searchTime > time);
 }
 
 /**
  * Get BPM at a specific beat position using the tree.
  */
-export function getBPMAtBeat(tree: TempoTreeNode | null, beat: number): number | undefined {
+export function getBPMAtBeat(tree: TempoTreeNode | null, beat: number): number {
+    if (!tree) throw new Error("empty conductor track");
+    if (tree.lb > beat || tree.rb < beat) throw new Error("beat out of range of track");
     const result = findSegmentAndOffsetByBeat(tree, beat);
-    if (!result) return undefined;
-
     const { l: { r: bpmStart }, r: { l: bpmEnd }, len, ab: accumulatedBeat } = result;
-    const beatOffset = beat - accumulatedBeat;
-    const beatSpan = len;
-    const progress = beatOffset / beatSpan;
-    return bpmStart + (bpmEnd - bpmStart) * progress;
+    return bpmStart + (bpmEnd - bpmStart) * (beat - accumulatedBeat) / len;
 }

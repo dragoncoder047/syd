@@ -225,8 +225,8 @@ export function treeGetInRange<T extends AVLNode<K, any>, K>(root: T | null, sta
 /**
  * Get the two points immediately to the left and right of the key value
  * @param tree The tree to search
- * @param time The key at which to look (or numeric timestamp if comparator not provided)
- * @param comparator Optional comparator function; defaults to numeric comparison
+ * @param time The key at which to look
+ * @param comparator Comparator function to determine whether to go left or right
  * @returns [left, right] - the nodes on either side
  */
 export function treeGetBookends<T extends AVLNode<K, any>, K>(tree: T | null, time: K, comparator: Comparator<K>): [T | null, T | null] {
@@ -242,12 +242,10 @@ export function treeGetBookends<T extends AVLNode<K, any>, K>(tree: T | null, ti
             break;
         } else if (comparison < 0) {
             // node.t is a candidate successor (strictly > time)
-            right = tree;
-            tree = tree.l;
+            tree = (right = tree).l;
         } else { // comparison > 0
             // node.t is a candidate predecessor (<= time)
-            left = tree;
-            tree = tree.r;
+            tree = (left = tree).r;
         }
     }
     return [left, right];

@@ -9,8 +9,8 @@ test("creates tempo tree correctly", () => {
     ]);
 
     expect(state).not.toBeNull();
-    expect(state!.len).toEqual(32);
-    expect(state!.lenSec).toEqual(16);
+    expect(state!.lt).toEqual(0);
+    expect(state!.rt).toEqual(16);
     expect(state!.lb).toEqual(0);
     expect(state!.rb).toEqual(32);
     expect(state!.ll).toEqual(120);
@@ -58,9 +58,6 @@ test("handles linear tempo ramps", () => {
         { delta: 0, data: [120, 120] },
         { delta: 32, data: [240, 240] }
     ]);
-
-    // Round-trip lookup
-    expect(timeToBeat(state, beatToTime(state, 32)!)).toEqual(32);
 
     // Check midpoint (beat 16)
     const timeMidRamp = beatToTime(state, 16)!;

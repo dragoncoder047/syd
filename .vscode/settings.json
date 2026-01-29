@@ -4,6 +4,7 @@
         "freqz",
         "Iliffe",
         "isinstance",
+        "lerp",
         "Nyquist",
         "treeify",
         "zzfx"
