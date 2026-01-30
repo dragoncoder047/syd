@@ -170,24 +170,24 @@ interface SegmentWithOffset {
 }
 
 function findSegmentHelper(tree: TempoTreeNode, shouldGoLeft: (accumulatedBeat: number, accumulatedTime: number) => boolean): SegmentWithOffset {
-    var left: TempoTreeNode = null as any;
-    var right: TempoTreeNode = null as any;
+    var left: TempoTreeNode = tree;
+    var right: TempoTreeNode = tree;
     var accumulatedSeconds = 0;
     var accumulatedBeat = 0;
 
     while (tree) {
-        console.log("loop", left, right, accumulatedBeat, accumulatedSeconds);
+        // console.log("loop", left, right, accumulatedBeat, accumulatedSeconds);
         if (shouldGoLeft(tree.k, accumulatedSeconds + tree.lt)) {
             tree = (right = tree).l!;
-            console.log("go left");
+            // console.log("go left");
         } else {
             accumulatedSeconds += tree.lt;
             accumulatedBeat = tree.lb;
             tree = (left = tree).r!;
-            console.log("go right");
+            // console.log("go right");
         }
     }
-    console.log("final", left, right, accumulatedBeat, accumulatedSeconds);
+    console.log("final", { ld: left.d, lk: left.k, rd: right.d, rk: right.k, ab: accumulatedBeat, at: accumulatedSeconds });
     return {
         l: left.d,
         r: right.d,
