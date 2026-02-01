@@ -74,13 +74,19 @@ test("can get BPM at any beat position", () => {
         { delta: 100, data: [200, 200] }
     ]);
 
-    // At start, should be 100 BPM
+    // At start
     expect(getBPMAtBeat(state, 0)).toEqual(100);
 
-    // At midpoint of ramp (beat 50), should be 150 BPM
+    // 1/4 of the way through
+    expect(getBPMAtBeat(state, 25)).toEqual(125);
+
+    // At midpoint of ramp
     expect(getBPMAtBeat(state, 50)).toEqual(150);
 
-    // At end of ramp, should be 200 BPM
+    // 3/4 of the way through
+    expect(getBPMAtBeat(state, 75)).toEqual(175);
+
+    // At end of ramp
     expect(getBPMAtBeat(state, 100)).toEqual(200);
 });
 
