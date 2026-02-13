@@ -15,12 +15,6 @@
                 "types": "./src/sydWorklet.ts",
                 "default": "./build/sydWorklet.js"
             }
-        },
-        "./esbuildPlugin": {
-            "import": {
-                "types": "./src/esbuildPlugin/index.ts",
-                "default": "./build/esbuildPlugin/index.js"
-            }
         }
     },
     "scripts": {
