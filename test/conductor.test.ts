@@ -1,10 +1,10 @@
 import { expect, test } from "bun:test";
 import { Conductor } from "../src/sequencer/conductor";
-import { createTempoTreeState } from "../src/sequencer/tempoTree";
+import { createTempoControlState } from "../src/sequencer/tempoController";
 import { TempoTrack } from "../src/songFormat";
 
 test("maintain beat position when tempo is hot-swapped", () => {
-    const conductor = new Conductor(createTempoTreeState([
+    const conductor = new Conductor(createTempoControlState([
         { delta: 0, data: [120, 120] },
         { delta: 32, data: [120, 120] }
     ]));
@@ -16,7 +16,7 @@ test("maintain beat position when tempo is hot-swapped", () => {
     expect(conductor.curBPM).toEqual(120);
 
     // Hot-swap to 240 BPM
-    conductor.state = createTempoTreeState([
+    conductor.state = createTempoControlState([
         { delta: 0, data: [240, 240] },
         { delta: 32, data: [240, 240] }
     ]);
@@ -28,7 +28,7 @@ test("maintain beat position when tempo is hot-swapped", () => {
 });
 
 test("handles multiple hot-swaps", () => {
-    const conductor = new Conductor(createTempoTreeState([
+    const conductor = new Conductor(createTempoControlState([
         { delta: 0, data: [120, 120] },
         { delta: 32, data: [120, 120] }
     ]));
@@ -38,7 +38,7 @@ test("handles multiple hot-swaps", () => {
     expect(conductor.curBPM).toEqual(120);
 
     // Swap to 240 BPM
-    conductor.state = createTempoTreeState([
+    conductor.state = createTempoControlState([
         { delta: 0, data: [240, 240] },
         { delta: 32, data: [240, 240] }
     ]);
@@ -46,7 +46,7 @@ test("handles multiple hot-swaps", () => {
     expect(conductor.curBPM).toEqual(240);
 
     // Swap to 60 BPM
-    conductor.state = createTempoTreeState([
+    conductor.state = createTempoControlState([
         { delta: 0, data: [60, 60] },
         { delta: 32, data: [60, 60] }
     ]);
@@ -55,7 +55,7 @@ test("handles multiple hot-swaps", () => {
 });
 
 test("works with complex tempo patterns after hot-swap", () => {
-    const conductor = new Conductor(createTempoTreeState([
+    const conductor = new Conductor(createTempoControlState([
         { delta: 0, data: [120, 120] },
         { delta: 32, data: [120, 120] }
     ]));
@@ -72,7 +72,7 @@ test("works with complex tempo patterns after hot-swap", () => {
         { delta: 64, data: [120, 90] },
         { delta: 32, data: [90, 90] }
     ];
-    conductor.state = createTempoTreeState(complexTempo);
+    conductor.state = createTempoControlState(complexTempo);
 
     // Beat position preserved
     expect(conductor.beatPos).toEqual(16);
@@ -81,13 +81,13 @@ test("works with complex tempo patterns after hot-swap", () => {
 });
 
 test("hot-swapping and then seeking doesn't crash", () => {
-    const conductor = new Conductor(createTempoTreeState([
+    const conductor = new Conductor(createTempoControlState([
         { delta: 0, data: [120, 120] },
         { delta: 32, data: [120, 120] }
     ]));
 
     // Hot-swap
-    conductor.state = createTempoTreeState([
+    conductor.state = createTempoControlState([
         { delta: 0, data: [240, 240] },
         { delta: 32, data: [240, 240] }
     ]);
@@ -98,7 +98,7 @@ test("hot-swapping and then seeking doesn't crash", () => {
 });
 
 test("advances beat position based on tempo", () => {
-    const conductor = new Conductor(createTempoTreeState([
+    const conductor = new Conductor(createTempoControlState([
         { delta: 0, data: [120, 120] },
         { delta: 32, data: [120, 120] }
     ]));
@@ -110,7 +110,7 @@ test("advances beat position based on tempo", () => {
     expect(conductor.beatPos).toEqual(12);
 
     // Hot-swap to 240 BPM
-    conductor.state = createTempoTreeState([
+    conductor.state = createTempoControlState([
         { delta: 0, data: [240, 240] },
         { delta: 32, data: [240, 240] }
     ]);
@@ -124,7 +124,7 @@ test("advances beat position based on tempo", () => {
 });
 
 test("maintains beat position during hot-swap with advance", () => {
-    const conductor = new Conductor(createTempoTreeState([
+    const conductor = new Conductor(createTempoControlState([
         { delta: 0, data: [120, 120] },
         { delta: 32, data: [120, 120] }
     ]));
@@ -134,7 +134,7 @@ test("maintains beat position during hot-swap with advance", () => {
     expect(conductor.beatPos).toEqual(6);
 
     // Hot-swap
-    conductor.state = createTempoTreeState([
+    conductor.state = createTempoControlState([
         { delta: 0, data: [240, 240] },
         { delta: 32, data: [240, 240] }
     ]);

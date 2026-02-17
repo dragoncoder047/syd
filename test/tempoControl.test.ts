@@ -1,28 +1,34 @@
 import { expect, test } from "bun:test";
-import { beatToTime, createTempoTreeState, getBPMAtBeat, timeToBeat } from "../src/sequencer/tempoTree";
-import { treeMap } from "../src/math/tree/avl";
+import { beatToTime, createTempoControlState, getBPMAtBeat, timeToBeat } from "../src/sequencer/tempoController";
 
 test("creates tempo tree correctly", () => {
-    const state = createTempoTreeState([
+    const state = createTempoControlState([
         { delta: 0, data: [120, 120] },
         { delta: 32, data: [120, 120] }
     ]);
 
-    expect(state).not.toBeNull();
-    expect(state!.lt).toEqual(0);
-    expect(state!.rt).toEqual(16);
-    expect(state!.lb).toEqual(0);
-    expect(state!.rb).toEqual(32);
-    expect(state!.ll).toEqual(120);
-    expect(state!.rr).toEqual(120);
-
-    const elements: number[] = [];
-    treeMap(state, node => elements.push(node.k));
-    expect(elements).toEqual([0, 32]);
+    expect(state).toEqual([
+        {
+            p: {
+                l: 120,
+                r: 120,
+                t: 0,
+            },
+            ts: 0
+        },
+        {
+            p: {
+                l: 120,
+                r: 120,
+                t: 32,
+            },
+            ts: 16
+        }
+    ]);
 });
 
 test("handles constant tempo", () => {
-    const state = createTempoTreeState([
+    const state = createTempoControlState([
         { delta: 0, data: [120, 120] },
         { delta: 32, data: [120, 120] }
     ]);
@@ -36,7 +42,7 @@ test("handles constant tempo", () => {
 });
 
 test("handles step tempo changes", () => {
-    const state = createTempoTreeState([
+    const state = createTempoControlState([
         { delta: 0, data: [120, 120] },
         { delta: 32, data: [120, 240] },
         { delta: 32, data: [240, 240] }
@@ -54,7 +60,7 @@ test("handles step tempo changes", () => {
 });
 
 test("handles linear tempo ramps", () => {
-    const state = createTempoTreeState([
+    const state = createTempoControlState([
         { delta: 0, data: [120, 120] },
         { delta: 32, data: [240, 240] }
     ]);
@@ -69,7 +75,7 @@ test("handles linear tempo ramps", () => {
 });
 
 test("can get BPM at any beat position", () => {
-    const state = createTempoTreeState([
+    const state = createTempoControlState([
         { delta: 0, data: [100, 100] },
         { delta: 100, data: [200, 200] }
     ]);
@@ -91,7 +97,7 @@ test("can get BPM at any beat position", () => {
 });
 
 test("handles complex tempo patterns", () => {
-    const state = createTempoTreeState([
+    const state = createTempoControlState([
         { delta: 0, data: [100, 100] },
         { delta: 16, data: [100, 100] },
         { delta: 16, data: [150, 150] },

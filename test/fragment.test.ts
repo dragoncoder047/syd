@@ -33,7 +33,7 @@ test("unify fragments", () => {
     });
 });
 
-test("compining graph with un-unified input returns an error but uses the default", () => {
+test("compining graph with un-unified input returns an error and uses the default", () => {
     const fragment1: NodeGraph = {
         out: 0,
         nodes: [

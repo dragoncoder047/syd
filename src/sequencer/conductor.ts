@@ -1,4 +1,4 @@
-import { beatToTime, getBPMAtBeat, TempoTreeNode, timeToBeat } from "./tempoTree";
+import { beatToTime, fixAbsoluteTimeMarkers, getBPMAtBeat, TempoControlData, timeToBeat } from "./tempoController";
 
 /**
  * Playback conductor that maintains beat position relative to a tempo tree.
@@ -9,22 +9,20 @@ import { beatToTime, getBPMAtBeat, TempoTreeNode, timeToBeat } from "./tempoTree
  * avoiding precision loss from repeated instantaneous BPM calculations.
  */
 export class Conductor {
-    #state: TempoTreeNode | null;
+    #state: TempoControlData[];
     #bPos: number = 0;
     #curBPM: number = 120;
 
-    constructor(tempoState: TempoTreeNode | null) {
-        this.#state = tempoState;
-        this.#curBPM = getBPMAtBeat(this.#state, 0);
+    constructor(tempoState: TempoControlData[]) {
+        this.#curBPM = getBPMAtBeat(this.#state = fixAbsoluteTimeMarkers(tempoState), this.#bPos);
     }
 
     /** Replace the tempo state (hot-swap). Beat position stays the same. */
-    set state(newState: TempoTreeNode | null) {
-        this.#state = newState;
-        this.#curBPM = getBPMAtBeat(this.#state, this.#bPos);
+    set state(newState: TempoControlData[]) {
+        this.#curBPM = getBPMAtBeat(this.#state = fixAbsoluteTimeMarkers(newState), this.#bPos);
     }
 
-    get state() {
+    get state(): readonly TempoControlData[] {
         return this.#state;
     }
 
