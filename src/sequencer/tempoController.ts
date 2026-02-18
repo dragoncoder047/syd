@@ -139,8 +139,8 @@ export function segmentTimeToBeatPosition(
 export function beatToTime(track: TempoControlData[], beat: number): number {
     if (!track) throw new Error("empty conductor track");
     const first = track[0]!, last = track.at(-1)!;
-    if (first.p.t >= beat) return first.p.l / 60 * (first.p.t - beat); // off the left side
-    if (last.p.t <= beat) return last.p.r / 60 * (beat - last.p.t); // off the right side
+    if (first.p.t >= beat) return first.ts - first.p.l / 60 * (first.p.t - beat); // off the left side
+    if (last.p.t <= beat) return last.ts + last.p.r / 60 * (beat - last.p.t); // off the right side
     const { l: { p: { r: bpmStart, t: accumulatedBeat }, ts: accumulatedTime }, r: { p: { l: bpmEnd, t: nextBeat } } } = findRegion(track, beat, p => p.p.t);
     const len = nextBeat - accumulatedBeat;
     return accumulatedTime + segmentBeatNumberToTime(beat - accumulatedBeat, bpmStart, bpmEnd, len);
@@ -152,8 +152,8 @@ export function beatToTime(track: TempoControlData[], beat: number): number {
 export function timeToBeat(track: TempoControlData[], time: number): number {
     if (!track) throw new Error("empty conductor track");
     const first = track[0]!, last = track.at(-1)!;
-    if (first.ts >= time) return 60 * (first.ts - time) / first.p.l; // off the left side
-    if (last.p.t <= time) return 60 * (time - last.ts) / last.p.l; // off the right side
+    if (first.ts >= time) return first.p.t - 60 * (first.ts - time) / first.p.l; // off the left side
+    if (last.p.t <= time) return last.p.t + 60 * (time - last.ts) / last.p.r; // off the right side
     const { l: { p: { r: bpmStart, t: accumulatedBeat }, ts: accumulatedTime }, r: { p: { l: bpmEnd, t: nextBeat } } } = findRegion(track, time, p => p.ts);
     const len = nextBeat - accumulatedBeat;
     return accumulatedBeat + segmentTimeToBeatPosition(time - accumulatedTime, bpmStart, bpmEnd, len);
