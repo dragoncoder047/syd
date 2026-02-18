@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { beatToTime, createTempoControlState, getBPMAtBeat, timeToBeat } from "../src/sequencer/tempoController";
+import { beatToTime, createTempoControlState, getBPMAtBeat, segmentBeatNumberToTime, timeToBeat } from "../src/sequencer/tempoController";
 
 test("creates tempo tree correctly", () => {
     const state = createTempoControlState([
@@ -67,7 +67,7 @@ test("handles linear tempo ramps", () => {
 
     // Check midpoint (beat 16)
     const timeMidRamp = beatToTime(state, 16)!;
-    expect(timeMidRamp).toEqual(6);
+    expect(timeMidRamp).toEqual(segmentBeatNumberToTime(16, 120, 240, 32));
 
     // round-trip at midpoint
     const beatMid = timeToBeat(state, timeMidRamp);
@@ -117,4 +117,18 @@ test("handles complex tempo patterns", () => {
     expect(getBPMAtBeat(state, 24)).toEqual(125);
     expect(getBPMAtBeat(state, 48)).toEqual(135);
     expect(getBPMAtBeat(state, 64)).toEqual(120);
+});
+
+test("handles data off the ends", () => {
+    const b1 = 1924, b2 = 7462
+    const state = createTempoControlState([
+        { delta: 0, data: [b1, 120] },
+        { delta: 32, data: [120, b2] }
+    ]);
+    expect(getBPMAtBeat(state, -1000)).toEqual(b1);
+    expect(getBPMAtBeat(state, 1000)).toEqual(b2);
+    expect(beatToTime(state, -32)).toEqual(-60 * 32 / b1);
+    for (var i = 0; i < 10; i++) {
+        expect(timeToBeat(state, 16 + i * 1)).toEqual(32 + i * b2 / 60);
+    }
 });

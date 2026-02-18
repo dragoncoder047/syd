@@ -1,5 +1,4 @@
-import { exp, ln } from "../math/math";
-import { AVLNode, NodeMaker, combinedHeight, compareNumbers, treeInsertOrUpdate } from "../math/tree/avl";
+import { abs, exp, ln, max, min } from "../math/math";
 import { TempoTrack } from "../songFormat";
 
 /**
@@ -88,8 +87,9 @@ export function segmentBeatNumberToTime(
         return beatPos * spbStart;
     } else {
         const nms = bpmEnd - bpmStart;
-        const nds = -lenBeats * bpmStart;
-        return 60 * lenBeats * (-ln(nds) + ln(nds - beatPos * nms)) / nms;
+        const nds = lenBeats * bpmStart;
+        // Why the abs()'es fix this I have no idea.
+        return 60 * lenBeats * (-ln(nds) + ln(abs(-nds - beatPos * nms))) / nms;
     }
 }
 
@@ -139,8 +139,8 @@ export function segmentTimeToBeatPosition(
 export function beatToTime(track: TempoControlData[], beat: number): number {
     if (!track) throw new Error("empty conductor track");
     const first = track[0]!, last = track.at(-1)!;
-    if (first.p.t >= beat) return first.ts + first.p.l / 60 * (beat - first.p.t); // off the left side
-    if (last.p.t <= beat) return last.ts + last.p.r / 60 * (beat - last.p.t); // off the right side
+    if (first.p.t >= beat) return first.ts + 60 / first.p.l * (beat - first.p.t); // off the left side
+    if (last.p.t <= beat) return last.ts + 60 / last.p.r * (beat - last.p.t); // off the right side
     const { l: { p: { r: bpmStart, t: accumulatedBeat }, ts: accumulatedTime }, r: { p: { l: bpmEnd, t: nextBeat } } } = findRegion(track, beat, p => p.p.t);
     const len = nextBeat - accumulatedBeat;
     return accumulatedTime + segmentBeatNumberToTime(beat - accumulatedBeat, bpmStart, bpmEnd, len);
@@ -152,8 +152,8 @@ export function beatToTime(track: TempoControlData[], beat: number): number {
 export function timeToBeat(track: TempoControlData[], time: number): number {
     if (!track) throw new Error("empty conductor track");
     const first = track[0]!, last = track.at(-1)!;
-    if (first.ts >= time) return first.p.t + 60 * (time - first.ts) / first.p.l; // off the left side
-    if (last.p.t <= time) return last.p.t + 60 * (time - last.ts) / last.p.r; // off the right side
+    if (first.ts >= time) return first.p.t + first.p.l * (time - first.ts) / 60; // off the left side
+    if (last.ts <= time) return last.p.t + last.p.r * (time - last.ts) / 60; // off the right side
     const { l: { p: { r: bpmStart, t: accumulatedBeat }, ts: accumulatedTime }, r: { p: { l: bpmEnd, t: nextBeat } } } = findRegion(track, time, p => p.ts);
     const len = nextBeat - accumulatedBeat;
     return accumulatedBeat + segmentTimeToBeatPosition(time - accumulatedTime, bpmStart, bpmEnd, len);
@@ -173,32 +173,24 @@ export function getBPMAtBeat(track: TempoControlData[], beat: number): number {
 }
 
 interface SegmentBounds<T> { l: T, r: T }
-
 function findRegion<T>(track: T[], value: number, key: (p: T) => number): SegmentBounds<T> {
-    const top = track.length - 1;
-    var lo = 0, hi = top;
-    while (lo <= hi) {
-        const mid = (lo + hi) >> 1;
-        const k = key(track[mid]!);
-        if (k === value) {
-            // exact match
-            hi = mid;
-            lo = mid + 1;
-            break;
-        }
-
-        if (k < value) lo = mid + 1;
-        else hi = mid - 1;
+    const len = track.length;
+    const lm1 = len - 1;
+    var probe = len >> 1;
+    var step = len >> 2 || 1;
+    for (; step > 0; step >>= 1) {
+        const k = key(track[probe]!);
+        if (k === value) break;
+        probe = k < value ? min(lm1, probe + step) : max(0, probe - step);
     }
-    if (lo >= top) {
-        lo--;
-        hi--;
+    // sanity corrections
+    while (probe > 0 && key(track[probe]!) > value) probe--;
+    while (probe < lm1 && key(track[probe + 1]!) <= value) probe++;
+    return probe === lm1 ? {
+        l: track[lm1 - 1]!,
+        r: track[lm1]!,
+    } : {
+        l: track[probe]!,
+        r: track[probe + 1]!,
     }
-    const result = {
-        l: track[hi]!,
-        r: track[lo]!,
-    };
-    console.log(result);
-    if (key(result.l) > key(result.r)) throw "bad";
-    return result;
 }
