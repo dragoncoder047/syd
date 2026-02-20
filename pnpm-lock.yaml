@@ -11,6 +11,9 @@ importers:
       jsoncrush:
         specifier: ^1.1.8
         version: 1.1.8
+      lib0:
+        specifier: ^0.2.117
+        version: 0.2.117
       microdiff:
         specifier: ^1.5.0
         version: 1.5.0
@@ -272,8 +275,16 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
+  isomorphic.js@0.2.5:
+    resolution: {integrity: sha512-PIeMbHqMt4DnUP3MA/Flc0HElYjMXArsw1qwJZcm9sqR8mq3l8NYizFMty0pWwE/tzIGH3EKK5+jes5mAr85yw==}
+
   jsoncrush@1.1.8:
     resolution: {integrity: sha512-lvIMGzMUA0fjuqwNcxlTNRq2bibPZ9auqT/LyGdlR5hvydJtA/BasSgkx4qclqTKVeTidrJvsS/oVjlTCPQ4Nw==}
+
+  lib0@0.2.117:
+    resolution: {integrity: sha512-DeXj9X5xDCjgKLU/7RR+/HQEVzuuEUiwldwOGsHK/sfAfELGWEyTcf0x+uOvCvK3O2zPmZePXWL85vtia6GyZw==}
+    engines: {node: '>=16'}
+    hasBin: true
 
   microdiff@1.5.0:
     resolution: {integrity: sha512-Drq+/THMvDdzRYrK0oxJmOKiC24ayUV8ahrt8l3oRK51PWt6gdtrIGrlIH3pT/lFh1z93FbAcidtsHcWbnRz8Q==}
@@ -461,7 +472,13 @@ snapshots:
       '@esbuild/win32-ia32': 0.25.5
       '@esbuild/win32-x64': 0.25.5
 
+  isomorphic.js@0.2.5: {}
+
   jsoncrush@1.1.8: {}
+
+  lib0@0.2.117:
+    dependencies:
+      isomorphic.js: 0.2.5
 
   microdiff@1.5.0: {}
 

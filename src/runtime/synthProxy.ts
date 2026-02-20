@@ -1,5 +1,4 @@
 import { Matrix } from "../math/matrix";
-import { str } from "../utils";
 import { Synth } from "./synth";
 
 export function newSynth(context: AudioContext): SynthRPCProxy {
@@ -56,7 +55,7 @@ function makeSynthProxy(audioNode: AudioWorkletNode): SynthRPCProxy {
             };
         },
         set(_, p) {
-            throw new TypeError(`Cannot set property of ProxiedSynth ${str(p)} which is read-only`);
+            throw new TypeError(`Cannot set property of ProxiedSynth ${String(p)} which is read-only`);
         }
     }) as SynthRPCProxy;
 }

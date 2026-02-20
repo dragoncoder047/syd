@@ -46,6 +46,7 @@
     },
     "dependencies": {
         "jsoncrush": "^1.1.8",
+        "lib0": "^0.2.117",
         "microdiff": "^1.5.0"
     }
 }

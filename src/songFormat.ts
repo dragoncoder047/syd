@@ -1,4 +1,4 @@
-import { FragmentGraph } from "./graph/builder";
+import { WidgetGraph } from "./graph/widgetbuilder";
 
 export type EventSequence<T> = { delta: number, data: T }[];
 
@@ -23,7 +23,7 @@ export interface Song {
     timeline: EventSequence<SectionName>;
     sections: SectionData[];
     noteShapes: NoteShape[];
-    postprocess: FragmentGraph;
+    postprocess: WidgetGraph;
 }
 
 export interface SongMetadata {
@@ -49,7 +49,7 @@ export interface Tuning {
 }
 
 export interface InstrumentData extends Named<InstrumentName> {
-    def: FragmentGraph;
+    def: WidgetGraph;
     // TODO: more stuff here
 }
 

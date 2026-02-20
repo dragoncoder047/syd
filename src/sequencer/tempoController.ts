@@ -1,4 +1,5 @@
-import { abs, exp, ln, max, min } from "../math/math";
+import { abs, max, min } from "lib0/math";
+import { exp, ln } from "../math/math";
 import { TempoTrack } from "../songFormat";
 
 /**

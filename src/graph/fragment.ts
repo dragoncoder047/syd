@@ -2,10 +2,13 @@ import { isArray, isNumber, isString } from "../utils";
 import { NodeGraph } from "./types";
 
 export interface NodeFragmentEdge {
+    /** if true, the node inputs a constant value into this fragment input, and from is ignored */
     constant?: boolean;
-    from?: [frag: number, port: string];
+    /** if constant is true, this is the constant value, otherwise ignored */
     value?: number;
-    to: [number, string];
+    /** if constant is false, this is the graph node that produces the output */
+    from?: [frag: number, port: string];
+    to: [frag: number, port: string];
 }
 
 export type GraphFragment = Omit<NodeGraph, "out"> & {

@@ -15,20 +15,7 @@ export const isString = is("string") as (x: any) => x is string;
 export const isArray = Array.isArray;
 // export const isObject = is("object") as (x: any) => x is Record<string, any>;
 
-export const str = JSON.stringify;
-
 var gensymCounter = 0;
 export function gensym(): `$${number}` {
     return `$${gensymCounter++}`;
-}
-
-export function isinstance<C>(obj: any, cls: abstract new (...args: any[]) => C): obj is C {
-    return obj instanceof cls;
-}
-
-const idMap = new WeakMap<Object, number>();
-var idCounter = 0;
-export const globalID = (obj: any): number => {
-    if (!idMap.has(obj)) idMap.set(obj, idCounter++);
-    return idMap.get(obj)!
 }
