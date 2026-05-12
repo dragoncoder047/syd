@@ -1705,17 +1705,17 @@
         {
             "name": "sandbox recorder",
             "samples": [
-                0.30136986301369867,
-                -0.3073972602739726,
-                0.2410958904109589,
-                -0.24712328767123287,
-                0.18082191780821918,
-                -0.18684931506849314,
-                0.12054794520547946,
-                -0.12657534246575342,
-                0.06027397260273973,
-                -0.0663013698630137,
-                0.36164383561643837
+                0.3013698630136987,
+                -0.3073972602739727,
+                0.24109589041095894,
+                -0.24712328767123293,
+                0.1808219178082192,
+                -0.18684931506849323,
+                0.12054794520547947,
+                -0.12657534246575347,
+                0.060273972602739735,
+                -0.06630136986301371,
+                0.3616438356164384
             ]
         },
         {
@@ -1998,11 +1998,11 @@
         {
             "name": "nerdbox unnamed 2",
             "samples": [
-                0.0884923806822577,
+                0.08849238068225769,
                 0.004022380940102622,
-                -0.3982157130701596,
-                0.04424619034112885,
-                -2.4335404687620867,
+                -0.39821571307015957,
+                0.044246190341128845,
+                -2.4335404687620863,
                 -0.031482866204264756
             ]
         },
@@ -8302,6 +8302,85 @@
                 "At $LO, your the envelope will output a 0 to lower envelope bound, and at $HI your envelope will output a 2 to lower envelope bound.",
                 "This settings will not work if your lower envelope bound is higher than your upper envelope bound"
             ]
+        },
+        {
+            "name": "invert wave",
+            "pianoName": "Invert Wave",
+            "maxRawVol": 1,
+            "newNoteVol": 1,
+            "forSong": false,
+            "convertRealFactor": 0,
+            "associatedEffect": "invertWave",
+            "maxIndex": 0,
+            "promptName": "Invert Wave",
+            "promptDesc": [
+                "Allows you to toggle the Invert Wave effect on instruments. Value must be exactly 1 for this to take effect.",
+                "[$LO - $HI]"
+            ]
+        },
+        {
+            "name": "phaser",
+            "pianoName": "Phaser",
+            "maxRawVol": 32,
+            "newNoteVol": 0,
+            "forSong": false,
+            "convertRealFactor": 0,
+            "associatedEffect": "phaser",
+            "maxIndex": 0,
+            "promptName": "Instrument Phaser",
+            "promptDesc": [
+                "This setting controls the Phaser Mix of your insturment, just like the Phaser slider.",
+                "At $LO, your instrument will have no phaser. At $HI, it will be at maximum.",
+                "[OVERWRITING] [$LO - $HI]"
+            ]
+        },
+        {
+            "name": "phaser frequency",
+            "pianoName": "Phaser Frequency",
+            "maxRawVol": 32,
+            "newNoteVol": 0,
+            "forSong": false,
+            "convertRealFactor": 0,
+            "associatedEffect": "phaser",
+            "maxIndex": 0,
+            "promptName": "Phaser Frequency",
+            "promptDesc": [
+                "This setting controls the phaser frequency of your insturment, just like the phaser freq slider.",
+                "At $LO, your instrument will have no phaser freq. At $HI, it will be at maximum.",
+                "[OVERWRITING] [$LO - $HI]"
+            ]
+        },
+        {
+            "name": "phaser feedback",
+            "pianoName": "Phaser Feedback",
+            "maxRawVol": 32,
+            "newNoteVol": 0,
+            "forSong": false,
+            "convertRealFactor": 0,
+            "associatedEffect": "phaser",
+            "maxIndex": 0,
+            "promptName": "Phaser Feedback",
+            "promptDesc": [
+                "This setting controls the phaser feedback of your insturment, just like the phaser feedback slider.",
+                "At $LO, your instrument will have no phaser feedback. At $HI, it will be at maximum.",
+                "[OVERWRITING] [$LO - $HI]"
+            ]
+        },
+        {
+            "name": "phaser stages",
+            "pianoName": "Phaser Stages",
+            "maxRawVol": 32,
+            "newNoteVol": 0,
+            "forSong": false,
+            "convertRealFactor": 0,
+            "associatedEffect": "phaser",
+            "maxIndex": 0,
+            "promptName": "Phaser Stages",
+            "promptDesc": [
+                "This setting controls the number of phaser stages in your insturment, just like the phaser stages slider.",
+                "At $LO, your instrument will have no phaser stages. At $HI, it will be at maximum.",
+                "[OVERWRITING] [$LO - $HI]"
+            ]
         }
     ],
     "envs": [
@@ -8689,6 +8768,50 @@
             "isFilter": false,
             "maxCount": 1,
             "effect": "echo",
+            "compatibleInstruments": null
+        },
+        {
+            "name": "phaserFreq",
+            "computeIndex": "phaserFreq",
+            "displayName": "phaser freq",
+            "perNote": false,
+            "interleave": false,
+            "isFilter": false,
+            "maxCount": 1,
+            "effect": "phaser",
+            "compatibleInstruments": null
+        },
+        {
+            "name": "phaserMix",
+            "computeIndex": "phaserMix",
+            "displayName": "phaser",
+            "perNote": false,
+            "interleave": false,
+            "isFilter": false,
+            "maxCount": 1,
+            "effect": "phaser",
+            "compatibleInstruments": null
+        },
+        {
+            "name": "phaserFeedback",
+            "computeIndex": "phaserFeedback",
+            "displayName": "phaser feedback",
+            "perNote": false,
+            "interleave": false,
+            "isFilter": false,
+            "maxCount": 1,
+            "effect": "phaser",
+            "compatibleInstruments": null
+        },
+        {
+            "name": "phaserStages",
+            "computeIndex": "phaserStages",
+            "displayName": "phaser stages",
+            "perNote": false,
+            "interleave": false,
+            "isFilter": false,
+            "maxCount": 1,
+            "effect": "phaser",
             "compatibleInstruments": null
         }
     ],
