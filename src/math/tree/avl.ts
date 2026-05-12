@@ -1,4 +1,4 @@
-import { max } from "../math";
+import { max } from "lib0/math";
 import { between } from "./interval";
 
 export interface AVLNode<K, D> {
@@ -75,7 +75,7 @@ function rebalance<N extends AVLNode<K, D>, D, K>(n: N, make: NodeMaker<N, D, K>
  * @param comparator Optional comparator function; defaults to numeric comparison
  * @returns The updated tree
  */
-export function treeInsertOrUpdate<N extends AVLNode<K, D>, D, K = number>(
+export function treeInsertOrUpdate<N extends AVLNode<any, any>, D extends N["d"] = N["d"], K extends N["k"] = N["k"]>(
     root: N | null,
     time: K,
     data: D,
@@ -103,7 +103,13 @@ export function treeInsertOrUpdate<N extends AVLNode<K, D>, D, K = number>(
  * @param mapper The function to transform the old value into the new value
  * @returns The updated tree
  */
-export function treeUpdateByMapping<N extends AVLNode<K, D>, D, K>(root: N | null, time: K, mapper: (d: D) => D, make: NodeMaker<N, D, K>, comparator: Comparator<K>): N | null {
+export function treeUpdateByMapping<N extends AVLNode<any, any>, D extends N["d"] = N["d"], K extends N["k"] = N["k"]>(
+    root: N | null,
+    time: K,
+    mapper: (d: D) => D,
+    make: NodeMaker<N, D, K>,
+    comparator: Comparator<K>
+): N | null {
     if (!root) return null;
     const comparison = comparator(time, root.k);
     // No need to rebalance since we're not adding or removing nodes
@@ -148,7 +154,7 @@ export function inOrderPredecessor<N extends AVLNode<any, any>>(n: N): N | null 
  * @param time The time stamp to remove the data of
  * @returns The update tree
  */
-export function treeRemove<N extends AVLNode<K, D>, D, K>(
+export function treeRemove<N extends AVLNode<any, any>, D extends N["d"] = N["d"], K extends N["k"] = N["k"]>(
     root: N | null,
     time: K,
     make: NodeMaker<N, D, K>,
@@ -229,7 +235,7 @@ export function treeGetInRange<T extends AVLNode<K, any>, K>(root: T | null, sta
  * @param comparator Comparator function to determine whether to go left or right
  * @returns [left, right] - the nodes on either side
  */
-export function treeGetBookends<T extends AVLNode<K, any>, K>(tree: T | null, time: K, comparator: Comparator<K>): [T | null, T | null] {
+export function treeGetBookends<T extends AVLNode<any, any>, K extends T["k"]>(tree: T | null, time: K, comparator: Comparator<K>): [T | null, T | null] {
     var left: T | null = null;
     var right: T | null = null;
 

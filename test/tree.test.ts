@@ -98,64 +98,65 @@ describe("remove", () => {
         expect(treeRemove(null, 5, makeTreeNode, compareNumbers)).toBeNull();
     });
 });
+describe("bookends", () => {
+    test("exact match uses the matched as the left of the interval", () => {
+        var tree: AVLNode<number, number> | null = null;
+        var elements = [1, 3, 5, 7, 9];
+        for (var i of elements) {
+            tree = treeInsertOrUpdate(tree, i, i * 10, makeTreeNode, compareNumbers);
+        }
 
-test("treeGetBookends exact match uses the matched as the left of the interval", () => {
-    var tree: AVLNode<number, number> | null = null;
-    var elements = [1, 3, 5, 7, 9];
-    for (var i of elements) {
-        tree = treeInsertOrUpdate(tree, i, i * 10, makeTreeNode, compareNumbers);
-    }
+        const [left, right] = treeGetBookends(tree, 5, compareNumbers);
+        expect(left).not.toBeNull();
+        expect(left!.k).toEqual(5);
+        expect(left!.d).toEqual(50);
+        expect(right).not.toBeNull();
+        expect(right!.k).toEqual(7);
+        expect(right!.d).toEqual(70);
+    });
 
-    const [left, right] = treeGetBookends(tree, 5, compareNumbers);
-    expect(left).not.toBeNull();
-    expect(left!.k).toEqual(5);
-    expect(left!.d).toEqual(50);
-    expect(right).not.toBeNull();
-    expect(right!.k).toEqual(7);
-    expect(right!.d).toEqual(70);
-});
+    test("finds value between nodes", () => {
+        var tree: AVLNode<number, number> | null = null;
+        tree = treeInsertOrUpdate(tree, 1, 10, makeTreeNode, compareNumbers);
+        tree = treeInsertOrUpdate(tree, 5, 50, makeTreeNode, compareNumbers);
+        tree = treeInsertOrUpdate(tree, 9, 90, makeTreeNode, compareNumbers);
 
-test("treeGetBookends finds value between nodes", () => {
-    var tree: AVLNode<number, number> | null = null;
-    tree = treeInsertOrUpdate(tree, 1, 10, makeTreeNode, compareNumbers);
-    tree = treeInsertOrUpdate(tree, 5, 50, makeTreeNode, compareNumbers);
-    tree = treeInsertOrUpdate(tree, 9, 90, makeTreeNode, compareNumbers);
+        const [left, right] = treeGetBookends(tree, 3, compareNumbers);
+        expect(left).not.toBeNull();
+        expect(left!.k).toEqual(1);
+        expect(left!.d).toEqual(10);
+        expect(right).not.toBeNull();
+        expect(right!.k).toEqual(5);
+        expect(right!.d).toEqual(50);
+    });
 
-    const [left, right] = treeGetBookends(tree, 3, compareNumbers);
-    expect(left).not.toBeNull();
-    expect(left!.k).toEqual(1);
-    expect(left!.d).toEqual(10);
-    expect(right).not.toBeNull();
-    expect(right!.k).toEqual(5);
-    expect(right!.d).toEqual(50);
-});
+    test("finds value before all nodes", () => {
+        var tree: AVLNode<number, number> | null = null;
+        tree = treeInsertOrUpdate(tree, 5, 50, makeTreeNode, compareNumbers);
+        tree = treeInsertOrUpdate(tree, 9, 90, makeTreeNode, compareNumbers);
 
-test("treeGetBookends finds value before all nodes", () => {
-    var tree: AVLNode<number, number> | null = null;
-    tree = treeInsertOrUpdate(tree, 5, 50, makeTreeNode, compareNumbers);
-    tree = treeInsertOrUpdate(tree, 9, 90, makeTreeNode, compareNumbers);
+        const [left, right] = treeGetBookends(tree, 1, compareNumbers);
+        expect(left).toBeNull();
+        expect(right).not.toBeNull();
+        expect(right!.k).toEqual(5);
+        expect(right!.d).toEqual(50);
+    });
 
-    const [left, right] = treeGetBookends(tree, 1, compareNumbers);
-    expect(left).toBeNull();
-    expect(right).not.toBeNull();
-    expect(right!.k).toEqual(5);
-    expect(right!.d).toEqual(50);
-});
+    test("finds value after all nodes", () => {
+        var tree: AVLNode<number, number> | null = null;
+        tree = treeInsertOrUpdate(tree, 1, 10, makeTreeNode, compareNumbers);
+        tree = treeInsertOrUpdate(tree, 5, 50, makeTreeNode, compareNumbers);
 
-test("treeGetBookends finds value after all nodes", () => {
-    var tree: AVLNode<number, number> | null = null;
-    tree = treeInsertOrUpdate(tree, 1, 10, makeTreeNode, compareNumbers);
-    tree = treeInsertOrUpdate(tree, 5, 50, makeTreeNode, compareNumbers);
+        const [left, right] = treeGetBookends(tree, 9, compareNumbers);
+        expect(left).not.toBeNull();
+        expect(left!.k).toEqual(5);
+        expect(left!.d).toEqual(50);
+        expect(right).toBeNull();
+    });
 
-    const [left, right] = treeGetBookends(tree, 9, compareNumbers);
-    expect(left).not.toBeNull();
-    expect(left!.k).toEqual(5);
-    expect(left!.d).toEqual(50);
-    expect(right).toBeNull();
-});
-
-test("treeGetBookends on empty tree returns all null", () => {
-    const [left, right] = treeGetBookends(null, 5, compareNumbers);
-    expect(left).toBeNull();
-    expect(right).toBeNull();
+    test("empty tree returns all null", () => {
+        const [left, right] = treeGetBookends(null, 5, compareNumbers);
+        expect(left).toBeNull();
+        expect(right).toBeNull();
+    });
 });

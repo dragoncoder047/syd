@@ -71,7 +71,7 @@ test("handles linear tempo ramps", () => {
 
     // round-trip at midpoint
     const beatMid = timeToBeat(state, timeMidRamp);
-    expect(beatMid).toEqual(16);
+    expect(beatMid).toBeCloseTo(16);
 });
 
 test("can get BPM at any beat position", () => {

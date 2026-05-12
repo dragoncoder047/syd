@@ -1,5 +1,5 @@
-import { max, min } from "../math";
-import { AVLNode, combinedHeight, Comparator, NodeMaker, compareNumbers } from "./avl";
+import { max, min } from "lib0/math";
+import { AVLNode, combinedHeight, Comparator, compareNumbers, NodeMaker } from "./avl";
 
 
 export interface IntervalNode<T> extends AVLNode<number, [T, end: number]> {
@@ -11,8 +11,8 @@ export interface IntervalNode<T> extends AVLNode<number, [T, end: number]> {
 export const makeIntervalNode = (<T>(time: number, dataAndEnd: [T, number], left: IntervalNode<T> | null, right: IntervalNode<T> | null): IntervalNode<T> => ({
     k: time, d: dataAndEnd, l: left, r: right,
     h: combinedHeight(left, right),
-    x: min(time, left?.x ?? Infinity, right?.x ?? Infinity),
-    y: max(dataAndEnd[1], left?.y ?? -Infinity, right?.y ?? -Infinity),
+    x: min(time, min(left?.x ?? Infinity, right?.x ?? Infinity)),
+    y: max(dataAndEnd[1], min(left?.y ?? -Infinity, right?.y ?? -Infinity)),
 })) satisfies NodeMaker<IntervalNode<any>, [any, number], any>;
 
 /**

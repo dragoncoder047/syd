@@ -1,4 +1,4 @@
-import { max } from "./math";
+import { max } from "lib0/math";
 
 export class Matrix {
     /** zero-indexed and stored in row-major order,

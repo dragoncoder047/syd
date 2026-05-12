@@ -1,7 +1,6 @@
 
 export interface SequencerEvent {
     kind: SequencerEventType;
-    isMod: boolean;
     targetInstrument: string | number;
     value: number;
     duration: number;

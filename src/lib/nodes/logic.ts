@@ -1,5 +1,5 @@
-import { AudioProcessor, Dimensions, AudioProcessorFactory } from "../../compiler/nodeDef";
-import { abs } from "../../math/math";
+import { abs } from "lib0/math";
+import { AudioProcessor, AudioProcessorFactory, Dimensions } from "../../compiler/nodeDef";
 import { Matrix, scalarMatrix } from "../../math/matrix";
 import { Synth } from "../../runtime/synth";
 
