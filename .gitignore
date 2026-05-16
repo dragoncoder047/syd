@@ -8,6 +8,9 @@
 # ignore temp beepmods
 beepmods/**
 
+# ignore build
+build/**
+
 
 # python stuff
 **/__pycache__/

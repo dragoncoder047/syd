@@ -18,23 +18,13 @@ const config = {
     sourcemap: true,
     keepNames: true,
     minify: !!opt("-m", false),
-    metafile: true,
     platform: "browser",
     charset: "utf8",
     entryPoints: ["src/index.ts", "src/sydWorklet.ts"],
     format: "esm",
     target: "esnext",
-    treeShaking: true,
     splitting: true,
     outdir,
-    plugins: [
-        {
-            name: "mark_node:_as_external",
-            setup(build) {
-                build.onResolve({ filter: /^node:/ }, () => ({ external: true }))
-            },
-        }
-    ],
 };
 
 if (opt("-w", false)) {

@@ -1,5 +1,5 @@
+import { Matrix, Matrix_copyFrom, Matrix_put, Matrix_setScalar_i, Matrix_smear_i, Matrix_toScalar } from "@r47onfire/game-math";
 import { AudioProcessor } from "../compiler/nodeDef";
-import { Matrix } from "../math/matrix";
 import { Channels } from "./channels";
 import { Opcode, Program } from "./program";
 
@@ -21,8 +21,8 @@ export class ProgramState {
         const nodes = this.n;
         const outSample = this.x;
 
-        const push = (x: Matrix) => (stack[sp++] ??= new Matrix).copyFrom(x);
-        const pushScalar = (x: number) => push(temp.setScalar(x));
+        const push = (x: Matrix) => Matrix_copyFrom(stack[sp++] ??= new Matrix, x);
+        const pushScalar = (x: number) => push(Matrix_setScalar_i(temp, x));
         const pop = () => stack[--sp];
         const peek = () => stack[sp - 1];
         const temp = new Matrix(1, 1);
@@ -47,23 +47,23 @@ export class ProgramState {
                     pop();
                     break;
                 case Opcode.MARK_LIVE_STATE:
-                    alive = !!peek()!.toScalar();
+                    alive = !!Matrix_toScalar(peek()!);
                     break;
                 case Opcode.SMEAR_MATRIX:
-                    peek()!.smear(i1 as number, i2!);
+                    Matrix_smear_i(peek()!, i1 as number, i2!);
                     break;
                 case Opcode.SET_MATRIX_EL:
-                    i = pop()!.toScalar();
-                    peek()!.put(i1 as number, i2!, i);
+                    i = Matrix_toScalar(pop()!);
+                    Matrix_put(peek()!, i1 as number, i2!, i);
                     break;
                 case Opcode.GET_REGISTER:
                     push(registers[i1 as number]!);
                     break;
                 case Opcode.TAP_REGISTER:
-                    registers[i1 as number]!.copyFrom(peek()!);
+                    Matrix_copyFrom(registers[i1 as number]!, peek()!);
                     break;
                 case Opcode.CALL_NODE:
-                    for (i = 0; i < i2!; i++) (argv[i2! - i - 1] ??= new Matrix).copyFrom(pop()!);
+                    for (i = 0; i < i2!; i++) Matrix_copyFrom(argv[i2! - i - 1] ??= new Matrix, pop()!);
                     push(nodes[i1 as number]!(argv, isStartOfBlock, blockProgress));
                     break;
                 case Opcode.GET_CHANNEL:
@@ -71,7 +71,7 @@ export class ProgramState {
                     break;
                 case Opcode.MAYBE_STORE_TO_CHANNEL:
                     var a = pop()!, b = peek()!;
-                    if (a.toScalar() > 0) channels.put(i1 as string, b);
+                    if (Matrix_toScalar(a) > 0) channels.put(i1 as string, b);
                     break;
                 case Opcode.PUSH_WAVE_NUMBER:
                     pushScalar(wavenames[i1 as string]!);
@@ -80,8 +80,9 @@ export class ProgramState {
                     throw new Error(`unimplemented opcode ${Opcode[op]} snuck in...`);
             }
         }
-        outSample.copyFrom(pop()!);
-        if (outSample.rows !== 2 && outSample.cols !== 1) outSample.smear(2, 1);
+        Matrix_copyFrom(outSample, pop()!);
+        if (outSample.rows !== 2 && outSample.cols !== 1) Matrix_smear_i(outSample, 2, 1);
         return alive;
     }
 }
+

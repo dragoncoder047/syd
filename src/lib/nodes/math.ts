@@ -1,5 +1,6 @@
-import { AudioProcessor, Dimensions, AudioProcessorFactory } from "../../compiler/nodeDef";
-import { Matrix } from "../../math/matrix";
+import { Matrix, Matrix_applyBinary, Matrix_fill_i } from "@r47onfire/game-math";
+import { add } from "lib0/math";
+import { AudioProcessor, AudioProcessorFactory, Dimensions } from "../../compiler/nodeDef";
 import { Synth } from "../../runtime/synth";
 
 export class MathNode extends AudioProcessorFactory {
@@ -22,7 +23,7 @@ export class MathNode extends AudioProcessorFactory {
         this.name = "op" + operator;
     }
     make(synth: Synth): AudioProcessor {
-        return inputs => inputs[0]!.applyBinary(this.opFunc, inputs[1]!);
+        return inputs => Matrix_applyBinary(inputs[0]!, this.opFunc, inputs[1]!);
     }
 }
 
@@ -33,9 +34,9 @@ export class MixAllNode extends AudioProcessorFactory {
     make(synth: Synth): AudioProcessor {
         const sum = new Matrix(2, 1);
         return _ => {
-            sum.fill(0);
+            Matrix_fill_i(sum, 0);
             for (var i = 0; i < synth.i.length; i++) {
-                sum.applyBinary((x, y) => x + y, synth.c.get(synth.i[i]!.ocn));
+                Matrix_applyBinary(sum, add, synth.c.get(synth.i[i]!.ocn));
             }
             return sum;
         }

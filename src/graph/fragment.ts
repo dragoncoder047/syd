@@ -1,4 +1,4 @@
-import { isArray, isNumber, isString } from "../utils";
+import { isArray, isNumber, isString } from "lib0/function";
 import { NodeGraph } from "./types";
 
 export interface NodeFragmentEdge {

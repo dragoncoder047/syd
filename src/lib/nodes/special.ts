@@ -1,6 +1,6 @@
+import { Matrix, Matrix_put, Matrix_toScalar } from "@r47onfire/game-math";
 import { AudioProcessorFactory, CompilerCtx, Dimensions, NodeArgs, NodeInputDef, SCALAR_DIMS } from "../../compiler/nodeDef";
 import { NodeInput } from "../../graph/types";
-import { Matrix } from "../../math/matrix";
 import { Opcode, Program } from "../../runtime/program";
 
 export class BuildMatrix extends AudioProcessorFactory {
@@ -40,9 +40,9 @@ export class BuildMatrix extends AudioProcessorFactory {
         for (var i = 0; i < rows; i++) {
             for (var j = 0; j < cols; j++) {
                 const index = j + i * cols;
-                const val = compiler.value(subnodes[index]!);
+                const val: Matrix | null = compiler.value(subnodes[index]!);
                 if (val !== null) {
-                    myMat.put(i, j, val.toScalar());
+                    Matrix_put(myMat, i, j, Matrix_toScalar(val));
                 } else {
                     compiler.compile(subnodes[index]!, index, myNodeNo, computedDefaults[index]!);
                     program.push([Opcode.SET_MATRIX_EL, i, j]);

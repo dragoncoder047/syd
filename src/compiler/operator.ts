@@ -1,3 +1,5 @@
+import { add } from "lib0/math";
+
 export const OPERATORS: Record<string, ((a: number, b: number) => number)> = {
     // interpolate and bitwise AND
     "&": (a, b) => a & b,
@@ -11,7 +13,7 @@ export const OPERATORS: Record<string, ((a: number, b: number) => number)> = {
     "/": (a, b) => a / b,
     "%": (a, b) => a % b,
     // add
-    "+": (a, b) => a + b,
+    "+": add,
     // subtract, negate
     "-": (a, b) => a - b,
     // boolean OR / AND

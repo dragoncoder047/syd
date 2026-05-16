@@ -1,4 +1,4 @@
-import { cos, sin } from "../math";
+import { cos, sin } from "@r47onfire/game-math";
 import { FilterCoefficients } from "./iir";
 
 // blame matlab for the reading on this one

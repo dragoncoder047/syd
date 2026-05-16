@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { AudioProcessorFactory, compile, Dimensions, ErrorReason, NodeGraph, SCALAR_DIMS } from "../src";
 import { BuildMatrix } from "../src/lib/nodes/special";
-import { Matrix, scalarMatrix } from "../src/math/matrix";
+import { Matrix, Matrix_from2DList, Matrix_fromScalar } from "@r47onfire/game-math";
 import { Opcode } from "../src/runtime/program";
 
 test("basic", () => {
@@ -46,7 +46,7 @@ test("basic", () => {
                 [Opcode.CALL_NODE, 0, 2],
                 [Opcode.TAP_REGISTER, 0],
             ],
-            registers: [scalarMatrix(0)],
+            registers: [Matrix_fromScalar(0)],
             constantTab: [],
             nodes: [
                 ["a", { M: 2, N: 3, P: 1, Q: 1 }],
@@ -166,7 +166,7 @@ describe("matrix builder", () => {
                     [Opcode.PUSH_CONSTANT, 0]
                 ],
                 registers: [],
-                constantTab: [Matrix.of2DList([[1, 2, 3], [4, 5, 6]])],
+                constantTab: [Matrix_from2DList([[1, 2, 3], [4, 5, 6]])],
                 nodes: []
             },
             []
@@ -200,8 +200,8 @@ describe("matrix builder", () => {
                     [Opcode.GET_REGISTER, 0],
                     [Opcode.SET_MATRIX_EL, 1, 1],
                 ],
-                registers: [scalarMatrix(0)],
-                constantTab: [Matrix.of2DList([[1, 0, 3], [4, 0, 6]])],
+                registers: [Matrix_fromScalar(0)],
+                constantTab: [Matrix_from2DList([[1, 0, 3], [4, 0, 6]])],
                 nodes: [
                     ["a", {}]
                 ]
@@ -225,7 +225,7 @@ describe("matrix builder", () => {
                     [Opcode.PUSH_CONSTANT, 0],
                 ],
                 registers: [],
-                constantTab: [Matrix.of2DList([[1, 2, 3], [4, 5, 0]])],
+                constantTab: [Matrix_from2DList([[1, 2, 3], [4, 5, 0]])],
                 nodes: []
             },
             [
@@ -264,7 +264,7 @@ describe("matrix builder", () => {
                     [Opcode.SET_MATRIX_EL, 1, 1],
                 ],
                 registers: [],
-                constantTab: [Matrix.of2DList([[1, 1], [1, 0]])],
+                constantTab: [Matrix_from2DList([[1, 1], [1, 0]])],
                 nodes: [
                     ["a", {}]
                 ]
@@ -305,8 +305,8 @@ describe("matrix builder", () => {
                 ],
                 registers: [],
                 constantTab: [
-                    Matrix.of2DList([[1, 1], [1, 0]]),
-                    Matrix.of2DList([[2, 2], [2, 2]]),
+                    Matrix_from2DList([[1, 1], [1, 0]]),
+                    Matrix_from2DList([[2, 2], [2, 2]]),
                 ],
                 nodes: []
             },

@@ -1,5 +1,5 @@
+import { Matrix } from "@r47onfire/game-math";
 import { NodeInput } from "../graph/types";
-import { Matrix } from "../math/matrix";
 import { Opcode, Program } from "../runtime/program";
 import { Synth } from "../runtime/synth";
 

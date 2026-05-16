@@ -1,7 +1,7 @@
+import { Matrix_fromScalar } from "@r47onfire/game-math";
 import { expect, test } from "bun:test";
 import { AudioProcessorFactory, compile, ErrorReason, NodeGraph, SCALAR_DIMS } from "../src";
 import { getFragmentInputs, GraphFragment, NodeFragmentEdge, unifyGraphFragments } from "../src/graph/fragment";
-import { scalarMatrix } from "../src/math/matrix";
 import { Opcode } from "../src/runtime/program";
 
 test("unify fragments", () => {
@@ -61,7 +61,7 @@ test("compining graph with un-unified input returns an error and uses the defaul
                 [Opcode.CALL_NODE, 0, 1],
             ],
             registers: [],
-            constantTab: [scalarMatrix(123)],
+            constantTab: [Matrix_fromScalar(123)],
             nodes: [
                 ["b", {}]
             ]

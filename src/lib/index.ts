@@ -1,8 +1,7 @@
+import { lerpNumber, Matrix, Matrix_applyUnary, Matrix_copyFrom, Matrix_get } from "@r47onfire/game-math";
 import { CompiledGraph } from "../compiler/compile";
 import { AudioProcessorFactory } from "../compiler/nodeDef";
 import { OPERATORS } from "../compiler/operator";
-import { lerp } from "../math/math";
-import { Matrix } from "../math/matrix";
 import { Opcode } from "../runtime/program";
 import { Bitcrusher, DelayLine, Filter } from "./nodes/effects";
 import { WavetableOscillator } from "./nodes/generators";
@@ -40,9 +39,9 @@ export class KRateHelper {
         this.sample = new Matrix(rows, cols);
     }
     nextBlock() {
-        this.prev.copyFrom(this.current);
+        Matrix_copyFrom(this.prev, this.current);
     }
     loadForSample(progress: number) {
-        return this.sample.applyUnary((_, row, col) => lerp(this.prev.get(row, col), this.current.get(row, col), progress));
+        return Matrix_applyUnary(this.sample, (_, row, col) => lerpNumber(Matrix_get(this.prev, row, col), Matrix_get(this.current, row, col), progress));
     }
 }

@@ -14,12 +14,12 @@ export class Conductor {
     #curBPM: number = 120;
 
     constructor(tempoState: TempoControlData[]) {
-        this.#curBPM = getBPMAtBeat(this.#state = fixAbsoluteTimeMarkers(tempoState), this.#bPos);
+        this.#curBPM = getBPMAtBeat(this.#state = fixAbsoluteTimeMarkers(tempoState, 0), this.#bPos);
     }
 
     /** Replace the tempo state (hot-swap). Beat position stays the same. */
     set state(newState: TempoControlData[]) {
-        this.#curBPM = getBPMAtBeat(this.#state = fixAbsoluteTimeMarkers(newState), this.#bPos);
+        this.#curBPM = getBPMAtBeat(this.#state = fixAbsoluteTimeMarkers(newState, 0), this.#bPos);
     }
 
     get state(): readonly TempoControlData[] {

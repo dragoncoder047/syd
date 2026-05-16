@@ -1,4 +1,4 @@
-import { Matrix } from "../math/matrix";
+import { Matrix } from "@r47onfire/game-math";
 import { Synth } from "./synth";
 
 export function newSynth(context: AudioContext): SynthRPCProxy {
@@ -19,7 +19,7 @@ function makeSynthProxy(audioNode: AudioWorkletNode): SynthRPCProxy {
     audioNode.port.onmessage = event => {
         const data: MessageReply = event.data;
         if (data.t) {
-            const resurrected = Object.fromEntries(data.w.map(([k, v]) => [k, Matrix.resurrect(v)]));
+            const resurrected = Object.fromEntries(data.w);
             tickHandlers.forEach(h => h(data.dt, resurrected));
             return;
         }

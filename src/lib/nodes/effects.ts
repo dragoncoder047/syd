@@ -1,8 +1,7 @@
+import { lerpNumber, Matrix, Matrix_applyMulti, Matrix_asColumn, Matrix_copyFrom, Matrix_get, Matrix_put, Matrix_toScalar, TAU } from "@r47onfire/game-math";
 import { KRateHelper } from "..";
 import { AudioProcessor, AudioProcessorFactory, Dimensions, SCALAR_DIMS } from "../../compiler/nodeDef";
 import { allPass1stOrderInvertPhaseAbove, FilterCoefficients, highPass2ndOrderButterworth, highShelf1stOrder, lowPass2ndOrderButterworth, peak2ndOrder } from "../../math/filtering/iir";
-import { lerp, sin, TAU } from "../../math/math";
-import { Matrix } from "../../math/matrix";
 import { Synth } from "../../runtime/synth";
 
 enum FilterType {
@@ -62,10 +61,10 @@ export class Filter extends AudioProcessorFactory {
         return (inputs, start, progress) => {
             if (start) {
                 coefficients.nextBlock();
-                const kind = inputs[1]!.toScalar() as FilterType;
-                const cutoff = inputs[2]!.toScalar();
-                const resonance = inputs[3]!.toScalar();
-                const width = inputs[4]!.toScalar();
+                const kind = Matrix_toScalar(inputs[1]!) as FilterType;
+                const cutoff = Matrix_toScalar(inputs[2]!);
+                const resonance = Matrix_toScalar(inputs[3]!);
+                const width = Matrix_toScalar(inputs[4]!);
                 const cornerRadiansPerSample = TAU * cutoff * synth.dt;
                 filterCoefficientFunctions[kind]!(filterCoefficients, cornerRadiansPerSample, resonance, width)
                 const { a1, a2, b0, b1, b2 } = filterCoefficients;
@@ -75,20 +74,20 @@ export class Filter extends AudioProcessorFactory {
                 cData[4] = a2;
                 cData[5] = b2;
             }
-            const samples = inputs[0]!.asColumn();
+            const samples = Matrix_asColumn(inputs[0]!);
             const params = coefficients.loadForSample(progress).data;
             const b0 = params[1]!;
             const a1 = params[2]!;
             const b1 = params[3]!;
             const a2 = params[4]!;
             const b2 = params[5]!;
-            const out = samples.applyMulti((sample, [x1, x2, y1, y2]) =>
+            const out = Matrix_applyMulti(samples, (sample, [x1, x2, y1, y2]) =>
                 b0 * sample + b1 * x1 + b2 * x2 - a1 * y1 - a2 * y2,
                 historyList, historyNumbers);
-            x2.copyFrom(x1);
-            x1.copyFrom(samples);
-            y2.copyFrom(y1);
-            y1.copyFrom(out);
+            Matrix_copyFrom(x2, x1);
+            Matrix_copyFrom(x1, samples);
+            Matrix_copyFrom(y2, y1);
+            Matrix_copyFrom(y1, out);
             return out;
         }
     }
@@ -112,10 +111,10 @@ export class Bitcrusher extends AudioProcessorFactory {
     make(synth: Synth, sizeVars: { M: number, N: number }): AudioProcessor {
         var phase = 1, last = new Matrix(sizeVars.M, sizeVars.N);
         return inputs => {
-            phase += inputs[1]!.toScalar() * synth.dt;
+            phase += Matrix_toScalar(inputs[1]!) * synth.dt;
             if (phase >= 1) {
                 phase -= (phase | 0);
-                last.copyFrom(inputs[0]!);
+                Matrix_copyFrom(last, inputs[0]!);
             }
             return last;
         }
@@ -145,8 +144,8 @@ export class DelayLine extends AudioProcessorFactory {
         // out: each row is the input channel, each column is the channel delayed by amount
         const outTmp = new Matrix(C, T);
         return inputs => {
-            const inSamples = inputs[0]!.asColumn().data;
-            const delaysTaps = inputs[1]!.asColumn().data;
+            const inSamples = Matrix_asColumn(inputs[0]!).data;
+            const delaysTaps = Matrix_asColumn(inputs[1]!).data;
             var mask = buffer.rows - 1;
             for (var tapIndex = 0; tapIndex < T; tapIndex++) {
                 const delaySamples = delaysTaps[tapIndex]! / synth.dt;
@@ -169,10 +168,10 @@ export class DelayLine extends AudioProcessorFactory {
                 mask = len - 1;
                 for (var channelNo = 0; channelNo < C; channelNo++) {
                     // linear interpolation between samples
-                    const s0 = buffer.get((pos + len - di0) & mask, channelNo);
-                    const s1 = buffer.get((pos + len - di1) & mask, channelNo);
-                    outTmp.put(channelNo, tapIndex, lerp(s0, s1, alpha));
-                    buffer.put(pos, channelNo, inSamples[channelNo]!);
+                    const s0 = Matrix_get(buffer, (pos + len - di0) & mask, channelNo);
+                    const s1 = Matrix_get(buffer, (pos + len - di1) & mask, channelNo);
+                    Matrix_put(outTmp, channelNo, tapIndex, lerpNumber(s0, s1, alpha));
+                    Matrix_put(buffer, pos, channelNo, inSamples[channelNo]!);
                 }
             }
             pos = (pos + 1) & mask;

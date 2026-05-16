@@ -1,5 +1,5 @@
-import { AudioProcessor, Dimensions, AudioProcessorFactory, SCALAR_DIMS } from "../../compiler/nodeDef";
-import { scalarMatrix } from "../../math/matrix";
+import { Matrix_fromScalar, Matrix_setScalar_i, Matrix_toScalar } from "@r47onfire/game-math";
+import { AudioProcessor, AudioProcessorFactory, Dimensions, SCALAR_DIMS } from "../../compiler/nodeDef";
 import { Synth } from "../../runtime/synth";
 
 
@@ -30,13 +30,13 @@ export class WavetableOscillator extends AudioProcessorFactory {
     getOutputDims = () => SCALAR_DIMS;
     make(synth: Synth): AudioProcessor {
         var phase = 0, prevIntegral = 0;
-        const value = scalarMatrix(0);
+        const value = Matrix_fromScalar(0);
         return inputs => {
             var sample = 0;
-            const wantedFrequency = inputs[0]!.toScalar();
-            const wave = synth.w[inputs[1]!.toScalar()];
-            const phaseMod = inputs[2]!.toScalar();
-            const aliasing = inputs[3]!.toScalar() > 0;
+            const wantedFrequency = Matrix_toScalar(inputs[0]!);
+            const wave = synth.w[Matrix_toScalar(inputs[1]!)];
+            const phaseMod = Matrix_toScalar(inputs[2]!);
+            const aliasing = Matrix_toScalar(inputs[3]!) > 0;
             if (wave) {
                 const
                     baseFrequency = wave.b,
@@ -60,7 +60,7 @@ export class WavetableOscillator extends AudioProcessorFactory {
                     prevIntegral = next;
                 }
             }
-            value.setScalar(sample);
+            Matrix_setScalar_i(value, sample);
             return value;
         }
     }

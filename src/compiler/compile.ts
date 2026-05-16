@@ -1,7 +1,7 @@
 import { GraphNode, NodeGraph, NodeInput } from "../graph/types";
-import { Matrix, scalarMatrix } from "../math/matrix";
+import { Matrix, Matrix_equals, Matrix_fromScalar, Matrix_smear_i } from "@r47onfire/game-math";
 import { Opcode, Program } from "../runtime/program";
-import { isArray, isNumber, isString } from "../utils";
+import { isArray, isNumber, isString } from "lib0/function";
 import { AudioProcessorFactory, CompilerCtx, Dimensions, NodeArgs, SCALAR_DIMS } from "./nodeDef";
 
 export interface CompiledGraph {
@@ -52,9 +52,9 @@ export function compile(graph: NodeGraph, defs: AudioProcessorFactory[]): [Compi
                 code: ErrorReason.UNUSED_FRAG_INPUT
             });
             const smear = needsSmeared[parentNode]?.[argNo];
-            const mat = scalarMatrix(default_);
+            const mat = Matrix_fromScalar(default_);
             if (smear) {
-                mat.smear(smear[0]!, smear[1]!);
+                Matrix_smear_i(mat, smear[0]!, smear[1]!);
             }
             context.pushConstant(mat, false);
             return;
@@ -79,13 +79,13 @@ export function compile(graph: NodeGraph, defs: AudioProcessorFactory[]): [Compi
     const context: CompilerCtx = {
         compile,
         value(index) {
-            if (isString(index)) return scalarMatrix(0);
-            if (isArray(index)) return scalarMatrix(index[0]);
+            if (isString(index)) return Matrix_fromScalar(0);
+            if (isArray(index)) return Matrix_fromScalar(index[0]);
             const [name, _, args] = nodeInfoTab[index]!;
             return map[name]!.value(args, context);
         },
         pushConstant(value, forceNew) {
-            const existIndex = forceNew ? -1 : constantTab.findIndex(v => v.equals(value));
+            const existIndex = forceNew ? -1 : constantTab.findIndex(v => Matrix_equals(v, value));
             program.push([Opcode.PUSH_CONSTANT, existIndex >= 0 ? existIndex : (constantTab.push(value) - 1)]);
         },
     };

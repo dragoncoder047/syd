@@ -1,4 +1,5 @@
-import { cos, sin, sqrt, tan } from "../math";
+import { cos, sin, tan } from "@r47onfire/game-math";
+import { sqrt } from "lib0/math";
 
 export class FilterCoefficients {
     a1: number = 0;

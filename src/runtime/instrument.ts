@@ -1,5 +1,5 @@
+import { Matrix, Matrix_fill_i } from "@r47onfire/game-math";
 import { CompiledGraph } from "../compiler/compile";
-import { Matrix } from "../math/matrix";
 import { Channels } from "./channels";
 import { Synth } from "./synth";
 import { Tone } from "./tone";
@@ -46,7 +46,7 @@ export class Instrument {
         var i: number;
         const liveNotes = this.ln, deadNotes = this.dn, liveNoteCount = liveNotes.length;
         const curGain = gainForChord(liveNoteCount);
-        const out = this.x.fill(0), outData = out.data;
+        const out = Matrix_fill_i(this.x, 0), outData = out.data;
         for (i = 0; i < liveNoteCount; i++) {
             const note = liveNotes[i]!;
             const s = note.processSample(true, curGain, channels, isStartOfBlock, blockProgress);

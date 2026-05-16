@@ -1,13 +1,6 @@
-import { abs, max, min, round } from "lib0/math";
-
-export const PI = Math.PI;
-export const TAU = 2 * PI;
-export const sqrt = Math.sqrt;
-export const clamp = (x: number, y: number, z: number) => max(min(x, z), y);
-export const sin = Math.sin;
-export const cos = Math.cos;
+import { clamp, sin, tan, TAU } from "@r47onfire/game-math";
+import { abs, round } from "lib0/math";
 export const sgn = Math.sign;
-export const tan = Math.tan;
 export const ln = Math.log;
 export const exp = Math.exp;
 export const tanW = (x: number) => clamp(tan(x), -1, 1);
@@ -15,4 +8,3 @@ export const saw = (x: number) => 1 - (2 * x / TAU % 2 + 2) % 2;
 export const tri = (x: number) => 1 - 4 * abs(round(x / TAU) - x / TAU);
 export const noise3 = (x: number) => sin(x ** 3);
 export const noise5 = (x: number) => sin(x ** 5);
-export const lerp = (a: number, b: number, progress: number) => a * (1 - progress) + b * progress;

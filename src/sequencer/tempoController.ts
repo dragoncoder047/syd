@@ -137,7 +137,7 @@ export function segmentTimeToBeatPosition(
 /**
  * Convert beat position to time in seconds using the tree.
  */
-export function beatToTime(track: TempoControlData[], beat: number): number {
+export function beatToTime(track: readonly TempoControlData[], beat: number): number {
     if (!track) throw new Error("empty conductor track");
     const first = track[0]!, last = track.at(-1)!;
     if (first.p.t >= beat) return first.ts + 60 / first.p.l * (beat - first.p.t); // off the left side
@@ -150,7 +150,7 @@ export function beatToTime(track: TempoControlData[], beat: number): number {
 /**
  * Convert time in seconds to beat position using the tree.
  */
-export function timeToBeat(track: TempoControlData[], time: number): number {
+export function timeToBeat(track: readonly TempoControlData[], time: number): number {
     if (!track) throw new Error("empty conductor track");
     const first = track[0]!, last = track.at(-1)!;
     if (first.ts >= time) return first.p.t + first.p.l * (time - first.ts) / 60; // off the left side
@@ -163,7 +163,7 @@ export function timeToBeat(track: TempoControlData[], time: number): number {
 /**
  * Get BPM at a specific beat position using the tree.
  */
-export function getBPMAtBeat(track: TempoControlData[], beat: number): number {
+export function getBPMAtBeat(track: readonly TempoControlData[], beat: number): number {
     if (!track) throw new Error("empty conductor track");
     const first = track[0]!, last = track.at(-1)!;
     if (first.p.t >= beat) return first.p.l; // off the left side
@@ -174,7 +174,7 @@ export function getBPMAtBeat(track: TempoControlData[], beat: number): number {
 }
 
 interface SegmentBounds<T> { l: T, r: T }
-function findRegion<T>(track: T[], value: number, key: (p: T) => number): SegmentBounds<T> {
+function findRegion<T>(track: readonly T[], value: number, key: (p: T) => number): SegmentBounds<T> {
     const len = track.length;
     const lm1 = len - 1;
     var probe = len >> 1;

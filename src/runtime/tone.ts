@@ -1,6 +1,5 @@
 import { CompiledGraph } from "../compiler/compile";
 import { AudioProcessor } from "../compiler/nodeDef";
-import { Matrix } from "../math/matrix";
 import { AutomatedValue, AutomatedValueMethod } from "./automation";
 import { Channels } from "./channels";
 import { ProgramState } from "./programState";
@@ -21,7 +20,7 @@ export class Tone {
         this.pitch = new AutomatedValue(pitch, AutomatedValueMethod.EXPONENTIAL);
         this.expression = new AutomatedValue(expression, AutomatedValueMethod.EXPONENTIAL);
         this.nodes = state.nodes.map(([name, dims]) => synth.nt.find(f => f.name === name)!.make(synth, dims));
-        this.impl = new ProgramState(state.code, state.registers.map(r => Matrix.resurrect(r)), this.nodes, state.constantTab);
+        this.impl = new ProgramState(state.code, state.registers, this.nodes, state.constantTab);
     }
     /** HOT CODE */
     processSample(gate: boolean, gain: number, channels: Channels, isStartOfBlock: boolean, blockProgress: number) {
