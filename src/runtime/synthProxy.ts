@@ -19,7 +19,7 @@ function makeSynthProxy(audioNode: AudioWorkletNode): SynthRPCProxy {
     audioNode.port.onmessage = event => {
         const data: MessageReply = event.data;
         if (data.t) {
-            const resurrected = Object.fromEntries(data.w);
+            const resurrected = Object.fromEntries(data.w) as Record<string, Matrix>;
             tickHandlers.forEach(h => h(data.dt, resurrected));
             return;
         }
@@ -37,11 +37,7 @@ function makeSynthProxy(audioNode: AudioWorkletNode): SynthRPCProxy {
         audioNode,
         onTick(cb) {
             tickHandlers.add(cb);
-            return {
-                cancel() {
-                    tickHandlers.delete(cb);
-                }
-            }
+            return () => tickHandlers.delete(cb);
         },
     }, {
         get(target: any, m: keyof SynthRPCProxy) {
@@ -89,8 +85,8 @@ export type MessageReply<T extends SynthMethod = SynthMethod> = {
 
 type ProxyObject = {
     audioNode: AudioWorkletNode;
-    onTick(cb: (dt: number, watchedChannels: Record<string, Matrix>) => void): { cancel(): void };
+    onTick(cb: (dt: number, watchedChannels: Record<string, Matrix>) => void): () => void;
 }
-export type SynthRPCProxy = ProxyObject & {
+export type SynthRPCProxy = Readonly<ProxyObject & {
     [K in SynthMethod]: PromiseFunction<Synth[K]>
-}
+}>;
