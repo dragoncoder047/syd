@@ -1,11 +1,11 @@
 import { Wave } from "../runtime/synth";
-import { ChannelData } from "../songFormat";
-import { GraphFragment, NodeFragmentEdge, OutPort, unifyGraphFragments } from "./fragment";
+import { ChannelData, WidgetGraph } from "../songFormat";
+import { GraphFragment, unifyGraphFragments } from "./fragment";
 
 export interface WidgetBuildResult {
     fragment: GraphFragment;
     waves: Record<string, Promise<Wave>>;
-    channels: ChannelData[]
+    channels: ChannelData[];
 }
 
 export interface Widget {
@@ -16,21 +16,6 @@ export interface Widget {
     /** return the Y-positions of the ports on this node's GUI box.
      * each is a mapping from port name -> Y-position of rendered port */
     getPorts(data: any): { inputs: Record<string, number>, outputs: Record<string, number> };
-}
-
-export interface WidgetGraphNode {
-    name: string;
-    data: any;
-    children: WidgetGraph[];
-}
-
-export interface WidgetGraph {
-    /** List of GUI nodes present in this graph */
-    nodes: WidgetGraphNode[];
-    /** List of links between edges */
-    edges: NodeFragmentEdge[];
-    /** List of "dangling outputs" used to connect into e.g. a parent graph */
-    out: Record<string, OutPort>;
 }
 
 export function fragmentsToGraph(g: WidgetGraph, builders: Record<string, Widget>): WidgetBuildResult {

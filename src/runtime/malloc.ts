@@ -5,7 +5,7 @@ type voidstar = number;
 type size_t = number;
 
 const nextHighest16 = (n: number) => (n + 15) & ~15;
-const nullptr: voidstar = 0;
+const NULL = 0;
 
 type FreelistChunk = [start: voidstar, end: voidstar];
 
@@ -39,7 +39,7 @@ export class Malloc {
         if (bytes > have) this.heap.grow(ceil((bytes - have) / 65536));
     }
     malloc(bytes: size_t): voidstar {
-        if (bytes < 1) return nullptr;
+        if (bytes < 1) return NULL;
         bytes = nextHighest16(bytes);
         const freelist = this.freelist;
         for (var i = 0; i < freelist.length; i++) {
@@ -58,19 +58,20 @@ export class Malloc {
         this.allocated.set(ptr, bytes);
         return ptr;
     }
-    free(ptr: voidstar) {
-        if (!ptr) return;
+    free(ptr: voidstar): typeof NULL {
+        if (!ptr) return NULL;
         const size = this.allocated.get(ptr);
-        if (!size) return; // easy double free protection
+        if (!size) return NULL; // easy double free protection
         const freelist = this.freelist;
         var i = freelist.findIndex(b => b[0] > ptr);
         if (i === -1) i = freelist.length;
         freelist.splice(i > 0 ? i - 1 : 0, i > 0 ? 2 : 1, ...mergeChunks(freelist[i - 1], [ptr, ptr + size], freelist[i]));
         this.allocated.delete(ptr);
+        return NULL;
     }
     realloc(ptr: voidstar, bytes: size_t): voidstar {
         if (!ptr) return this.malloc(bytes);
-        if (!bytes) return this.free(ptr), nullptr;
+        if (!bytes) return this.free(ptr);
         bytes = nextHighest16(bytes);
         const oldBytes = this.allocated.get(ptr)!;
         const change = bytes - oldBytes;
@@ -79,12 +80,16 @@ export class Malloc {
         const i = freelist.findIndex(b => b[0] === oldEnd);
         if (i >= 0) {
             const b = freelist[i]!;
-            const nbs = b[1] - b[0];
-            if (nbs === change) freelist.splice(i, 1);
-            else if (nbs > change) b[0] += change;
-            this.allocated.set(ptr, bytes);
-            this.#ensure(bytes);
-            return ptr;
+            const size = b[1] - b[0];
+            // next chunk large enough to expand into?
+            if (size >= change) {
+                // exact amount => delete freelist chunk
+                if (size === change) freelist.splice(i, 1);
+                // otherwise adjust next chunk to change space needed
+                else b[0] += change;
+                this.allocated.set(ptr, bytes);
+                return ptr;
+            }
         }
         if (ptr + oldBytes === this.heapTop) {
             // last chunk grows for free
@@ -94,7 +99,7 @@ export class Malloc {
         }
         // else free and re-malloc
         const new_ = this.malloc(bytes);
-        if (!new_) return nullptr;
+        if (!new_) return NULL;
         memcpy(this.heap.buffer, ptr, new_, min(bytes, oldBytes));
         this.free(ptr);
         return new_;

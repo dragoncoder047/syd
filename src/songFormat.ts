@@ -1,5 +1,3 @@
-import { WidgetGraph } from "./graph/widgetbuilder";
-
 export type EventSequence<T> = { delta: number, data: T }[];
 
 interface Named<T extends string> { name: T }
@@ -24,6 +22,32 @@ export interface Song {
     sections: SectionData[];
     noteShapes: NoteShape[];
     postprocess: WidgetGraph;
+}
+
+export interface NodeFragmentEdge {
+    /** if true, the node inputs a constant value into this fragment input, and from is ignored */
+    constant?: boolean;
+    /** if constant is true, this is the constant value, otherwise ignored */
+    value?: number;
+    /** if constant is false, this is the graph node that produces the output */
+    from?: [frag: number, port: string];
+    to: [frag: number, port: string];
+}
+export type OutPort = [frag: number, port: string];
+
+export interface WidgetGraphNode {
+    name: string;
+    data: any;
+    children: WidgetGraph[];
+}
+
+export interface WidgetGraph {
+    /** List of GUI nodes present in this graph */
+    nodes: WidgetGraphNode[];
+    /** List of links between edges */
+    edges: NodeFragmentEdge[];
+    /** List of "dangling outputs" used to connect into e.g. a parent graph */
+    out: Record<string, OutPort>;
 }
 
 export interface SongMetadata {
