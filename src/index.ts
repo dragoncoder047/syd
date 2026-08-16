@@ -3,16 +3,15 @@ export {
     ErrorReason
 } from "./compiler/compile";
 export {
-    type AudioProcessor,
     AudioProcessorFactory,
-    type Dimensions,
     SCALAR_DIMS,
+    type AudioProcessor,
+    type Dimensions,
     type NodeInputDef
 } from "./compiler/nodeDef";
 export {
     getFragmentInputs,
-    unifyGraphFragments,
-    type NodeFragmentEdge
+    unifyGraphFragments
 } from "./graph/fragment";
 export {
     type GraphNode,
@@ -27,13 +26,14 @@ export {
     Sequencer
 } from "./sequencer";
 export type {
-    SongMetadata,
+    NodeFragmentEdge,
     NoteData,
     NotePin,
     NoteShape,
-    SectionData,
     RenderingPreferences,
+    SectionData,
     Song,
-    Tuning,
+    SongMetadata,
+    Tuning
 } from "./songFormat";
 
